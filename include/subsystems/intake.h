@@ -1,7 +1,7 @@
 #pragma once
 #include "subsystems.h"
 
-class Intake : subsystem {
+class Intake : public subsystem {
 
 public:
   enum State {

@@ -9,6 +9,7 @@
 // #include "auton/util.h"
 #include "main.h"
 #include "robot.h"
+#include "subsystems/intake.h"
 
 namespace controller_mapping {
 typedef pros::controller_analog_e_t axis_t;
