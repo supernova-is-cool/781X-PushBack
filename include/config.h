@@ -12,7 +12,8 @@ struct robotConfig {
   struct Pneumatics {
     pros::adi::Pneumatics filter;
     pros::adi::Pneumatics littleWill;
-    pros::adi::Pneumatics elevator;
+    pros::adi::Pneumatics leftElevator;
+    pros::adi::Pneumatics rightElevator;
 
   private:
     friend struct robotConfig;

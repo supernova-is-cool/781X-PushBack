@@ -17,6 +17,12 @@ typedef pros::controller_digital_e_t button_t;
 
 constexpr axis_t LEFT_DRIVE = pros::E_CONTROLLER_ANALOG_LEFT_Y;
 constexpr axis_t RIGHT_DRIVE = pros::E_CONTROLLER_ANALOG_RIGHT_Y;
+constexpr button_t MATCH_LOADER = pros::E_CONTROLLER_DIGITAL_X;
+constexpr button_t ELEVATOR = pros::E_CONTROLLER_DIGITAL_R2;
+constexpr button_t OUTAKE = pros::E_CONTROLLER_DIGITAL_L2;
+constexpr button_t STORE = pros::E_CONTROLLER_DIGITAL_L1;
+constexpr button_t SCORE = pros::E_CONTROLLER_DIGITAL_R1;
+
 }; // namespace controller_mapping
 namespace map = controller_mapping;
 
@@ -25,8 +31,6 @@ template <class... Ts> struct overloads : Ts... {
   using Ts::operator()...;
 };
 template <class... Ts> overloads(Ts...) -> overloads<Ts...>;
-
-void skillsMacro() {}
 
 /**
  * Runs the operator control code. This function will be started in its own task
@@ -48,6 +52,26 @@ void opcontrol() {
   while (true) {
     bot.tank(master.get_analog(map::LEFT_DRIVE),
              master.get_analog(map::RIGHT_DRIVE));
+
+    if (master.get_digital(map::ELEVATOR)) {
+      bot.leftElevator.toggle();
+      bot.rightElevator.toggle();
+    }
+
+    if (master.get_digital(map::MATCH_LOADER)) {
+      bot.littleWill.toggle();
+    }
+
+    if (master.get_digital(map::SCORE)){
+      bot.intake.goToScoring();
+    } else if (master.get_digital(map::OUTAKE)){
+      bot.intake.goToOutaking();
+    } else if (master.get_digital(map::STORE)){
+      bot.intake.goToStoring();
+    } else {
+      bot.intake.goToIdle();
+    }
+
     pros::delay(5); // Run every 20ms (refresh rate of the controller)
   }
 }

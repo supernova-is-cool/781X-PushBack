@@ -27,7 +27,7 @@ void Intake::runTask() {
         break;
     }
     case State::STORING: {
-        m_top.move(-POWER * 0.25);
+        //m_top.move(-POWER * 0.25);
         m_bottom.move(POWER);
         break;
     }

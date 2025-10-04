@@ -44,7 +44,8 @@ class Robot : private lemlib::Chassis {
     /** Extended is down/active. */
     pros::adi::Pneumatics littleWill;
     /** Extended is down/active. */
-    pros::adi::Pneumatics elevator;
+    pros::adi::Pneumatics leftElevator;
+    pros::adi::Pneumatics rightElevator;
     /** Extended is up/inactive. */
     pros::Controller& gamepad;
 
