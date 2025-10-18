@@ -21,7 +21,7 @@ class Robot : private lemlib::Chassis {
   public:
     const robotConfig& m_config;
   private:
-
+    Intake::Sensor intakeSensor;  // ✅ add this line
     pros::Controller m_gamepad;
     Intake m_intake;
 

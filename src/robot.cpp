@@ -192,8 +192,14 @@ Robot::Robot(const robotConfig &m_config)
       m_gamepad(pros::E_CONTROLLER_MASTER), gamepad(m_gamepad),
       m_transform(std::make_shared<auton::AllianceTransform>(COLOR::RED)),
       m_config(robotConfig::config),
+
+      intakeSensor(robotConfig::config.sensors.intakeColor),
+
       m_intake(robotConfig::config.motors.topStage,
-               robotConfig::config.motors.bottomStage),
+               robotConfig::config.motors.bottomStage,
+               robotConfig::config.sensors.intakeDistance,
+               robotConfig::config.pneumatics.filter, intakeSensor),
+
       intake(m_intake) {}
 
 Robot Robot::instance{robotConfig::config};

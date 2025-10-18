@@ -2,7 +2,8 @@
 #include "pros/adi.hpp"
 
 robotConfig::Sensors robotConfig::Sensors::sensors{
-    .intakeFilter{6},
+    .intakeColor{9},
+    .intakeDistance{1},
     .vert{30},
     .hori{-13},
     .imu{12},

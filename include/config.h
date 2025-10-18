@@ -32,7 +32,8 @@ struct robotConfig {
   };
 
   struct Sensors {
-    pros::Optical intakeFilter;
+    pros::Optical intakeColor;
+    pros::Distance intakeDistance;
     pros::Rotation vert;
     pros::Rotation hori;
     pros::IMU imu;

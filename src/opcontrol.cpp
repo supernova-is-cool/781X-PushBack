@@ -2,6 +2,7 @@
 #include "lemlib/pose.hpp"
 #include "lemlib/timer.hpp"
 #include "lemlib/util.hpp"
+#include "pros/adi.h"
 #include "pros/misc.h"
 #include "pros/rtos.hpp"
 #include <optional>
@@ -53,12 +54,12 @@ void opcontrol() {
     bot.tank(master.get_analog(map::LEFT_DRIVE),
              master.get_analog(map::RIGHT_DRIVE));
 
-    if (master.get_digital(map::ELEVATOR)) {
+    if (master.get_digital_new_press(map::ELEVATOR)) {
       bot.leftElevator.toggle();
       bot.rightElevator.toggle();
     }
 
-    if (master.get_digital(map::MATCH_LOADER)) {
+    if (master.get_digital_new_press(map::MATCH_LOADER)) {
       bot.littleWill.toggle();
     }
 

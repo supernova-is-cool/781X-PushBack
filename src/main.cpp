@@ -1,5 +1,6 @@
 #include "lemlib/api.hpp" 
 #include "main.h"
+#include "robot.h"
 
 /**
  * A callback function for LLEMU's center button.
@@ -28,6 +29,7 @@ void initialize() {
 	pros::lcd::set_text(1, "Hello PROS User!");
 
 	pros::lcd::register_btn1_cb(on_center_button);
+	bot.m_config.sensors.intakeColor.set_led_pwm(100);
 }
 
 /**
