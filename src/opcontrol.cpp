@@ -23,6 +23,7 @@ constexpr button_t ELEVATOR = pros::E_CONTROLLER_DIGITAL_R2;
 constexpr button_t OUTAKE = pros::E_CONTROLLER_DIGITAL_L2;
 constexpr button_t STORE = pros::E_CONTROLLER_DIGITAL_L1;
 constexpr button_t SCORE = pros::E_CONTROLLER_DIGITAL_R1;
+constexpr button_t ALIGNER = pros::E_CONTROLLER_DIGITAL_Y;
 
 }; // namespace controller_mapping
 namespace map = controller_mapping;
@@ -48,6 +49,7 @@ template <class... Ts> overloads(Ts...) -> overloads<Ts...>;
  */
 
 void opcontrol() {
+
   pros::Controller master(pros::E_CONTROLLER_MASTER);
 
   while (true) {
@@ -57,17 +59,18 @@ void opcontrol() {
     if (master.get_digital_new_press(map::ELEVATOR)) {
       bot.leftElevator.toggle();
       bot.rightElevator.toggle();
+      bot.aligner.toggle();
     }
 
     if (master.get_digital_new_press(map::MATCH_LOADER)) {
       bot.littleWill.toggle();
     }
 
-    if (master.get_digital(map::SCORE)){
+    if (master.get_digital(map::SCORE)) {
       bot.intake.goToScoring();
-    } else if (master.get_digital(map::OUTAKE)){
+    } else if (master.get_digital(map::OUTAKE)) {
       bot.intake.goToOutaking();
-    } else if (master.get_digital(map::STORE)){
+    } else if (master.get_digital(map::STORE)) {
       bot.intake.goToStoring();
     } else {
       bot.intake.goToIdle();

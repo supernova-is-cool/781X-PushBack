@@ -14,6 +14,7 @@ struct robotConfig {
     pros::adi::Pneumatics littleWill;
     pros::adi::Pneumatics leftElevator;
     pros::adi::Pneumatics rightElevator;
+    pros::adi::Pneumatics aligner;
 
   private:
     friend struct robotConfig;

@@ -1,6 +1,9 @@
-#include "lemlib/api.hpp" 
 #include "main.h"
+#include "lemlib/api.hpp"
+#include "autonSelector/selector.hpp"
 #include "robot.h"
+
+ts::selector* selector = nullptr;
 
 /**
  * A callback function for LLEMU's center button.
@@ -9,13 +12,23 @@
  * "I was pressed!" and nothing.
  */
 void on_center_button() {
-	static bool pressed = false;
-	pressed = !pressed;
-	if (pressed) {
-		pros::lcd::set_text(2, "I was pressed!");
-	} else {
-		pros::lcd::clear_line(2);
-	}
+  static bool pressed = false;
+  pressed = !pressed;
+  if (pressed) {
+    pros::lcd::set_text(2, "I was pressed!");
+  } else {
+    pros::lcd::clear_line(2);
+  }
+}
+
+void screen() {
+  // Only print if auton selection is complete
+  while (true) {
+    pros::lcd::print(3, "x:\t%fin", bot.getPose().x);
+    pros::lcd::print(4, "y:\t%fin", bot.getPose().y);
+    pros::lcd::print(5, "theta:\t%fdeg", bot.getPose().theta);
+    pros::delay(50);
+  }
 }
 
 /**
@@ -25,11 +38,23 @@ void on_center_button() {
  * to keep execution time for this mode under a few seconds.
  */
 void initialize() {
-	pros::lcd::initialize();
-	pros::lcd::set_text(1, "Hello PROS User!");
+  pros::lcd::initialize();
+  selector = ts::selector::get();
+  selector->display();
 
-	pros::lcd::register_btn1_cb(on_center_button);
-	bot.m_config.sensors.intakeColor.set_led_pwm(100);
+  // ensure robot is initialized
+  Robot::get();
+  // indicate calibration
+  pros::delay(250);
+  bot.calibrate();
+  pros::delay(250);
+  bot.m_config.sensors.intakeColor.set_led_pwm(100);
+
+  bot.setAlliance(ALLIANCE::RED);
+  bot.setPose({0, 0, 0}, 72);
+  pros::delay(250);
+
+  new pros::Task{screen};
 }
 
 /**
@@ -61,8 +86,14 @@ void competition_initialize() {}
  * will be stopped. Re-enabling the robot will restart the task, not re-start it
  * from where it left off.
  */
-void autonomous() {}
+void autonomous() { 
+  /*
+  bot.setPose({0, 0, 0});
+  bot.turnToHeading(90, 1000);
+  */
+  selector->run_selected_auton();
 
+  }
 /**
  * Runs the operator control code. This function will be started in its own task
  * with the default priority and stack size whenever the robot is enabled via
@@ -77,23 +108,26 @@ void autonomous() {}
  * task, not resume it from where it left off.
  */
 
-
 /*void opcontrol() {
-	pros::Controller master(pros::E_CONTROLLER_MASTER);
-	pros::MotorGroup left_mg({1, -2, 3});    // Creates a motor group with forwards ports 1 & 3 and reversed port 2
-	pros::MotorGroup right_mg({-4, 5, -6});  // Creates a motor group with forwards port 5 and reversed ports 4 & 6
+        pros::Controller master(pros::E_CONTROLLER_MASTER);
+        pros::MotorGroup left_mg({1, -2, 3});    // Creates a motor group with
+forwards ports 1 & 3 and reversed port 2 pros::MotorGroup right_mg({-4, 5, -6});
+// Creates a motor group with forwards port 5 and reversed ports 4 & 6
 
 
-	while (true) {
-		pros::lcd::print(0, "%d %d %d", (pros::lcd::read_buttons() & LCD_BTN_LEFT) >> 2,
-		                 (pros::lcd::read_buttons() & LCD_BTN_CENTER) >> 1,
-		                 (pros::lcd::read_buttons() & LCD_BTN_RIGHT) >> 0);  // Prints status of the emulated screen LCDs
+        while (true) {
+                pros::lcd::print(0, "%d %d %d", (pros::lcd::read_buttons() &
+LCD_BTN_LEFT) >> 2, (pros::lcd::read_buttons() & LCD_BTN_CENTER) >> 1,
+                                 (pros::lcd::read_buttons() & LCD_BTN_RIGHT) >>
+0);  // Prints status of the emulated screen LCDs
 
-		// Arcade control scheme
-		int dir = master.get_analog(ANALOG_LEFT_Y);    // Gets amount forward/backward from left joystick
-		int turn = master.get_analog(ANALOG_RIGHT_X);  // Gets the turn left/right from right joystick
-		left_mg.move(dir - turn);                      // Sets left motor voltage
-		right_mg.move(dir + turn);                     // Sets right motor voltage
-		pros::delay(20);                               // Run for 20 ms then update
-	}
+                // Arcade control scheme
+                int dir = master.get_analog(ANALOG_LEFT_Y);    // Gets amount
+forward/backward from left joystick int turn =
+master.get_analog(ANALOG_RIGHT_X);  // Gets the turn left/right from right
+joystick left_mg.move(dir - turn);                      // Sets left motor
+voltage right_mg.move(dir + turn);                     // Sets right motor
+voltage pros::delay(20);                               // Run for 20 ms then
+update
+        }
 } */

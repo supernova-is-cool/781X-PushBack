@@ -1,7 +1,6 @@
 #pragma once
 #include "config.h"
 #include "pros/adi.hpp"
-#include "subsystems/selector.h"
 #include "lemlib/chassis/chassis.hpp"
 #include "color.h"
 #include "auton/transform.h"
@@ -46,6 +45,7 @@ class Robot : private lemlib::Chassis {
     /** Extended is down/active. */
     pros::adi::Pneumatics leftElevator;
     pros::adi::Pneumatics rightElevator;
+    pros::adi::Pneumatics aligner;
     /** Extended is up/inactive. */
     pros::Controller& gamepad;
 
@@ -57,15 +57,15 @@ class Robot : private lemlib::Chassis {
     ALLIANCE getAlliance() const;
     COLOR getColor() const;
 
-    using lemlib::Chassis::angularLargeExit;
+using lemlib::Chassis::angularLargeExit;
     using lemlib::Chassis::angularPID;
     using lemlib::Chassis::angularSettings;
     using lemlib::Chassis::angularSmallExit;
     using lemlib::Chassis::arcade;
+    using lemlib::Chassis::calibrate;
     using lemlib::Chassis::cancelAllMotions;
     using lemlib::Chassis::cancelMotion;
     using lemlib::Chassis::curvature;
-    using lemlib::Chassis::drivetrain;
     using lemlib::Chassis::isInMotion;
     using lemlib::Chassis::lateralLargeExit;
     using lemlib::Chassis::lateralPID;
@@ -76,10 +76,8 @@ class Robot : private lemlib::Chassis {
     using lemlib::Chassis::waitUntil;
     using lemlib::Chassis::waitUntilDone;
 
-    void calibrate();
-
-    void setPose(lemlib::Pose pose, float stdDev = .5);
-    lemlib::Pose getPose();
+    void setPose(lemlib::Pose pose, bool radians = false);
+    lemlib::Pose getPose(bool radians = false);
 
     void turnToPoint(lemlib::Pose target, int timeout,
                      lemlib::TurnToPointParams params = {}, bool async = true);
@@ -96,20 +94,6 @@ class Robot : private lemlib::Chassis {
                     lemlib::MoveToPoseParams params = {}, bool async = true);
     void moveToPoint(lemlib::Pose target, int timeout,
                      lemlib::MoveToPointParams params = {}, bool async = true);
-
-    /**
-     * @warning Didn't work the single time I tested it.
-     * @brief Move the a point on the bot to a desired point and heading.
-     *
-     * @param target The desired target for the point.
-     * @param timeout How long to run the motion.
-     * @param offset The offset of the point relative to the center of the
-     * robot. X should be forwards/backwards, and Y, side to side.
-     */
-    void customMoveToPose(lemlib::Pose target, size_t timeout,
-                          lemlib::Pose offset = {0, 0},
-                          lemlib::MoveToPoseParams params = {},
-                          bool async = true);
 };
 
 inline Robot& bot = Robot::get();
