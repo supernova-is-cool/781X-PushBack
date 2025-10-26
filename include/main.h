@@ -1,3 +1,6 @@
+#include "autonSelector/selector.hpp"
+
+
 /**
  * \file main.h
  *

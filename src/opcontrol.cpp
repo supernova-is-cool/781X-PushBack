@@ -49,7 +49,6 @@ template <class... Ts> overloads(Ts...) -> overloads<Ts...>;
  */
 
 void opcontrol() {
-
   pros::Controller master(pros::E_CONTROLLER_MASTER);
 
   while (true) {

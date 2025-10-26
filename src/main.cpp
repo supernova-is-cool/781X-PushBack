@@ -1,28 +1,13 @@
 #include "main.h"
-#include "lemlib/api.hpp"
+#include "auton/autons.h"
 #include "autonSelector/selector.hpp"
+#include "lemlib/api.hpp"
 #include "robot.h"
 
-ts::selector* selector = nullptr;
-
-/**
- * A callback function for LLEMU's center button.
- *
- * When this callback is fired, it will toggle line 2 of the LCD text between
- * "I was pressed!" and nothing.
- */
-void on_center_button() {
-  static bool pressed = false;
-  pressed = !pressed;
-  if (pressed) {
-    pros::lcd::set_text(2, "I was pressed!");
-  } else {
-    pros::lcd::clear_line(2);
-  }
-}
+ts::selector *selector = nullptr;
+ts::auton RL("Red Left", doNothing);
 
 void screen() {
-  // Only print if auton selection is complete
   while (true) {
     pros::lcd::print(3, "x:\t%fin", bot.getPose().x);
     pros::lcd::print(4, "y:\t%fin", bot.getPose().y);
@@ -38,10 +23,8 @@ void screen() {
  * to keep execution time for this mode under a few seconds.
  */
 void initialize() {
-  pros::lcd::initialize();
   selector = ts::selector::get();
   selector->display();
-
   // ensure robot is initialized
   Robot::get();
   // indicate calibration
@@ -53,8 +36,6 @@ void initialize() {
   bot.setAlliance(ALLIANCE::RED);
   bot.setPose({0, 0, 0}, 72);
   pros::delay(250);
-
-  new pros::Task{screen};
 }
 
 /**
@@ -73,7 +54,12 @@ void disabled() {}
  * This task will exit when the robot is enabled and autonomous or opcontrol
  * starts.
  */
-void competition_initialize() {}
+void competition_initialize() { 
+	if(!selector->is_auton_selected())
+	{
+		//Handle no selected auton
+	}
+}
 
 /**
  * Runs the user autonomous code. This function will be started in its own task
@@ -86,14 +72,18 @@ void competition_initialize() {}
  * will be stopped. Re-enabling the robot will restart the task, not re-start it
  * from where it left off.
  */
-void autonomous() { 
+void autonomous() {
   /*
   bot.setPose({0, 0, 0});
   bot.turnToHeading(90, 1000);
   */
-  selector->run_selected_auton();
+  pros::lcd::initialize();
 
-  }
+  ts::selector::get()->run_selected_auton();
+  ts::selector::get()->hide();
+  new pros::Task{screen};
+}
+
 /**
  * Runs the operator control code. This function will be started in its own task
  * with the default priority and stack size whenever the robot is enabled via

@@ -36,7 +36,7 @@ void Intake::runTask() {
     auto sensedBlock = getSensedRing();
     printf("%i\n", (int)blockDetected);
 
-    if (sensedBlock.has_value()) {
+    if (sensedBlock.has_value() && enableFilter) {
       COLOR color = sensedBlock.value();
 
       if (color != m_targetColor) {
@@ -94,6 +94,9 @@ void Intake::goToIdle() { setState(State::IDLE); }
 void Intake::goToOutaking() { setState(State::OUTAKE); }
 void Intake::goToScoring() { setState(State::SCORING); }
 void Intake::goToStoring() { setState(State::STORING); }
+
+void Intake::enableFiltering() { enableFilter = true; }
+void Intake::disableFiltering() { enableFilter = false; }
 
 std::optional<COLOR> Intake::getSensedRing() { return m_sensor.getBlock(); }
 

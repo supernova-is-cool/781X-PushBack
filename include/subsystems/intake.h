@@ -29,6 +29,7 @@ private:
   Sensor &m_sensor;
   bool isOpen = false;
   COLOR m_targetColor = COLOR::RED;
+  bool enableFilter = true;
 
 public:
   explicit Intake(pros::Motor &top, pros::Motor &bottom,
@@ -45,6 +46,9 @@ public:
   void goToStoring();
   void goToScoring();
   void goToOutaking();
+
+  void enableFiltering();
+  void disableFiltering();
 
   std::optional<COLOR> getSensedRing();
   void setFilterColor();
