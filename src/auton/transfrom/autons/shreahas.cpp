@@ -26,8 +26,10 @@ void redAWP() {
   bot.setAlliance(ALLIANCE::RED);
 
   // place holder cuz idk were is gonna start
-  const Pose startingPose{0, 0, 0};
+  const Pose startingPose{(-2 * TILE) - 5.7, 7 + DRIVE_LENGTH + 15, 180};
+  
   bot.setPose(startingPose);
+  
 
   // match loader closest to referee
   const Pose farMatchLoader{-(3 * TILE - DRIVE_LENGTH - 8), 2 * TILE,
@@ -43,6 +45,7 @@ void redAWP() {
   pros::delay(1500);
   bot.intake.goToIdle();
 
+  /*
   // long goal closest to referee
   const Pose farLongGoal{-TILE - DRIVE_LENGTH, 2 * TILE, BLUE_STATION};
 
@@ -106,4 +109,5 @@ void redAWP() {
   bot.moveToPoint(closeLongGoal, 1000);
   bot.waitUntilDone();
   bot.intake.goToScoring();
+  */
 }

@@ -6,3 +6,4 @@
 
 void doNothing();
 void redAWP();
+void dumbSkills();

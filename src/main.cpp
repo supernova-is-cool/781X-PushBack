@@ -6,6 +6,8 @@
 
 ts::selector *selector = nullptr;
 ts::auton RL("Red Left", doNothing);
+ts::auton BOOM("Skills", dumbSkills);
+ts::auton iHope("SAWP", redAWP);
 
 void screen() {
   while (true) {
