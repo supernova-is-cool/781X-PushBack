@@ -7,3 +7,5 @@
 void doNothing();
 void redAWP();
 void dumbSkills();
+void center();
+void moreBalls();
