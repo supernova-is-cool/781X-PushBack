@@ -25,10 +25,11 @@ void screen() {
  * to keep execution time for this mode under a few seconds.
  */
 void initialize() {
-  selector = ts::selector::get();
-  selector->display();
+  //selector = ts::selector::get();
+  //selector->display();
   // ensure robot is initialized
   Robot::get();
+  pros::lcd::initialize();
   // indicate calibration
   pros::delay(250);
   bot.calibrate();
@@ -38,6 +39,7 @@ void initialize() {
   bot.setAlliance(ALLIANCE::RED);
   bot.setPose({0, 0, 0}, 72);
   pros::delay(250);
+  new pros::Task{screen};
 }
 
 /**
@@ -57,10 +59,12 @@ void disabled() {}
  * starts.
  */
 void competition_initialize() { 
-	if(!selector->is_auton_selected())
+	/*
+  if(!selector->is_auton_selected())
 	{
 		//Handle no selected auton
 	}
+  */
 }
 
 /**
@@ -79,11 +83,10 @@ void autonomous() {
   bot.setPose({0, 0, 0});
   bot.turnToHeading(90, 1000);
   */
-  pros::lcd::initialize();
-
-  ts::selector::get()->run_selected_auton();
-  ts::selector::get()->hide();
-  new pros::Task{screen};
+  redAWP();
+  //ts::selector::get()->run_selected_auton();
+  //ts::selector::get()->hide();
+  //new pros::Task{screen};
 }
 
 /**

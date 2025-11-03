@@ -8,11 +8,11 @@ robotConfig::Dimensions robotConfig::Dimensions::dimensions = {
     .driveWheelRpm = 600,
     .vertEncDiameter = lemlib::Omniwheel::NEW_2,
 
-    .vertEncDistance = 0.4f,
+    .vertEncDistance = 0.375f,
     .vertEncGearRatio = 1.f,
     .horiEncDiameter = lemlib::Omniwheel::NEW_2,
 
-    .horiEncDistance = -4.18f,
+    .horiEncDistance = -4.5f,
     .horiEncGearRatio = 1.f,
     .drivetrainWidth = dimensions::robot::DRIVE_WIDTH,
     .drivetrainLength = dimensions::robot::DRIVE_LENGTH,

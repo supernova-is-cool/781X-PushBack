@@ -73,6 +73,7 @@ void Intake::runTask() {
 
     case State::STORING:
       m_bottom.move(POWER);
+      m_top.move(POWER * 0.17);
       break;
 
     default:
