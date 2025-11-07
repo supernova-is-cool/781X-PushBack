@@ -83,7 +83,7 @@ void autonomous() {
   bot.setPose({0, 0, 0});
   bot.turnToHeading(90, 1000);
   */
-  redAWP();
+  moreBalls();
   //ts::selector::get()->run_selected_auton();
   //ts::selector::get()->hide();
   //new pros::Task{screen};
