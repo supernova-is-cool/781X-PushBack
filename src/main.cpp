@@ -81,9 +81,11 @@ void competition_initialize() {
 void autonomous() {
   /*
   bot.setPose({0, 0, 0});
-  bot.turnToHeading(90, 1000);
+  //bot.turnToHeading(90, 1000);
+  bot.moveToPoint({0, 10}, 1000);
   */
-  moreBalls();
+  
+  dumbSkills();
   //ts::selector::get()->run_selected_auton();
   //ts::selector::get()->hide();
   //new pros::Task{screen};

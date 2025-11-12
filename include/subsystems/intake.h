@@ -29,7 +29,7 @@ private:
   Sensor &m_sensor;
   bool isOpen = false;
   COLOR m_targetColor = COLOR::RED;
-  bool enableFilter = true;
+  bool enableFilter = false;
 
 public:
   explicit Intake(pros::Motor &top, pros::Motor &bottom,

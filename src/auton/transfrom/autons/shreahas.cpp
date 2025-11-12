@@ -24,6 +24,7 @@ void doNothing() { printf("yo what's up\n"); }
 
 void redAWP() {
   bot.setAlliance(ALLIANCE::RED);
+  bot.intake.disableFiltering();
 
   // place holder cuz idk were is gonna start
   const Pose startingPose{(-2 * TILE) - DRIVE_WIDTH + 5, 1.5 + DRIVE_LENGTH, 0};
