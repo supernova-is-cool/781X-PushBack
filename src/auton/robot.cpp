@@ -2,67 +2,39 @@
 #include "lemlib/chassis/chassis.hpp"
 #include "lemlib/pose.hpp"
 
+// Handles transformations for auton to work for both red and blue alliance
+
+void Robot::setTransform(std::shared_ptr<auton::Transformation> transform) {
+  m_transform = transform;
+}
+
 constexpr auto ALLIANCE_DEFAULT = ALLIANCE::RED;
 
-void Robot::setAlliance(ALLIANCE alliance) { m_alliance = alliance; }
+void Robot::setAlliance(ALLIANCE alliance) {
+  m_alliance = alliance;
+  setTransform(std::make_shared<auton::AllianceTransform>(alliance));
+}
 
 ALLIANCE Robot::getAlliance() const { return m_alliance; }
 
 COLOR Robot::getColor() const { return getAlliance(); }
 
-bool needsTransform() { return bot.getAlliance() != ALLIANCE_DEFAULT; }
-
-/** if in radians, stays in radians */
-float transformHeading(float origThetaDegrees) {
-  if (needsTransform()) return 0 - origThetaDegrees;
-  return origThetaDegrees;
-}
-
-/** if in radians, stays in radians */
-lemlib::Pose transformPose(lemlib::Pose original) {
-  if (needsTransform())
-    return {-original.x, original.y, transformHeading(original.theta)};
-  else return original;
-}
-
-lemlib::DriveSide transformDriveSide(lemlib::DriveSide original) {
-  constexpr auto LEFT = lemlib::DriveSide::LEFT;
-  constexpr auto RIGHT = lemlib::DriveSide::RIGHT;
-  if (needsTransform()) switch (original) {
-      case LEFT: return RIGHT;
-      case RIGHT: return LEFT;
-    }
-  else return original;
-}
-
-lemlib::AngularDirection transformAngDir(lemlib::AngularDirection original) {
-  constexpr auto CCW = lemlib::AngularDirection::CCW_COUNTERCLOCKWISE;
-  constexpr auto CW = lemlib::AngularDirection::CW_CLOCKWISE;
-  constexpr auto AUTO = lemlib::AngularDirection::AUTO;
-  if (needsTransform()) switch (original) {
-      case CCW: return CW;
-      case CW: return CCW;
-      case AUTO: return AUTO;
-    }
-  else return original;
-}
-
 void Robot::setPose(lemlib::Pose newPose, bool radians) {
-  lemlib::Chassis::setPose(transformPose(newPose), radians);
+  lemlib::Chassis::setPose(m_transform->transformPose(newPose), radians);
 }
 
 lemlib::Pose Robot::getPose(bool radians) {
-  return transformPose(lemlib::Chassis::getPose(radians));
+  return m_transform->transformPose(lemlib::Chassis::getPose(radians));
 }
 
 void Robot::turnToPoint(lemlib::Pose target, int timeout,
                         lemlib::TurnToPointParams params, bool async) {
-  const auto transformed = transformPose(target);
+  const auto transformed = m_transform->transformPose(target);
   lemlib::Chassis::turnToPoint(
       transformed.x, transformed.y, timeout,
       {
           .forwards = params.forwards,
-          .direction = transformAngDir(params.direction),
+          .direction = m_transform->transformAngDir(params.direction),
           .maxSpeed = params.maxSpeed,
           .minSpeed = params.minSpeed,
           .earlyExitRange = params.earlyExitRange,
@@ -72,11 +44,11 @@ void Robot::turnToPoint(lemlib::Pose target, int timeout,
 
 void Robot::turnToHeading(float theta, int timeout,
                           lemlib::TurnToHeadingParams params, bool async) {
-  const auto transformed = transformHeading(theta);
+  const auto transformed = m_transform->transformHeading(theta);
   lemlib::Chassis::turnToHeading(
       transformed, timeout,
       {
-          .direction = transformAngDir(params.direction),
+          .direction = m_transform->transformAngDir(params.direction),
           .maxSpeed = params.maxSpeed,
           .minSpeed = params.minSpeed,
           .earlyExitRange = params.earlyExitRange,
@@ -87,12 +59,13 @@ void Robot::turnToHeading(float theta, int timeout,
 void Robot::swingToPoint(lemlib::Pose target, lemlib::DriveSide lockedSide,
                          int timeout, lemlib::SwingToPointParams params,
                          bool async) {
-  const auto transformed = transformPose(target);
+  const auto transformed = m_transform->transformPose(target);
   lemlib::Chassis::swingToPoint(
-      transformed.x, transformed.y, transformDriveSide(lockedSide), timeout,
+      transformed.x, transformed.y, m_transform->transformDriveSide(lockedSide),
+      timeout,
       {
           .forwards = params.forwards,
-          .direction = transformAngDir(params.direction),
+          .direction = m_transform->transformAngDir(params.direction),
           .maxSpeed = params.maxSpeed,
           .minSpeed = params.minSpeed,
           .earlyExitRange = params.earlyExitRange,
@@ -103,11 +76,11 @@ void Robot::swingToPoint(lemlib::Pose target, lemlib::DriveSide lockedSide,
 void Robot::swingToHeading(float theta, lemlib::DriveSide lockedSide,
                            int timeout, lemlib::SwingToHeadingParams params,
                            bool async) {
-  const auto transformed = transformHeading(theta);
+  const auto transformed = m_transform->transformHeading(theta);
   lemlib::Chassis::swingToHeading(
-      transformed, transformDriveSide(lockedSide), timeout,
+      transformed, m_transform->transformDriveSide(lockedSide), timeout,
       {
-          .direction = transformAngDir(params.direction),
+          .direction = m_transform->transformAngDir(params.direction),
           .maxSpeed = params.maxSpeed,
           .minSpeed = params.minSpeed,
           .earlyExitRange = params.earlyExitRange,
@@ -117,7 +90,7 @@ void Robot::swingToHeading(float theta, lemlib::DriveSide lockedSide,
 
 void Robot::moveToPose(lemlib::Pose target, int timeout,
                        lemlib::MoveToPoseParams params, bool async) {
-  const auto transformed = transformPose(target);
+  const auto transformed = m_transform->transformPose(target);
   lemlib::Chassis::moveToPose(transformed.x, transformed.y, transformed.theta,
                               timeout,
                               {
@@ -133,7 +106,7 @@ void Robot::moveToPose(lemlib::Pose target, int timeout,
 
 void Robot::moveToPoint(lemlib::Pose target, int timeout,
                         lemlib::MoveToPointParams params, bool async) {
-  const auto transformed = transformPose(target);
+  const auto transformed = m_transform->transformPose(target);
   lemlib::Chassis::moveToPoint(transformed.x, transformed.y, timeout,
                                {
                                    .forwards = params.forwards,

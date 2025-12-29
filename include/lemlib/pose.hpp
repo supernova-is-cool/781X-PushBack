@@ -1,6 +1,7 @@
 #pragma once
 
 #include <string>
+#include <format>
 
 namespace lemlib {
 /**
@@ -206,6 +207,27 @@ class Pose {
          * @endcode
          */
         Pose rotate(float angle) const;
+
+        Pose withTheta(float newTheta) const { return Pose(x, y, newTheta); }
+
+        Pose withX(float newX) const { return Pose(newX, y, theta); }
+
+        Pose withY(float newY) const { return Pose(x, newY, theta); }
+
+        /**
+        * @brief Creates a pose from polar coordinates
+        *
+        * @param r Radius of polar coordinates
+        * @param theta Theta of polar coordinates
+        * @param inRadians Whether theta is in radians
+        * @param standardPos If true, +x direction is 0 theta and clockwise is
+        * positive (standard), otherwise +y direction is 0 theta and
+        * counterclockwise is positive (compass)
+        * @return Pose in cartesian coordinates, with a theta of the input theta
+        */
+        static Pose fromPolar(float r, float theta, bool inRadians = false,
+                            bool standardPos = false);
+
 };
 
 /**
@@ -216,3 +238,32 @@ class Pose {
  */
 std::string format_as(const Pose& pose);
 } // namespace lemlib
+
+// Provides std::print support for lemlib::Pose
+template <> struct std::formatter<lemlib::Pose, char> : std::formatter<double, char> {
+        // Parse specifiers (using the base class's parse function)
+        template <typename ParseContext> constexpr auto parse(ParseContext& ctx) {
+            // Call parse on the current object (base class subobject)
+            return std::formatter<double, char>::parse(ctx);
+        }
+
+        // Format the units::Pose object
+        template <typename FormatContext> auto format(const lemlib::Pose& pose, FormatContext& ctx) const {
+            auto it = ctx.out();
+            it = format_to(it, "(");
+
+            // Create temporary formatter objects for Length and Angle
+            std::formatter<float, char> fmtLength {};
+            std::formatter<float, char> fmtAngle {};
+
+            // Use the temporary objects to format each component.
+            it = fmtLength.format(pose.x, ctx);
+            it = format_to(it, ", ");
+            it = fmtLength.format(pose.y, ctx);
+            it = format_to(it, ", ");
+            it = fmtAngle.format(pose.theta, ctx);
+            it = format_to(it, ")");
+
+            return it;
+        }
+};

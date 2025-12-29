@@ -105,6 +105,11 @@ class SignTransform : public Transformation {
     enum SIGN {
       POSITIVE,
       NEGATIVE,
+      REFEREE = POSITIVE,
+      AUDIENCE = NEGATIVE,
+    };
+    static constexpr SIGN flipSign(const SIGN sign) {
+      return (sign == SIGN::POSITIVE) ? SIGN::NEGATIVE : SIGN::POSITIVE;
     };
 
     /** @brief The sign that the auto was programmed for. */
