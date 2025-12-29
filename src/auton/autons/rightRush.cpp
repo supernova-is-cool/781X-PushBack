@@ -84,6 +84,10 @@ void autons::rightRush() {
 
   const Pose descore = {-TILE + DRIVE_LENGTH - 2, -38, RED_STATION};
   bot.descore.extend();
+
+  // Do not cross auton line
+  bot.matchLoader.retract();
+  
   //bot.moveToPoint(descore, 2000, {.forwards = false});
   bot.waitUntilDone();
   bot.turnToHeading(RED_STATION, 1000);
@@ -93,6 +97,9 @@ void autons::rightRush() {
   bot.descore.retract();
   bot.waitUntilDone();
   const Pose currentPose = bot.getPose();
+  
+  // Repeatedly run moveToPose to hold position against pushes
+  // (When auton stage ends, this will also end)
   while (true){
     bot.moveToPose(currentPose, 1000);
   }
