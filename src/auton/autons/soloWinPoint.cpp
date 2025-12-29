@@ -20,7 +20,7 @@ using namespace auton::util;
 using lemlib::Pose;
 using AngDir = lemlib::AngularDirection;
 
-void neilAteTaco() {
+void autons::soloWinPoint() {
   // === STARTING POSE ===
   const Pose startingPosition = {-2 * TILE - DRIVE_WIDTH + 5,
                                  -TILE + DRIVE_LENGTH / 2 + 1, 180};

@@ -6,9 +6,9 @@
 #include "robot.h"
 
 ts::selector *selector = nullptr;
-ts::auton RL("Right", neilAteTaco);
-ts::auton BOOM("Skills", dumbSkills);
-ts::auton iHope("Left", moreBalls);
+ts::auton RL("Right", autons::soloWinPoint);
+ts::auton BOOM("Skills", autons::leftMiddle);
+ts::auton iHope("Left", autons::moreBalls);
 
 void screen() {
   while (true) {
@@ -87,7 +87,7 @@ void autonomous() {
   
   //bot.moveToPoint({0, 10}, 1000);
   
-  dumbSkills();
+  autons::leftMiddle();
 
 }
 

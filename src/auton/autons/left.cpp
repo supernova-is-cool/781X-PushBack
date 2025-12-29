@@ -20,7 +20,7 @@ using namespace auton::util;
 using lemlib::Pose;
 using AngDir = lemlib::AngularDirection;
 
-void dumbSkills() {
+void autons::leftMiddle() {  
   // --- Starting Pose ---
   const Pose startingPosition = {2 * TILE + DRIVE_LENGTH / 2, -0.7 * TILE + 1.5,
                                  270};
