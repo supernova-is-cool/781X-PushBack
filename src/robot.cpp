@@ -49,6 +49,7 @@ Robot::Robot(const robotConfig &m_config)
       matchLoader(robotConfig::config.pneumatics.matchLoader),
       lift(robotConfig::config.pneumatics.lift),
       descore(robotConfig::config.pneumatics.descore),
+      odomLift(robotConfig::config.pneumatics.odomLift),
       m_gamepad(pros::E_CONTROLLER_MASTER), gamepad(m_gamepad),
       m_transform(std::make_shared<auton::AllianceTransform>(COLOR::RED)),
       m_config(robotConfig::config),
@@ -57,8 +58,7 @@ Robot::Robot(const robotConfig &m_config)
       m_intake(robotConfig::config.motors.topStage,
                robotConfig::config.motors.bottomStage,
                robotConfig::config.sensors.intakeDistance
-          ),
-
-      intake(m_intake) {}
+          ),      intake(m_intake) {}
+          
 
 Robot Robot::instance{robotConfig::config};

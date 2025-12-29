@@ -13,6 +13,7 @@ struct robotConfig {
     pros::adi::Pneumatics matchLoader;
     pros::adi::Pneumatics lift;
     pros::adi::Pneumatics descore;
+    pros::adi::Pneumatics odomLift;
 
   private:
     friend struct robotConfig;

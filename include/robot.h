@@ -45,6 +45,8 @@ class Robot : private lemlib::Chassis {
     /** Extended is up/inactive. */
     pros::adi::Pneumatics descore;
 
+    pros::adi::Pneumatics odomLift;
+
     pros::Controller& gamepad;
 
     void setTransform(std::shared_ptr<auton::Transformation> transform);
