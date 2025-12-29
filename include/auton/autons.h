@@ -10,6 +10,6 @@ namespace autons {
   /** Starts on left corner, scores on left middle goal, and left long goal. */
   void leftMiddle();
   void center();
-  void moreBalls();
+  void skills();
   void soloWinPoint();
 }

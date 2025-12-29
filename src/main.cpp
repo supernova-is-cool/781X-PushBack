@@ -8,7 +8,7 @@
 ts::selector *selector = nullptr;
 ts::auton RL("Right", autons::soloWinPoint);
 ts::auton BOOM("Skills", autons::leftMiddle);
-ts::auton iHope("Left", autons::moreBalls);
+ts::auton iHope("Left", autons::skills);
 
 void screen() {
   while (true) {
@@ -87,7 +87,7 @@ void autonomous() {
   
   //bot.moveToPoint({0, 10}, 1000);
   bot.odomLift.extend();
-  autons::leftMiddle();
+  autons::skills();
 }
 
 /**
