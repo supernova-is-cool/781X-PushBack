@@ -23,7 +23,7 @@ constexpr button_t ELEVATOR = pros::E_CONTROLLER_DIGITAL_R2;
 constexpr button_t OUTAKE = pros::E_CONTROLLER_DIGITAL_L2;
 constexpr button_t STORE = pros::E_CONTROLLER_DIGITAL_L1;
 constexpr button_t SCORE = pros::E_CONTROLLER_DIGITAL_R1;
-constexpr button_t ALIGNER = pros::E_CONTROLLER_DIGITAL_Y;
+constexpr button_t DESCORE = pros::E_CONTROLLER_DIGITAL_UP;
 
 }; // namespace controller_mapping
 namespace map = controller_mapping;
@@ -56,13 +56,11 @@ void opcontrol() {
              master.get_analog(map::RIGHT_DRIVE));
 
     if (master.get_digital_new_press(map::ELEVATOR)) {
-      bot.leftElevator.toggle();
-      bot.rightElevator.toggle();
-      bot.aligner.toggle();
+      bot.lift.toggle();
     }
 
     if (master.get_digital_new_press(map::MATCH_LOADER)) {
-      bot.littleWill.toggle();
+      bot.matchLoader.toggle();
     }
 
     if (master.get_digital(map::SCORE)) {
@@ -73,6 +71,10 @@ void opcontrol() {
       bot.intake.goToStoring();
     } else {
       bot.intake.goToIdle();
+    }
+
+    if (master.get_digital_new_press(map::DESCORE)){
+      bot.descore.toggle();
     }
 
     pros::delay(5); // Run every 20ms (refresh rate of the controller)

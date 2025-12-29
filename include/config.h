@@ -10,11 +10,9 @@
 struct robotConfig {
 
   struct Pneumatics {
-    pros::adi::Pneumatics filter;
-    pros::adi::Pneumatics littleWill;
-    pros::adi::Pneumatics leftElevator;
-    pros::adi::Pneumatics rightElevator;
-    pros::adi::Pneumatics aligner;
+    pros::adi::Pneumatics matchLoader;
+    pros::adi::Pneumatics lift;
+    pros::adi::Pneumatics descore;
 
   private:
     friend struct robotConfig;
@@ -33,7 +31,6 @@ struct robotConfig {
   };
 
   struct Sensors {
-    pros::Optical intakeColor;
     pros::Distance intakeDistance;
     pros::Rotation vert;
     pros::Rotation hori;

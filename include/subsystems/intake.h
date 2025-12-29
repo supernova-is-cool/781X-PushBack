@@ -9,32 +9,21 @@
 class Intake : public subsystem {
 
 public:
-  enum State { IDLE, STORING, SCORING, OUTAKE, EMERGENCY_STOP };
+  enum State { IDLE, STORING, SCORING, OUTAKE, SLOW_OUTAKE, SKILLS, EMERGENCY_STOP };
 
-  class Sensor {
-  private:
-    pros::Optical &m_optical;
-
-  public:
-    explicit Sensor(pros::Optical &optical);
-    std::optional<COLOR> getBlock() const;
-  };
 
 private:
   State m_state;
   pros::Motor &m_top;
   pros::Motor &m_bottom;
   pros::Distance &m_distance;
-  pros::adi::Pneumatics &m_filter;
-  Sensor &m_sensor;
   bool isOpen = false;
   COLOR m_targetColor = COLOR::RED;
   bool enableFilter = false;
 
 public:
   explicit Intake(pros::Motor &top, pros::Motor &bottom,
-                  pros::Distance &distance, pros::adi::Pneumatics &filter,
-                  Sensor &sensor);
+                  pros::Distance &distance);
 
   void runTask() override;
 
@@ -46,6 +35,8 @@ public:
   void goToStoring();
   void goToScoring();
   void goToOutaking();
+  void goToSlowOutake();
+  void goToSkills();
 
   void enableFiltering();
   void disableFiltering();

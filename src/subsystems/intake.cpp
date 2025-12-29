@@ -9,28 +9,12 @@
 
 #define POWER 127
 
-Intake::Sensor::Sensor(pros::Optical &optical) : m_optical(optical) {}
-
-std::optional<COLOR> Intake::Sensor::getBlock() const {
-  if (m_optical.get_proximity() < 200)
-    return std::nullopt;
-
-  const float hueRem = std::remainder(m_optical.get_hue(), 360);
-
-  if (std::abs(hueRem) < 60) {
-    return COLOR::RED;
-  } else {
-    return COLOR::BLUE;
-  }
-}
-
-Intake::Intake(pros::Motor &top, pros::Motor &bottom, pros::Distance &distance,
-               pros::adi::Pneumatics &filter, Sensor &sensor)
-    : m_top(top), m_bottom(bottom), m_distance(distance), m_filter(filter),
-      m_state(IDLE), m_sensor(sensor) {}
+Intake::Intake(pros::Motor &top, pros::Motor &bottom, pros::Distance &distance)
+    : m_top(top), m_bottom(bottom), m_distance(distance), m_state(IDLE) {}
 
 void Intake::runTask() {
 
+  /*
   while (true) {
     bool blockDetected = (m_distance.get() < 80);
     auto sensedBlock = getSensedRing();
@@ -40,51 +24,59 @@ void Intake::runTask() {
       COLOR color = sensedBlock.value();
 
       if (color != m_targetColor) {
-          m_filter.retract();
-          isOpen = true;
+        m_filter.retract();
+        isOpen = true;
       } else {
-          m_filter.extend();
-          isOpen = false;
+        m_filter.extend();
+        isOpen = false;
       }
     }
+    */
 
-    switch (m_state) {
-    case State::EMERGENCY_STOP:
-      m_top.set_brake_mode(pros::E_MOTOR_BRAKE_BRAKE);
-      m_bottom.set_brake_mode(pros::E_MOTOR_BRAKE_BRAKE);
-      m_top.brake();
-      m_bottom.brake();
-      return;
+  switch (m_state) {
+  case State::EMERGENCY_STOP:
+    m_top.set_brake_mode(pros::E_MOTOR_BRAKE_BRAKE);
+    m_bottom.set_brake_mode(pros::E_MOTOR_BRAKE_BRAKE);
+    m_top.brake();
+    m_bottom.brake();
+    return;
 
-    case State::IDLE:
-      m_top.brake();
-      m_bottom.brake();
-      break;
+  case State::IDLE:
+    m_top.brake();
+    m_bottom.brake();
+    break;
 
-    case State::OUTAKE:
-      m_top.move(-POWER);
-      m_bottom.move(-POWER);
-      break;
+  case State::OUTAKE:
+    m_top.move(-POWER);
+    m_bottom.move(-POWER);
+    break;
 
-    case State::SCORING:
-      m_top.move(POWER);
-      m_bottom.move(POWER);
-      break;
+  case State::SCORING:
+    m_top.move(POWER);
+    m_bottom.move(POWER);
+    break;
 
-    case State::STORING:
-      m_bottom.move(POWER);
-      m_top.move(POWER * 0.17);
-      break;
+  case State::STORING:
+    m_bottom.move(POWER);
+    m_top.brake();
+    break;
 
-    default:
-      break;
-    }
+  case State::SLOW_OUTAKE:
+    m_bottom.move(80);
+    m_top.move(80);
 
-    m_top.set_brake_mode(pros::E_MOTOR_BRAKE_COAST);
-    m_bottom.set_brake_mode(pros::E_MOTOR_BRAKE_COAST);
+  case State::SKILLS:
+    m_bottom.move(POWER);
+    m_top.move(0.8 * POWER);
 
-    pros::delay(10);
+  default:
+    break;
   }
+
+  m_top.set_brake_mode(pros::E_MOTOR_BRAKE_COAST);
+  m_bottom.set_brake_mode(pros::E_MOTOR_BRAKE_COAST);
+
+  pros::delay(10);
 }
 
 const Intake::State &Intake::getState() { return m_state; }
@@ -95,21 +87,9 @@ void Intake::goToIdle() { setState(State::IDLE); }
 void Intake::goToOutaking() { setState(State::OUTAKE); }
 void Intake::goToScoring() { setState(State::SCORING); }
 void Intake::goToStoring() { setState(State::STORING); }
+void Intake::goToSlowOutake() { setState(State::SLOW_OUTAKE); }
+void Intake::goToSkills() { setState(State::SKILLS); }
 
 void Intake::enableFiltering() { enableFilter = true; }
 void Intake::disableFiltering() { enableFilter = false; }
 
-std::optional<COLOR> Intake::getSensedRing() { return m_sensor.getBlock(); }
-
-void Intake::setFilterColor() {
-  // Toggle target color
-  if (m_targetColor == COLOR::RED)
-    m_targetColor = COLOR::BLUE;
-  else
-    m_targetColor = COLOR::RED;
-
-  printf("Filter color set to: %s\n",
-         m_targetColor == COLOR::RED ? "RED" : "BLUE");
-}
-
-COLOR Intake::getFilterColor() const { return m_targetColor; }

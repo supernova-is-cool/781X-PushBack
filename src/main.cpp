@@ -2,12 +2,13 @@
 #include "auton/autons.h"
 #include "autonSelector/selector.hpp"
 #include "lemlib/api.hpp"
+#include "liblvgl/llemu.hpp"
 #include "robot.h"
 
 ts::selector *selector = nullptr;
-ts::auton RL("Red Left", doNothing);
+ts::auton RL("Right", neilAteTaco);
 ts::auton BOOM("Skills", dumbSkills);
-ts::auton iHope("SAWP", redAWP);
+ts::auton iHope("Left", moreBalls);
 
 void screen() {
   while (true) {
@@ -25,21 +26,22 @@ void screen() {
  * to keep execution time for this mode under a few seconds.
  */
 void initialize() {
+  pros::lcd::initialize();
+  new pros::Task{screen};
   //selector = ts::selector::get();
   //selector->display();
   // ensure robot is initialized
   Robot::get();
-  pros::lcd::initialize();
+  //pros::lcd::initialize();
   // indicate calibration
   pros::delay(250);
   bot.calibrate();
   pros::delay(250);
-  bot.m_config.sensors.intakeColor.set_led_pwm(100);
 
   bot.setAlliance(ALLIANCE::RED);
   bot.setPose({0, 0, 0}, 72);
   pros::delay(250);
-  new pros::Task{screen};
+
 }
 
 /**
@@ -79,16 +81,14 @@ void competition_initialize() {
  * from where it left off.
  */
 void autonomous() {
-  /*
-  bot.setPose({0, 0, 0});
+  
+  //bot.setPose({0, 0, 0});
   //bot.turnToHeading(90, 1000);
-  bot.moveToPoint({0, 10}, 1000);
-  */
+  
+  //bot.moveToPoint({0, 10}, 1000);
   
   dumbSkills();
-  //ts::selector::get()->run_selected_auton();
-  //ts::selector::get()->hide();
-  //new pros::Task{screen};
+
 }
 
 /**

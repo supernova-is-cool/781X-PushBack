@@ -20,7 +20,6 @@ class Robot : private lemlib::Chassis {
   public:
     const robotConfig& m_config;
   private:
-    Intake::Sensor intakeSensor;  // ✅ add this line
     pros::Controller m_gamepad;
     Intake m_intake;
 
@@ -38,15 +37,14 @@ class Robot : private lemlib::Chassis {
     Intake& intake;
 
 
-    // pros::adi::Pneumatics& kicker;
-    pros::adi::Pneumatics& filter;
+
     /** Extended is down/active. */
-    pros::adi::Pneumatics littleWill;
+    pros::adi::Pneumatics matchLoader;
     /** Extended is down/active. */
-    pros::adi::Pneumatics leftElevator;
-    pros::adi::Pneumatics rightElevator;
-    pros::adi::Pneumatics aligner;
+    pros::adi::Pneumatics lift;
     /** Extended is up/inactive. */
+    pros::adi::Pneumatics descore;
+
     pros::Controller& gamepad;
 
     void setTransform(std::shared_ptr<auton::Transformation> transform);

@@ -46,21 +46,18 @@ Robot::Robot(const robotConfig &m_config)
                       m_config.tunables.angularController,
                       robotConfig::config.makeSensors(),
                       &robotConfig::config.tunables.driveCurve),
-      filter(robotConfig::config.pneumatics.filter),
-      littleWill(robotConfig::config.pneumatics.littleWill),
-      leftElevator(robotConfig::config.pneumatics.leftElevator),
-      rightElevator(robotConfig::config.pneumatics.rightElevator),
-      aligner(robotConfig::config.pneumatics.aligner),
+      matchLoader(robotConfig::config.pneumatics.matchLoader),
+      lift(robotConfig::config.pneumatics.lift),
+      descore(robotConfig::config.pneumatics.descore),
       m_gamepad(pros::E_CONTROLLER_MASTER), gamepad(m_gamepad),
       m_transform(std::make_shared<auton::AllianceTransform>(COLOR::RED)),
       m_config(robotConfig::config),
 
-      intakeSensor(robotConfig::config.sensors.intakeColor),
 
       m_intake(robotConfig::config.motors.topStage,
                robotConfig::config.motors.bottomStage,
-               robotConfig::config.sensors.intakeDistance,
-               robotConfig::config.pneumatics.filter, intakeSensor),
+               robotConfig::config.sensors.intakeDistance
+          ),
 
       intake(m_intake) {}
 

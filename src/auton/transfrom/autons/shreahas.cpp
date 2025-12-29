@@ -1,5 +1,6 @@
 #include "auton/autons.h"
 #include "lemlib/pose.hpp"
+#include "pros/abstract_motor.hpp"
 #include "robot.h"
 #include <cstdio>
 
@@ -23,119 +24,78 @@ using AngDir = lemlib::AngularDirection;
 void doNothing() { printf("yo what's up\n"); }
 
 void redAWP() {
-  bot.setAlliance(ALLIANCE::RED);
-  bot.intake.disableFiltering();
+  const Pose startingPosition = {-2 * TILE - DRIVE_LENGTH / 2 - .5,
+                                 -0.7 * TILE + 2, 90};
+  bot.setPose(startingPosition);
 
-  // place holder cuz idk were is gonna start
-  const Pose startingPose{(-2 * TILE) - DRIVE_WIDTH + 5, 1.5 + DRIVE_LENGTH, 0};
+  const Pose theBalls = {
+      -1 * TILE,
+      -1 * TILE,
+  };
 
-  bot.setPose(startingPose);
-
-  // match loader closest to referee
-  const Pose farMatchLoader{-(3 * TILE), 2 * TILE, RED_STATION};
-
-  // moves bot towards the match loader in a curved motion and clears the match
-  // loader
-  // Move to first point smoothly
-  bot.moveToPoint({-1.9 * TILE, 1.5 * TILE}, 1000,
-                  {.maxSpeed = 80, .minSpeed = 30});
-  bot.waitUntilDone();
-  bot.littleWill.extend();
-
-  bot.swingToHeading(RED_STATION, lemlib::DriveSide::LEFT, 1200,
-                     {.maxSpeed = 70, .minSpeed = 40});
-  bot.waitUntilDone();
-  bot.moveToPoint(farMatchLoader, 1500,
-                  {.maxSpeed = 60, .minSpeed = 40, .earlyExitRange = 3});
-  bot.waitUntilDone();
   bot.intake.goToStoring();
-  bot.tank(-60, -60);
-  pros::delay(150);
-  bot.tank(0, 0);
-  pros::delay(100);
-  bot.tank(60, 60);
-  pros::delay(250);
-  bot.tank(0, 0);
-  pros::delay(500);
-
-  // bot.intake.goToIdle();
-
-  // long goal closest to referee
-  // Far long goal position (closest to referee) offset slightly rn
-  const Pose farLongGoal{-TILE, 2 * TILE + 3, BLUE_STATION};
-
-  bot.moveToPoint({-2 * TILE, 2 * TILE}, 1200,
-                  {.forwards = false, .maxSpeed = 75, .minSpeed = 40});
-  bot.waitUntil(10); // start next action slightly early
-  bot.littleWill.retract();
+  bot.moveToPoint(theBalls, 1200, {.minSpeed = 67, .earlyExitRange = 8});
+  bot.waitUntil(20);
+  bot.matchLoader.extend();
   bot.waitUntilDone();
-  pros::delay(100);
-  bot.turnToPoint(farLongGoal, 1000, {.maxSpeed = 70, .minSpeed = 30});
+  // pros::delay(750);
+  bot.turnToPoint({-2 * TILE, -2 * TILE}, 1200,
+                  {.maxSpeed = 95, .minSpeed = 80, .earlyExitRange = 17});
   bot.waitUntilDone();
-  bot.leftElevator.extend();
-  bot.rightElevator.extend();
-  pros::delay(150);
-  bot.moveToPose(farLongGoal, 1200, {.maxSpeed = 70, .minSpeed = 30});
+  bot.moveToPoint({-2 * TILE + 1, -2 * TILE + 1 }, 1000,
+                  {.maxSpeed = 95, .minSpeed = 80, .earlyExitRange = 15});
+
+  const Pose matchLoader = {MIN_X + DRIVE_LENGTH / 2 + 6, -2 * TILE - 1,
+                            RED_STATION};
   bot.waitUntilDone();
+  bot.turnToHeading(RED_STATION, 1000);
+  bot.waitUntilDone();
+  bot.moveToPoint(matchLoader, 1100, {.maxSpeed = 45});
+  bot.waitUntilDone();
+
   bot.tank(10, 10);
-  bot.intake.goToScoring();
-  pros::delay(2000);
-  // bot.intake.goToIdle();
-  pros::delay(200);
+  pros::delay(650);
   bot.tank(0, 0);
 
-  bot.intake.goToIdle();
+  const Pose longGoal = {-TILE - DRIVE_LENGTH / 2 + 4, -2 * TILE - 2,
+                         RED_STATION};
 
-  // swings to cluster of balls
-  const Pose farBalls = {-TILE, TILE};
+  bot.lift.extend();
 
-  bot.moveToPoint({-2 * TILE, -2 * TILE}, 1200,
+  bot.moveToPoint(longGoal, 1500,
                   {.forwards = false, .maxSpeed = 70, .minSpeed = 30});
   bot.waitUntilDone();
-  pros::delay(100);
-  bot.swingToPoint(farBalls, lemlib::DriveSide::RIGHT, 1000,
-                   {.maxSpeed = 60, .minSpeed = 30});
-  bot.waitUntilDone();
-  bot.intake.goToStoring();
-  pros::delay(100);
-  bot.moveToPoint(farBalls, 1500,
-                  {.maxSpeed = 60, .minSpeed = 25, .earlyExitRange = 2});
-  bot.waitUntilDone();
-  bot.intake.goToIdle();
+
+  // Smooth outaking sequence
+  bot.tank(-10, -10);
+  
+  bot.intake.goToScoring();
+  pros::delay(400);
+  bot.intake.goToOutaking();
   pros::delay(200);
-
-  /*
-
-  // goes to center goal to score
-  const Pose centerGoal = {-0.6 * TILE, 0.6 * TILE, 135};
-
-  bot.moveToPose({centerGoal}, 1000);
-  bot.waitUntilDone();
   bot.intake.goToScoring();
-  pros::delay(750);
+  pros::delay(2500);
   bot.intake.goToIdle();
+  pros::delay(100);
+  bot.tank(0, 0);
 
-  // backs out and intakes the other stack
-  const Pose closeBalls = {-TILE, -TILE};
+  bot.moveToPoint({-1.7 * TILE, -36.5}, 1000);
+  bot.waitUntilDone();
 
-  bot.moveToPoint({-TILE, TILE}, 1500, {.forwards = false});
+  const Pose descore = {-TILE + DRIVE_LENGTH - 2, -38, RED_STATION};
+  bot.descore.extend();
+  //bot.moveToPoint(descore, 2000, {.forwards = false});
   bot.waitUntilDone();
-  bot.turnToPoint(closeBalls, 1000);
+  bot.turnToHeading(RED_STATION, 1000);
   bot.waitUntilDone();
-  bot.intake.goToStoring();
-  bot.moveToPoint({-TILE, 0}, 1000, {.minSpeed = 100});
+  bot.moveToPoint({-5, bot.getPose().y}, 2500, {.forwards = false, .maxSpeed = 67});
+  bot.waitUntil(20);
+  bot.descore.retract();
   bot.waitUntilDone();
-  bot.moveToPoint({closeBalls}, 1000, {.maxSpeed = 80});
+  const Pose currentPose = bot.getPose();
+  while (true){
+    bot.moveToPose(currentPose, 1000);
+  }
 
-  // swerve not and score on long goal
-  const Pose closeLongGoal = {-TILE - DRIVE_LENGTH, -2 * TILE, BLUE_STATION};
 
-  bot.moveToPoint({-2 * TILE, -2 * TILE}, 1000);
-  bot.waitUntilDone();
-  bot.turnToHeading(BLUE_STATION, 1000);
-  bot.waitUntilDone();
-  bot.moveToPoint(closeLongGoal, 1000);
-  bot.waitUntilDone();
-  bot.intake.goToScoring();
-  */
 }

@@ -4,9 +4,9 @@
 robotConfig::Tunables robotConfig::Tunables::tunables {
     .lateralController =
         lemlib::ControllerSettings {
-            15.5, // kP
+            21, // kP
             0, // kI
-            95, // kD
+            94, // kD
             3, // windup range
             1, // smallErrorRange
             100, // smallErrorTimeout
@@ -16,7 +16,7 @@ robotConfig::Tunables robotConfig::Tunables::tunables {
         },
     .angularController =
         lemlib::ControllerSettings {
-            6, // kP
+            5, // kP
             0, // kI
             45, // kD
             15, // windup range

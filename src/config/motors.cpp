@@ -2,8 +2,8 @@
 #include "config.h"
 
 robotConfig::Motors robotConfig::Motors::motors {
-    .left {12, -13, -14},
-    .right {18, -19, 20},
-    .topStage {16, pros::v5::MotorGears::blue},
-    .bottomStage {8, pros::v5::MotorGears::blue}
+    .left {-11, -13, -12},
+    .right {18, 19, 20},
+    .topStage {1, pros::v5::MotorGears::blue},
+    .bottomStage {-10, pros::v5::MotorGears::blue}
 };

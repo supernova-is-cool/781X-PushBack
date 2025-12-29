@@ -1,18 +1,18 @@
 #include "dimensions.h"
 #include "config.h"
+#include "lemlib/chassis/trackingWheel.hpp"
 
 robotConfig::Dimensions robotConfig::Dimensions::dimensions = {
     .trackWidth = dimensions::robot::TRACK_WIDTH,
-    .driveWheelDiameter = 2.75f * 84.0 / 75.5 * 84.0 /
-                          83.0 /** Scale factor to make more accurate */,
-    .driveWheelRpm = 600,
+    .driveWheelDiameter = lemlib::Omniwheel::NEW_325,
+    .driveWheelRpm = 450,
     .vertEncDiameter = lemlib::Omniwheel::NEW_2,
 
-    .vertEncDistance = 0.375f,
+    .vertEncDistance = -0.25f,
     .vertEncGearRatio = 1.f,
     .horiEncDiameter = lemlib::Omniwheel::NEW_2,
 
-    .horiEncDistance = -4.5f,
+    .horiEncDistance = -4.4f,
     .horiEncGearRatio = 1.f,
     .drivetrainWidth = dimensions::robot::DRIVE_WIDTH,
     .drivetrainLength = dimensions::robot::DRIVE_LENGTH,
