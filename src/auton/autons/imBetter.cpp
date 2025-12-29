@@ -20,7 +20,7 @@ using namespace auton::util;
 using lemlib::Pose;
 using AngDir = lemlib::AngularDirection;
 
-void center(){
+void autons::center(){
 
 // Define field positions
 const Pose startingPosition{0, 0, 0};

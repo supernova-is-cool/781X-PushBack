@@ -4,9 +4,12 @@
 #include <functional>
 #include <optional>
 
-void doNothing();
-void redAWP();
-void dumbSkills();
-void center();
-void moreBalls();
-void neilAteTaco();
+namespace autons {
+  void doNothing();
+  void rightRush();
+  /** Starts on left corner, scores on left middle goal, and left long goal. */
+  void leftMiddle();
+  void center();
+  void moreBalls();
+  void soloWinPoint();
+}

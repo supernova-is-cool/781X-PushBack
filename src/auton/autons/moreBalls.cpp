@@ -20,7 +20,7 @@ using namespace auton::util;
 using lemlib::Pose;
 using AngDir = lemlib::AngularDirection;
 
-void moreBalls() {
+void autons::moreBalls() {
 
   const Pose theBalls = {-TILE, -TILE};
   const Pose matchLoader = {MIN_X + DRIVE_LENGTH / 2 + 4, -2 * TILE,

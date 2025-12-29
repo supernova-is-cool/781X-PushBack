@@ -21,9 +21,9 @@ using namespace auton::util;
 using lemlib::Pose;
 using AngDir = lemlib::AngularDirection;
 
-void doNothing() { printf("yo what's up\n"); }
+void autons::doNothing() { printf("yo what's up\n"); }
 
-void redAWP() {
+void autons::rightRush() {
   const Pose startingPosition = {-2 * TILE - DRIVE_LENGTH / 2 - .5,
                                  -0.7 * TILE + 2, 90};
   bot.setPose(startingPosition);
