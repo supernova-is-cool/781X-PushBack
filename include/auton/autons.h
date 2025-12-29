@@ -6,6 +6,7 @@
 
 namespace autons {
   void doNothing();
+  void leftRush();
   void rightRush();
   /** Starts on left corner, scores on left middle goal, and left long goal. */
   void leftMiddle();
