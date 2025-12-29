@@ -41,7 +41,7 @@ void initialize() {
   bot.setAlliance(ALLIANCE::RED);
   bot.setPose({0, 0, 0}, 72);
   pros::delay(250);
-
+  
 }
 
 /**
@@ -86,9 +86,8 @@ void autonomous() {
   //bot.turnToHeading(90, 1000);
   
   //bot.moveToPoint({0, 10}, 1000);
-  
+  bot.odomLift.extend();
   autons::leftMiddle();
-
 }
 
 /**
