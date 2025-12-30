@@ -20,7 +20,7 @@ using namespace auton::util;
 using lemlib::Pose;
 using AngDir = lemlib::AngularDirection;
 
-void autons::leftMiddle() {  
+void autons::leftMiddle() {
   // --- Starting Pose ---
   const Pose startingPosition = {2 * TILE + DRIVE_LENGTH / 2, -0.7 * TILE + 1.5,
                                  270};
@@ -37,17 +37,19 @@ void autons::leftMiddle() {
   bot.waitUntil(20);
   bot.matchLoader.extend();
   bot.waitUntilDone();
-  //pros::delay(750);
+  // pros::delay(750);
 
   // --- Middle Goal Setup ---
-  const Pose middleGoal = {12, -13, 130};
+  const Pose middleGoal = Pose::fromPolar(18.5, 135) + Pose{0, 0, 0};
 
   // Turn first for cleaner pathing
-  bot.turnToHeading(130, 1200);
+  bot.turnToPoint(middleGoal, 1200, {.forwards = false});
   bot.waitUntilDone();
 
   // Now drive backwards cleanly
   bot.moveToPoint(middleGoal, 1500, {.forwards = false});
+  bot.waitUntilDone();
+  bot.turnToPoint({0, 0}, 500, {.forwards = false});
   bot.waitUntilDone();
 
   // Score + reset intake
@@ -61,7 +63,7 @@ void autons::leftMiddle() {
   pros::delay(1600);
   bot.intake.goToIdle();
   pros::delay(150);
-  //bot.tank(0, 0);
+  // bot.tank(0, 0);
 
   const Pose matchLoader = {MAX_X - DRIVE_LENGTH / 2 - 4, -2 * TILE - 1,
                             BLUE_STATION};
@@ -74,7 +76,7 @@ void autons::leftMiddle() {
   bot.moveToPoint(matchLoader, 1100, {.maxSpeed = 45});
   bot.waitUntilDone();
   bot.tank(15, 15);
-  pros::delay(650);
+  pros::delay(600);
   bot.tank(0, 0);
 
   const Pose longGoal = {TILE + DRIVE_LENGTH / 2 - 4, -2 * TILE - 2,
@@ -99,12 +101,11 @@ void autons::leftMiddle() {
   pros::delay(100);
   bot.matchLoader.retract();
 
-  bot.moveToPoint({1.7 * TILE, -36.5}, 1000);
+  bot.moveToPoint({1.7 * TILE, -36}, 1000);
   bot.descore.extend();
   bot.waitUntilDone();
   bot.turnToHeading(RED_STATION, 1000);
-  bot.moveToPoint({4, bot.getPose().y}, 2500,
-                  {.maxSpeed = 67});
+  bot.moveToPoint({4, bot.getPose().y}, 2500, {.maxSpeed = 67});
   bot.waitUntil(25);
   bot.descore.retract();
   bot.waitUntilDone();

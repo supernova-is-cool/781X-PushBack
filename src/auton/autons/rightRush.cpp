@@ -3,6 +3,7 @@
 #include "pros/abstract_motor.hpp"
 #include "robot.h"
 #include <cstdio>
+#include <print>
 
 #include "auton/autons.h"
 #include "auton/util.h"
@@ -42,19 +43,24 @@ void autons::rightRush() {
   bot.turnToPoint({-2 * TILE, -2 * TILE}, 1200,
                   {.maxSpeed = 95, .minSpeed = 80, .earlyExitRange = 17});
   bot.waitUntilDone();
-  bot.moveToPoint({-2 * TILE + 1, -2 * TILE + 1 }, 1000,
-                  {.maxSpeed = 95, .minSpeed = 80, .earlyExitRange = 15});
 
-  const Pose matchLoader = {MIN_X + DRIVE_LENGTH / 2 + 6, -2 * TILE - 1,
+  const Pose matchLoader = {MIN_X + DRIVE_LENGTH / 2 + 3.5, -2 * TILE - 1,
                             RED_STATION};
+  const Pose alignmentPoint = matchLoader.withX(-2 * TILE + 1);
+
+  bot.moveToPoint(alignmentPoint, 1000,
+                  {.maxSpeed = 95, .minSpeed = 80, .earlyExitRange = 15});
+  bot.moveToPoint(alignmentPoint, 1000, {.earlyExitRange = 2});
+
   bot.waitUntilDone();
   bot.turnToHeading(RED_STATION, 1000);
   bot.waitUntilDone();
-  bot.moveToPoint(matchLoader, 1100, {.maxSpeed = 45});
+  bot.moveToPoint(matchLoader.withY(bot.getPose().y), 1100,
+                  {.maxSpeed = 72, .minSpeed = 16});
   bot.waitUntilDone();
 
   bot.tank(10, 10);
-  pros::delay(650);
+  pros::delay(850);
   bot.tank(0, 0);
 
   const Pose longGoal = {-TILE - DRIVE_LENGTH / 2 + 4, -2 * TILE - 2,
@@ -68,7 +74,7 @@ void autons::rightRush() {
 
   // Smooth outaking sequence
   bot.tank(-10, -10);
-  
+
   bot.intake.goToScoring();
   pros::delay(400);
   bot.intake.goToOutaking();
@@ -79,30 +85,34 @@ void autons::rightRush() {
   pros::delay(100);
   bot.tank(0, 0);
 
-  bot.moveToPoint({-1.7 * TILE, -36.5}, 1000);
+  const Pose scoringPose = longGoal;
+  std::println("pose of scored: {}", bot.getPose());
+
+  const Pose descoreTarget =
+      (scoringPose + Pose{0, 10.5}).withX(-TILE + DRIVE_LENGTH - 2);
+
+  bot.moveToPoint(descoreTarget.withX(-1.7 * TILE), 1000);
   bot.waitUntilDone();
 
-  const Pose descore = {-TILE + DRIVE_LENGTH - 2, -38, RED_STATION};
   bot.descore.extend();
 
   // Do not cross auton line
   bot.matchLoader.retract();
-  
-  //bot.moveToPoint(descore, 2000, {.forwards = false});
+
+  // bot.moveToPoint(descore, 2000, {.forwards = false});
   bot.waitUntilDone();
   bot.turnToHeading(RED_STATION, 1000);
   bot.waitUntilDone();
-  bot.moveToPoint({-5, bot.getPose().y}, 2500, {.forwards = false, .maxSpeed = 67});
+  bot.moveToPoint({-DRIVE_LENGTH / 2, bot.getPose().y}, 2500,
+                  {.forwards = false, .maxSpeed = 67});
   bot.waitUntil(20);
   bot.descore.retract();
   bot.waitUntilDone();
-  const Pose currentPose = bot.getPose();
-  
+  const Pose holdPose = bot.getPose().withTheta(RED_STATION);
+
   // Repeatedly run moveToPose to hold position against pushes
   // (When auton stage ends, this will also end)
-  while (true){
-    bot.moveToPose(currentPose, 1000);
+  while (true) {
+    bot.moveToPose(holdPose, 1000);
   }
-
-
 }

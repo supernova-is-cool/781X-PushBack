@@ -29,7 +29,7 @@ const Pose redAudienceMatchLoader = {MIN_X + DRIVE_LENGTH / 2 + 4, -2 * TILE,
                                      RED_STATION};
 /** Target to align in front of matchloader */
 const Pose alignWithRedAudienceMLTarget =
-    startPose.withY(redAudienceMatchLoader.y);
+    (startPose + Pose{2, 0}).withY(redAudienceMatchLoader.y);
 
 /**
  * @brief Collect balls from the matchloader at the given target pose.
@@ -40,7 +40,8 @@ void collectMatchLoader(Pose matchLoaderTarget) {
   bot.matchLoader.extend();
 
   // Go towards matchloader slowly
-  bot.moveToPoint(matchLoaderTarget, 1100, {.maxSpeed = 45});
+  bot.moveToPoint(matchLoaderTarget.withY(bot.getPose().y), 1100,
+                  {.maxSpeed = 45});
   bot.waitUntilDone();
 
   // Push robot into matchloader for a bit longer to pick up balls
@@ -67,12 +68,12 @@ void fillLongGoal(SignTransform::SIGN sign) {
 
   /** Red inlet of long goal */
   const Pose redLongGoalScoringTarget = {-TILE - DRIVE_LENGTH / 2 + 4,
-                                         -2 * TILE - 1, RED_STATION};
+                                         -2 * TILE, RED_STATION};
   // Prepare to score
   bot.lift.extend();
   // Back into long goal
   bot.moveToPoint(redLongGoalScoringTarget, 1500,
-                  {.forwards = false, .maxSpeed = 70, .minSpeed = 30});
+                  {.forwards = false, .maxSpeed = 70});
   bot.waitUntilDone();
 
   // Continuously push into long goal to ensure alignment while scoring
@@ -133,7 +134,7 @@ void fillLongGoal(SignTransform::SIGN sign) {
         trigAngleToHeading(pastLongGoalTargetPoint.angle(blueMatchLoader)));
   }();
 
-  // Get out of long goal quickly by swinging towards wall side
+  // Get out of long goal quickly by swinging
   bot.swingToPoint(
       pastBlueLongGoalTarget, lemlib::DriveSide::LEFT, 500,
       {.direction = pastBlueLongGoalTarget.y < redLongGoalScoringTarget.y
@@ -157,7 +158,7 @@ void fillLongGoal(SignTransform::SIGN sign) {
                      .lead = .3,
                      // TODO: increase
                      .maxSpeed = 96,
-                     .minSpeed = 32,
+                     .minSpeed = 64,
                      .earlyExitRange = 6,
                  });
 
@@ -175,7 +176,7 @@ void fillLongGoal(SignTransform::SIGN sign) {
   bot.intake.goToStoring();
 
   // Align with blue matchloader
-  bot.moveToPoint(alignWithBlueMLTarget, 200);
+  bot.moveToPoint(alignWithBlueMLTarget, 2000);
   bot.waitUntilDone();
 
   // Turn towards matchloader
@@ -230,16 +231,12 @@ void autons::skills() {
   lemlib::Timer skillsTimer{60 * 1000};
   skillsTimer.resume();
 
-  // Deploy hood
-  bot.intake.goToOutaking();
-
   // Position in front of matchloader
   bot.moveToPoint(alignWithRedAudienceMLTarget, 1600);
-  // Finish deploying hood, prepare to intake matchloader
-  bot.waitUntil(2);
+  bot.waitUntilDone();
+  // Prepare to intake matchloader balls
   bot.intake.goToStoring();
   bot.matchLoader.extend();
-  bot.waitUntilDone();
 
   // Turn towards matchloader cleanly
   bot.turnToHeading(RED_STATION, 1500);
