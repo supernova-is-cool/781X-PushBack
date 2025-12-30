@@ -7,8 +7,6 @@
 #include "robot.h"
 
 ts::selector *selector = nullptr;
-ts::auton skills("Skills", autons::skills);
-ts::auton soloWinPoint("SAWP", autons::soloWinPoint);
 ts::auton rightRush("Right Rush", autons::rightRush);
 ts::auton leftMiddle("Left Middle", autons::leftMiddle);
 ts::auton skills("Skill SAWP", autons::skills);
