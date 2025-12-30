@@ -3,19 +3,35 @@
 #include "autonSelector/selector.hpp"
 #include "lemlib/api.hpp"
 #include "liblvgl/llemu.hpp"
+#include "pros/misc.hpp"
 #include "robot.h"
 
 ts::selector *selector = nullptr;
-ts::auton RL("Right", autons::soloWinPoint);
-ts::auton BOOM("Skills", autons::leftMiddle);
-ts::auton iHope("Left", autons::skills);
+ts::auton skills("Skills", autons::skills);
+ts::auton soloWinPoint("SAWP", autons::soloWinPoint);
+ts::auton rightRush("Right Rush", autons::rightRush);
+ts::auton leftMiddle("Left Middle", autons::leftMiddle);
+ts::auton center("Center????", autons::center);
+ts::auton doNothing("Do Nothing", autons::doNothing);
 
 void screen() {
   while (true) {
-    pros::lcd::print(3, "x:\t%fin", bot.getPose().x);
-    pros::lcd::print(4, "y:\t%fin", bot.getPose().y);
-    pros::lcd::print(5, "theta:\t%fdeg", bot.getPose().theta);
+    if (pros::lcd::is_initialized()) {
+      pros::lcd::print(0, "Auton:\t%s",
+                       selector->get_selected_auton_name().c_str());
+      pros::lcd::print(3, "x:\t%fin", bot.getPose().x);
+      pros::lcd::print(4, "y:\t%fin", bot.getPose().y);
+      pros::lcd::print(5, "theta:\t%fdeg", bot.getPose().theta);
+    }
     pros::delay(50);
+  }
+}
+
+void init_odom_printing() {
+  if (!pros::lcd::is_initialized()) {
+    selector->hide();
+    pros::lcd::initialize();
+    new pros::Task{screen};
   }
 }
 
@@ -26,14 +42,16 @@ void screen() {
  * to keep execution time for this mode under a few seconds.
  */
 void initialize() {
-  pros::lcd::initialize();
-  new pros::Task{screen};
-  //selector = ts::selector::get();
-  //selector->display();
+  selector = ts::selector::get();
   // ensure robot is initialized
   Robot::get();
-  //pros::lcd::initialize();
-  // indicate calibration
+
+  if (pros::competition::is_connected() && pros::competition::is_disabled()) {
+    selector->display();
+  } else {
+    init_odom_printing();
+  }
+
   pros::delay(250);
   bot.calibrate();
   pros::delay(250);
@@ -41,7 +59,6 @@ void initialize() {
   bot.setAlliance(ALLIANCE::RED);
   bot.setPose({0, 0, 0}, 72);
   pros::delay(250);
-  
 }
 
 /**
@@ -60,13 +77,12 @@ void disabled() {}
  * This task will exit when the robot is enabled and autonomous or opcontrol
  * starts.
  */
-void competition_initialize() { 
-	/*
-  if(!selector->is_auton_selected())
-	{
-		//Handle no selected auton
-	}
-  */
+void competition_initialize() {
+  if (!selector->is_auton_selected()) {
+    // Handle no selected auton
+    // TODO: Change to doNothing before comp
+    selector->select_auton(rightRush.name);
+  }
 }
 
 /**
@@ -81,13 +97,9 @@ void competition_initialize() {
  * from where it left off.
  */
 void autonomous() {
-  
-  //bot.setPose({0, 0, 0});
-  //bot.turnToHeading(90, 1000);
-  
-  //bot.moveToPoint({0, 10}, 1000);
+  init_odom_printing();
   bot.odomLift.extend();
-  autons::skills();
+  selector->run_selected_auton();
 }
 
 /**
