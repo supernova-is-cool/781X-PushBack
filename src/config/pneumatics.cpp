@@ -5,5 +5,5 @@ robotConfig::Pneumatics robotConfig::Pneumatics::pneumatics{
     .matchLoader = pros::adi::Pneumatics('G', false),
     .lift = pros::adi::Pneumatics('H', false),
     .descore = pros::adi::Pneumatics{'F', false},
-    .odomLift = pros::adi::Pneumatics{'A', true, true}
+    .odomLift = pros::adi::Pneumatics{'E', true, false}
 };
