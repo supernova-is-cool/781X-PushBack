@@ -258,12 +258,6 @@ void autons::skills() {
   const Pose redRefereeMatchLoader =
       negToPosTransform.transformPose(redAudienceMatchLoader);
 
-  /** Distance between wall and barrier parallel to y axis */
-  const float PARK_ZONE_DEPTH = 17 /* in */;
-
-  /** Distance between parallel park barriers */
-  const float PARK_ZONE_WIDTH = 18 /* in */;
-
   const Pose aroundParkZoneTarget{MIN_X + PARK_ZONE_DEPTH + DRIVE_WIDTH / 2 + 3,
                                   0};
   // Get out of long goal

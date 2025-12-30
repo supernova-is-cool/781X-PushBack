@@ -28,6 +28,13 @@ constexpr float STANDS = long_headings::AUDIENCE;
 constexpr float RED = long_headings::RED_STATION;
 /** Heading to face blue driver station */
 constexpr float BLUE = long_headings::BLUE_STATION;
+
+/** Distance between wall and barrier parallel to y axis */
+const float PARK_ZONE_DEPTH = 17 /* in */;
+
+/** Distance between parallel park barriers */
+const float PARK_ZONE_WIDTH = 18 /* in */;
+
 } // namespace short_headings
 namespace DIR = short_headings;
 

@@ -11,6 +11,9 @@ ts::auton skills("Skills", autons::skills);
 ts::auton soloWinPoint("SAWP", autons::soloWinPoint);
 ts::auton rightRush("Right Rush", autons::rightRush);
 ts::auton leftMiddle("Left Middle", autons::leftMiddle);
+ts::auton skills("Skill SAWP", autons::skills);
+ts::auton skillsawp("Full Skills", autons::skillsAWP);
+ts::auton soloWinPoint("SAWP", autons::soloWinPoint);
 ts::auton center("Center????", autons::center);
 ts::auton doNothing("Do Nothing", autons::doNothing);
 
