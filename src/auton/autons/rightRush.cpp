@@ -22,7 +22,6 @@ using namespace auton::util;
 using lemlib::Pose;
 using AngDir = lemlib::AngularDirection;
 
-void autons::doNothing() { printf("yo what's up\n"); }
 
 void autons::rightRush() {
   const Pose startingPosition = {-2 * TILE - DRIVE_LENGTH / 2 - .5,
