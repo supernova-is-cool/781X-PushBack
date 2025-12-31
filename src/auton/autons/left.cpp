@@ -76,7 +76,7 @@ void autons::leftMiddle() {
   bot.moveToPoint(matchLoader, 1100, {.maxSpeed = 45});
   bot.waitUntilDone();
   bot.tank(15, 15);
-  pros::delay(600);
+  pros::delay(550);
   bot.tank(0, 0);
 
   const Pose longGoal = {TILE + DRIVE_LENGTH / 2 - 4, -2 * TILE - 2,
@@ -99,17 +99,29 @@ void autons::leftMiddle() {
   bot.tank(0, 0);
   bot.intake.goToIdle();
   pros::delay(100);
+
+  // Don't extend descore, since retracted descore is at the correct height now
+  bot.descore.retract();
+  // Don't cross auton line when descoring
   bot.matchLoader.retract();
 
-  bot.moveToPoint({1.7 * TILE, -36}, 1000);
-  bot.descore.extend();
+  // Exit long goal, and align descore mech
+  bot.moveToPoint({1.7 * TILE, -36.5}, 1000);
   bot.waitUntilDone();
+
+  // Rotate to face descore angle long goal
   bot.turnToHeading(RED_STATION, 1000);
-  bot.moveToPoint({4, bot.getPose().y}, 2500, {.maxSpeed = 67});
+  // Push blocks with descore
+  bot.moveToPoint({DRIVE_LENGTH / 2 + 1, bot.getPose().y}, 2500,
+                  {.maxSpeed = 67});
   bot.waitUntil(25);
+  // Put descore down
   bot.descore.retract();
   bot.waitUntilDone();
-  const Pose currentPose = bot.getPose();
+
+  // Repeatedly run moveToPose to hold position against pushes
+  // (When auton stage ends, this will also end)
+  const Pose currentPose = bot.getPose().withTheta(RED_STATION);
   while (true) {
     bot.moveToPose(currentPose, 1000);
   }

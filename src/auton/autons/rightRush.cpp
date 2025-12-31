@@ -22,7 +22,6 @@ using namespace auton::util;
 using lemlib::Pose;
 using AngDir = lemlib::AngularDirection;
 
-
 void autons::rightRush() {
   const Pose startingPosition = {-2 * TILE - DRIVE_LENGTH / 2 - .5,
                                  -0.7 * TILE + 2, 90};
@@ -43,7 +42,7 @@ void autons::rightRush() {
                   {.maxSpeed = 95, .minSpeed = 80, .earlyExitRange = 17});
   bot.waitUntilDone();
 
-  const Pose matchLoader = {MIN_X + DRIVE_LENGTH / 2 + 3.5, -2 * TILE - 1,
+  const Pose matchLoader = {MIN_X + DRIVE_LENGTH / 2 + 3.5, -2 * TILE - 2.5,
                             RED_STATION};
   const Pose alignmentPoint = matchLoader.withX(-2 * TILE + 1);
 
@@ -59,7 +58,7 @@ void autons::rightRush() {
   bot.waitUntilDone();
 
   bot.tank(10, 10);
-  pros::delay(850);
+  pros::delay(700);
   bot.tank(0, 0);
 
   const Pose longGoal = {-TILE - DRIVE_LENGTH / 2 + 4, -2 * TILE - 2,
@@ -80,6 +79,11 @@ void autons::rightRush() {
   pros::delay(200);
   bot.intake.goToScoring();
   pros::delay(2500);
+  bot.intake.goToOutaking();
+  pros::delay(200);
+  bot.intake.goToScoring();
+  return;
+
   bot.intake.goToIdle();
   pros::delay(100);
   bot.tank(0, 0);
@@ -87,13 +91,14 @@ void autons::rightRush() {
   const Pose scoringPose = longGoal;
   std::println("pose of scored: {}", bot.getPose());
 
-  const Pose descoreTarget =
-      (scoringPose + Pose{0, 10.5}).withX(-TILE + DRIVE_LENGTH - 2);
-
-  bot.moveToPoint(descoreTarget.withX(-1.7 * TILE), 1000);
+  // Exit long goal and align with long goal
+  const Pose descoreAlignTarget =
+      (scoringPose + Pose{0, 13.5}).withX(-TILE + DRIVE_LENGTH - 2);
+  bot.moveToPoint(descoreAlignTarget.withX(-1.7 * TILE), 1000);
   bot.waitUntilDone();
 
-  bot.descore.extend();
+  // Don't extend descore, since retracted descore is at the correct height now
+  bot.descore.retract();
 
   // Do not cross auton line
   bot.matchLoader.retract();
@@ -102,15 +107,21 @@ void autons::rightRush() {
   bot.waitUntilDone();
   bot.turnToHeading(RED_STATION, 1000);
   bot.waitUntilDone();
+
+  const Pose pushBlocksTarget{-DRIVE_LENGTH / 2, bot.getPose().y};
   bot.moveToPoint({-DRIVE_LENGTH / 2, bot.getPose().y}, 2500,
                   {.forwards = false, .maxSpeed = 67});
-  bot.waitUntil(20);
-  bot.descore.retract();
   bot.waitUntilDone();
-  const Pose holdPose = bot.getPose().withTheta(RED_STATION);
 
   // Repeatedly run moveToPose to hold position against pushes
   // (When auton stage ends, this will also end)
+  const Pose holdPose = [&] {
+    const Pose currentPose = bot.getPose();
+    return currentPose
+        .withTheta(RED_STATION)
+        // Do not go further than target and risk crossing auton line
+        .withX(std::max(currentPose.x, pushBlocksTarget.x));
+  }();
   while (true) {
     bot.moveToPose(holdPose, 1000);
   }

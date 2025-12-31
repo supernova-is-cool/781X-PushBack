@@ -82,7 +82,7 @@ void competition_initialize() {
   if (!selector->is_auton_selected()) {
     // Handle no selected auton
     // TODO: Change to doNothing before comp
-    selector->select_auton(rightRush.name);
+    selector->select_auton(leftMiddle.name);
   }
 }
 
