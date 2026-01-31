@@ -1,5 +1,6 @@
 #include "subsystems/intake.h"
 #include "color.h"
+#include "pros/adi.hpp"
 #include "pros/distance.hpp"
 #include "pros/optical.hpp"
 #include "robot.h"
@@ -9,8 +10,11 @@
 
 #define POWER 127
 
-Intake::Intake(pros::Motor &top, pros::Motor &bottom, pros::Distance &distance)
-    : m_top(top), m_bottom(bottom), m_distance(distance), m_state(IDLE) {}
+Intake::Intake(pros::Motor &top, pros::Motor &bottom,
+               pros::adi::Pneumatics &bottom_gate,
+               pros::adi::Pneumatics &top_gate)
+    : m_top(top), m_bottom(bottom), m_state(IDLE), m_bottom_gate(bottom_gate),
+      m_top_gate(top_gate) {}
 
 void Intake::runTask() {
 
@@ -47,27 +51,36 @@ void Intake::runTask() {
     break;
 
   case State::OUTAKE:
+    m_bottom_gate.retract();
+    m_top_gate.retract();
     m_top.move(-POWER);
     m_bottom.move(-POWER);
     break;
 
-  case State::SCORING:
+  case State::MIDDLE:
+    m_bottom_gate.extend();
+    m_top_gate.extend();
+    m_top.move(POWER * 0.65);
+    m_bottom.move(POWER * 0.65);
+    break;
+
+  case State::TOP:
+    m_bottom_gate.retract();
+    m_top_gate.retract();
     m_top.move(POWER);
     m_bottom.move(POWER);
     break;
 
   case State::STORING:
+    m_bottom_gate.extend();
+    m_top_gate.retract();
     m_bottom.move(POWER);
-    m_top.brake();
+    m_top.move(POWER);
     break;
 
   case State::SLOW_OUTAKE:
-    m_bottom.move(80);
-    m_top.move(80);
-
-  case State::SKILLS:
-    m_bottom.move(POWER);
-    m_top.move(0.8 * POWER);
+    m_bottom.move(-80);
+    m_top.move(-80);
 
   default:
     break;
@@ -85,11 +98,9 @@ void Intake::setState(State state) { m_state = state; }
 void Intake::emergencyStop() { setState(State::EMERGENCY_STOP); }
 void Intake::goToIdle() { setState(State::IDLE); }
 void Intake::goToOutaking() { setState(State::OUTAKE); }
-void Intake::goToScoring() { setState(State::SCORING); }
+void Intake::goToTOP() { setState(State::TOP); }
+void Intake::goToMIDDLE() { setState(State::MIDDLE); }
 void Intake::goToStoring() { setState(State::STORING); }
-void Intake::goToSlowOutake() { setState(State::SLOW_OUTAKE); }
-void Intake::goToSkills() { setState(State::SKILLS); }
 
 void Intake::enableFiltering() { enableFilter = true; }
 void Intake::disableFiltering() { enableFilter = false; }
-

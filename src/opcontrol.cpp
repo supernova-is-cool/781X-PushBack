@@ -18,12 +18,14 @@ typedef pros::controller_digital_e_t button_t;
 
 constexpr axis_t LEFT_DRIVE = pros::E_CONTROLLER_ANALOG_LEFT_Y;
 constexpr axis_t RIGHT_DRIVE = pros::E_CONTROLLER_ANALOG_RIGHT_Y;
-constexpr button_t MATCH_LOADER = pros::E_CONTROLLER_DIGITAL_X;
-constexpr button_t ELEVATOR = pros::E_CONTROLLER_DIGITAL_R2;
+constexpr button_t MIDDLE_GOAL = pros::E_CONTROLLER_DIGITAL_X;
+constexpr button_t DESCORE = pros::E_CONTROLLER_DIGITAL_R2;
 constexpr button_t OUTAKE = pros::E_CONTROLLER_DIGITAL_L2;
 constexpr button_t STORE = pros::E_CONTROLLER_DIGITAL_L1;
-constexpr button_t SCORE = pros::E_CONTROLLER_DIGITAL_R1;
-constexpr button_t DESCORE = pros::E_CONTROLLER_DIGITAL_UP;
+constexpr button_t HIGH_GOAL = pros::E_CONTROLLER_DIGITAL_R1;
+constexpr button_t MATCH_LOADER = pros::E_CONTROLLER_DIGITAL_UP;
+constexpr button_t PARK = pros::E_CONTROLLER_DIGITAL_DOWN;
+constexpr button_t CLAMP = pros::E_CONTROLLER_DIGITAL_B;
 
 }; // namespace controller_mapping
 namespace map = controller_mapping;
@@ -57,26 +59,32 @@ void opcontrol() {
     bot.tank(master.get_analog(map::LEFT_DRIVE),
              master.get_analog(map::RIGHT_DRIVE));
 
-    if (master.get_digital_new_press(map::ELEVATOR)) {
-      bot.lift.toggle();
-    }
-
     if (master.get_digital_new_press(map::MATCH_LOADER)) {
       bot.matchLoader.toggle();
     }
 
-    if (master.get_digital(map::SCORE)) {
-      bot.intake.goToScoring();
+    if (master.get_digital(map::HIGH_GOAL)) {
+      bot.intake.goToTOP();
     } else if (master.get_digital(map::OUTAKE)) {
       bot.intake.goToOutaking();
     } else if (master.get_digital(map::STORE)) {
       bot.intake.goToStoring();
+    } else if (master.get_digital(map::MIDDLE_GOAL)) {
+      bot.intake.goToMIDDLE();
     } else {
       bot.intake.goToIdle();
     }
 
     if (master.get_digital_new_press(map::DESCORE)) {
       bot.descore.toggle();
+    }
+
+    if (master.get_digital_new_press(map::CLAMP)) {
+      bot.clamp.toggle();
+    }
+
+    if (master.get_digital_new_press(map::PARK)) {
+      bot.park.toggle();
     }
 
     pros::delay(5); // Run every 20ms (refresh rate of the controller)

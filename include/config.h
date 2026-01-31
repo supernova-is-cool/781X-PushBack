@@ -11,9 +11,11 @@ struct robotConfig {
 
   struct Pneumatics {
     pros::adi::Pneumatics matchLoader;
-    pros::adi::Pneumatics lift;
     pros::adi::Pneumatics descore;
-    pros::adi::Pneumatics odomLift;
+    pros::adi::Pneumatics bottom_gate;
+    pros::adi::Pneumatics top_gate;
+    pros::adi::Pneumatics park;
+    pros::adi::Pneumatics clamp;
 
   private:
     friend struct robotConfig;
@@ -36,6 +38,10 @@ struct robotConfig {
     pros::Rotation vert;
     pros::Rotation hori;
     pros::IMU imu;
+    pros::Distance front;
+    pros::Distance back;
+    pros::Distance left;
+    pros::Distance right;
 
   private:
     friend struct robotConfig;

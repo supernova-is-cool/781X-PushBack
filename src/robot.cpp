@@ -47,18 +47,21 @@ Robot::Robot(const robotConfig &m_config)
                       robotConfig::config.makeSensors(),
                       &robotConfig::config.tunables.driveCurve),
       matchLoader(robotConfig::config.pneumatics.matchLoader),
-      lift(robotConfig::config.pneumatics.lift),
       descore(robotConfig::config.pneumatics.descore),
-      odomLift(robotConfig::config.pneumatics.odomLift),
+      park(robotConfig::config.pneumatics.park),
+      clamp(robotConfig::config.pneumatics.clamp),
+      front(robotConfig::config.sensors.front),
+      back(robotConfig::config.sensors.back),
+      left(robotConfig::config.sensors.left),
+      right(robotConfig::config.sensors.right),
       m_gamepad(pros::E_CONTROLLER_MASTER), gamepad(m_gamepad),
       m_transform(std::make_shared<auton::AllianceTransform>(COLOR::RED)),
       m_config(robotConfig::config),
 
-
       m_intake(robotConfig::config.motors.topStage,
                robotConfig::config.motors.bottomStage,
-               robotConfig::config.sensors.intakeDistance
-          ),      intake(m_intake) {}
-          
+               robotConfig::config.pneumatics.bottom_gate,
+               robotConfig::config.pneumatics.top_gate),
+      intake(m_intake) {}
 
 Robot Robot::instance{robotConfig::config};

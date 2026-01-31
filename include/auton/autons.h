@@ -13,4 +13,5 @@ namespace autons {
   void center();
   void skills();
   void soloWinPoint();
+  void skills();
 }

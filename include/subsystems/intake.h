@@ -9,21 +9,21 @@
 class Intake : public subsystem {
 
 public:
-  enum State { IDLE, STORING, SCORING, OUTAKE, SLOW_OUTAKE, SKILLS, EMERGENCY_STOP };
+  enum State { IDLE, STORING, MIDDLE, TOP, OUTAKE, SLOW_OUTAKE, EMERGENCY_STOP };
 
 
 private:
   State m_state;
   pros::Motor &m_top;
   pros::Motor &m_bottom;
-  pros::Distance &m_distance;
-  bool isOpen = false;
   COLOR m_targetColor = COLOR::RED;
   bool enableFilter = false;
+  pros::adi::Pneumatics &m_bottom_gate;
+  pros::adi::Pneumatics &m_top_gate;
 
 public:
   explicit Intake(pros::Motor &top, pros::Motor &bottom,
-                  pros::Distance &distance);
+                  pros::adi::Pneumatics &bottom_gate, pros::adi::Pneumatics &top_gate);
 
   void runTask() override;
 
@@ -33,10 +33,9 @@ public:
   void emergencyStop();
   void goToIdle();
   void goToStoring();
-  void goToScoring();
+  void goToTOP();
+  void goToMIDDLE();
   void goToOutaking();
-  void goToSlowOutake();
-  void goToSkills();
 
   void enableFiltering();
   void disableFiltering();
