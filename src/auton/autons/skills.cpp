@@ -17,7 +17,7 @@ using namespace dimensions::all;
 using namespace DIR;
 using namespace auton::util;
 
-// using lemlib::Pose;
+using lemlib::Pose;
 // using AngDir = lemlib::AngularDirection;
 
 void autons::skills() {

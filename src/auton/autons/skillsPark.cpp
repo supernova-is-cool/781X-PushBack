@@ -40,9 +40,9 @@ void autons::skillsPark() {
   pros::delay(1000);
 
   // Retract odom to prevent impedance when parking
-  bot.odomLift.retract();
+    //   bot.odomLift.retract();
   // Outtake to clear zone
-  bot.intake.goToScoring();
+  bot.intake.goToTOP();
 
   // Go into park zone
   tank(127, 127, 50, 0);
@@ -66,7 +66,7 @@ void autons::skillsPark() {
   // Once away from long goal, prepare to park
   bot.waitUntil(6);
   bot.matchLoader.retract();
-  bot.lift.retract();
+//   bot.lift.retract();
   bot.intake.goToIdle();
   bot.waitUntilDone();
 
@@ -88,7 +88,7 @@ void autons::skillsPark() {
   // Wait a bit so that momentum from turn doesn't mess up pod
   tank(96, 96, 250, 0);
   // Retract horizontal pod to prevent impedance when parking
-  bot.odomLift.retract();
+//   bot.odomLift.retract();
 
   /** Y distance of matchloader wheel to center of robot, when deployed */
   const float MATCHLOADER_WHEEL_OFFSET = 11.5; // in
