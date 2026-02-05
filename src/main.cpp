@@ -9,7 +9,7 @@
 ts::selector *selector = nullptr;
 ts::auton rightRush("Right Rush", autons::rightRush);
 ts::auton leftMiddle("Left Middle", autons::leftMiddle);
-ts::auton skills("Skill SAWP", autons::skills);
+ts::auton skillsawp("[[BAD!!!]] Skills", autons::skills);
 ts::auton soloWinPoint("SAWP", autons::soloWinPoint);
 ts::auton center("Center????", autons::center);
 ts::auton doNothing("Do Nothing", autons::doNothing);
@@ -82,7 +82,7 @@ void competition_initialize() {
   if (!selector->is_auton_selected()) {
     // Handle no selected auton
     // TODO: Change to doNothing before comp
-    selector->select_auton(leftMiddle.name);
+    selector->select_auton(skillsawp.name);
   }
 }
 
