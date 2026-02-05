@@ -7,6 +7,7 @@
 #include <cstdint>
 #include <memory>
 #include <vector>
+#include "subsystems/imu.hpp"
 
 lemlib::Drivetrain robotConfig::makeDrivetrain() const {
   return {&this->motors.left,
@@ -27,7 +28,7 @@ lemlib::OdomSensors robotConfig::makeSensors() const {
                                     this->dimensions.horiEncDiameter,
                                     this->dimensions.horiEncDistance,
                                     this->dimensions.horiEncGearRatio),
-          nullptr, &this->sensors.imu};
+          nullptr, new CustomIMU(this->sensors.imu.get_port(), this->tunables.imuGain)};
 }
 /*
 static std::shared_ptr<Odom> makeRealOdom(const robotConfig& config) {
