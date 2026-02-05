@@ -32,6 +32,14 @@ void autons::skills() {
   const Pose closeLongGoal = {-TILE - DRIVE_LENGTH, -2 * TILE, BLUE_STATION};
   const Pose centerGoal = {-7, 7};
 
+  bot.clamp.extend();
+  bot.park.extend();
+  bot.intake.goToStoring();
+  bot.tank(85, 85);
+
+
+  /*
+
   const Pose startingPosition = {0, 0, 0};
   bot.setPose(startingPosition);
 
@@ -93,4 +101,6 @@ void autons::skills() {
 
   bot.moveToPose({-TILE, 2.5 * TILE}, BLUE_STATION);
 
+
+*/
 }

@@ -53,7 +53,7 @@ template <class... Ts> overloads(Ts...) -> overloads<Ts...>;
 void opcontrol() {
   pros::Controller master(pros::E_CONTROLLER_MASTER);
   
-  bot.odomLift.retract();
+  //bot.odomLift.retract();
 
   while (true) {
     bot.tank(master.get_analog(map::LEFT_DRIVE),

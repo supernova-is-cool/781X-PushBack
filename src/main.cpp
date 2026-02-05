@@ -10,7 +10,6 @@ ts::selector *selector = nullptr;
 ts::auton rightRush("Right Rush", autons::rightRush);
 ts::auton leftMiddle("Left Middle", autons::leftMiddle);
 ts::auton skills("Skill SAWP", autons::skills);
-ts::auton skillsawp("Full Skills", autons::skillsAWP);
 ts::auton soloWinPoint("SAWP", autons::soloWinPoint);
 ts::auton center("Center????", autons::center);
 ts::auton doNothing("Do Nothing", autons::doNothing);
@@ -47,6 +46,7 @@ void initialize() {
   // ensure robot is initialized
   Robot::get();
 
+  
   if (pros::competition::is_connected() && pros::competition::is_disabled()) {
     selector->display();
   } else {
@@ -99,8 +99,11 @@ void competition_initialize() {
  */
 void autonomous() {
   init_odom_printing();
-  bot.odomLift.extend();
-  selector->run_selected_auton();
+  //bot.moveToPoint({0, 24, 0}, 2000);
+  //bot.turnToHeading(90, 2000);
+  autons::skills();
+  //bot.odomLift.extend();
+  //selector->run_selected_auton();
 }
 
 /**

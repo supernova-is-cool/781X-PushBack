@@ -57,7 +57,7 @@ namespace robot {
 constexpr float TRACK_WIDTH = 11.5;
 constexpr float DRIVE_WIDTH = 27.0 / 2;
 /** Includes funnels */
-constexpr float DRIVE_LENGTH = 32.0 / 2;
+constexpr float DRIVE_LENGTH = 31.0 / 2;
 
 } // namespace robot
 
