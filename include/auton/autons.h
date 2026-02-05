@@ -7,6 +7,7 @@
 namespace autons {
   void doNothing();
   void rightRush();
+  void leftRush();
   void right9Ball();
   void skillsAWP();
   /** Starts on left corner, scores on left middle goal, and left long goal. */

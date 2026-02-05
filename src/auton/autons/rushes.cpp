@@ -1,9 +1,10 @@
 #include "auton/autons.h"
+#include "auton/transform.h"
 #include "lemlib/pose.hpp"
 #include "pros/abstract_motor.hpp"
 #include "robot.h"
 #include <cstdio>
-
+#include <memory>
 
 #include "auton/autons.h"
 #include "auton/util.h"
@@ -21,38 +22,52 @@ using namespace auton::util;
 
 using lemlib::Pose;
 using AngDir = lemlib::AngularDirection;
+using SIGN = auton::SignTransform::SIGN;
 
-void autons::rightRush() {
+static void rush(auton::SignTransform::SIGN sign) {
+  // Programmed from right red perspective
+  bot.setTransform(std::make_shared<auton::SignTransform>(
+      sign, auton::SignTransform::AUDIENCE));
+
   const Pose startingPosition = {-2 * TILE - DRIVE_LENGTH / 2 - .5,
-                                 -0.7 * TILE + 2, 90};
+                                 -TILE + DRIVE_WIDTH / 2 - .5, 90};
   bot.setPose(startingPosition);
 
-  const Pose theBalls = {
-      -1 * TILE,
-      -1 * TILE,
-  };
+  const Pose centerBallsTarget = [&] {
+    /** Drop the the matchloader after the blocks in the x,
+     * but centered in the y between the blocks  */
+    const Pose matchloader_target{
+        -1 * TILE + BALL_INNER_DIAM * 1,
+        -1 * TILE + BALL_INNER_DIAM / 2,
+    };
+    /** Distance between robot target pose and matchloader target */
+    const float offset = -((MATCHLOADER_DIST_TO_CENTER + DRIVE_LENGTH / 2) / 2);
+    return matchloader_target +
+           Pose::fromPolar(offset, trigAngleToHeading(bot.getPose().angle(
+                                       matchloader_target)));
+  }();
 
   bot.intake.goToStoring();
-  bot.moveToPoint(theBalls, 1200, {.minSpeed = 67, .earlyExitRange = 8});
-  bot.waitUntil(20);
+  bot.moveToPoint(centerBallsTarget, 1200, {.minSpeed = 32});
+  // Once within 6in of target, capture the balls with ML mech
+  waitUntilDistToPose(centerBallsTarget, 6);
   bot.matchLoader.extend();
-  bot.waitUntilDone();
-  // pros::delay(750);
-  bot.turnToPoint({-2 * TILE, -2 * TILE}, 1200,
-                  {.maxSpeed = 95, .minSpeed = 80, .earlyExitRange = 17});
-  bot.waitUntilDone();
 
   const Pose matchLoader = {MIN_X + DRIVE_LENGTH / 2 + 3.5, -2 * TILE - 2.5,
                             RED_STATION};
   const Pose alignmentPoint = matchLoader.withX(-2 * TILE + 1);
+  bot.turnToPoint(alignmentPoint, 500,
+                  {.maxSpeed = 95, .minSpeed = 80, .earlyExitRange = 15});
+  bot.waitUntilDone();
 
   bot.moveToPoint(alignmentPoint, 1000,
-                  {.maxSpeed = 95, .minSpeed = 80, .earlyExitRange = 15});
-  bot.moveToPoint(alignmentPoint, 1000, {.earlyExitRange = 2});
+                  {.maxSpeed = 95, .minSpeed = 80, .earlyExitRange = 18});
+  bot.moveToPoint(alignmentPoint, 1000);
 
   bot.waitUntilDone();
   bot.turnToHeading(RED_STATION, 1000);
   bot.waitUntilDone();
+
   bot.moveToPoint(matchLoader.withY(bot.getPose().y), 1100,
                   {.maxSpeed = 72, .minSpeed = 16});
   bot.waitUntilDone();
@@ -63,8 +78,6 @@ void autons::rightRush() {
 
   const Pose longGoal = {-TILE - DRIVE_LENGTH / 2 + 4, -2 * TILE - 2,
                          RED_STATION};
-
-
   bot.moveToPoint(longGoal, 1500,
                   {.forwards = false, .maxSpeed = 70, .minSpeed = 30});
   bot.waitUntilDone();
@@ -87,28 +100,33 @@ void autons::rightRush() {
   bot.tank(0, 0);
 
   const Pose scoringPose = longGoal;
-  std::println("pose of scored: {}", bot.getPose());
+  // std::println("pose of scored: {}", bot.getPose());
 
+  // Do not cross auton line when descoring
+  bot.matchLoader.retract();
+
+  const float distanceFromGoalToDescore = 12;
   // Exit long goal and align with long goal
   const Pose descoreAlignTarget =
-      (scoringPose + Pose{0, 13.5}).withX(-TILE + DRIVE_LENGTH - 2);
+      (scoringPose + Pose{0, distanceFromGoalToDescore})
+          .withX(-TILE + DRIVE_LENGTH - 2);
+  bot.swingToPoint(descoreAlignTarget, DriveSide::RIGHT, 500);
   bot.moveToPoint(descoreAlignTarget.withX(-1.7 * TILE), 1000);
   bot.waitUntilDone();
 
   // Don't extend descore, since retracted descore is at the correct height now
   bot.descore.retract();
 
-  // Do not cross auton line
-  bot.matchLoader.retract();
-
-  // bot.moveToPoint(descore, 2000, {.forwards = false});
+  /** If on left side, should face towards center. */
+  const bool faceCenter = sign == SIGN::REFEREE;
+  const float descoreHeading = faceCenter ? BLUE_STATION : RED_STATION;
   bot.waitUntilDone();
-  bot.turnToHeading(RED_STATION, 1000);
+  bot.turnToHeading(descoreHeading, 1000);
   bot.waitUntilDone();
 
   const Pose pushBlocksTarget{-DRIVE_LENGTH / 2, bot.getPose().y};
   bot.moveToPoint({-DRIVE_LENGTH / 2, bot.getPose().y}, 2500,
-                  {.forwards = false, .maxSpeed = 67});
+                  {.forwards = faceCenter, .maxSpeed = 67});
   bot.waitUntilDone();
 
   // Repeatedly run moveToPose to hold position against pushes
@@ -116,11 +134,15 @@ void autons::rightRush() {
   const Pose holdPose = [&] {
     const Pose currentPose = bot.getPose();
     return currentPose
-        .withTheta(RED_STATION)
+        .withTheta(descoreHeading)
         // Do not go further than target and risk crossing auton line
         .withX(std::max(currentPose.x, pushBlocksTarget.x));
   }();
   while (true) {
-    bot.moveToPose(holdPose, 1000);
+    bot.moveToPose(holdPose, 1000, {}, false);
   }
 }
+
+void autons::rightRush() { rush(SIGN::AUDIENCE); }
+
+void autons::leftRush() { rush(SIGN::REFEREE); }

@@ -8,6 +8,7 @@
 
 ts::selector *selector = nullptr;
 ts::auton rightRush("Right Rush", autons::rightRush);
+ts::auton leftRush("Left Rush", autons::leftRush);
 // ts::auton right9Ball("Right 9 Ball", autons::right9Ball);
 ts::auton leftMiddle("Left Middle", autons::leftMiddle);
 ts::auton skillsawp("Skill SAWP", autons::skillsAWP);
@@ -85,7 +86,7 @@ void competition_initialize() {
   if (!selector->is_auton_selected()) {
     // Handle no selected auton
     // TODO: Change to doNothing before comp
-    selector->select_auton(leftMiddle.name);
+    selector->select_auton(leftRush.name);
   }
 }
 
@@ -102,11 +103,16 @@ void competition_initialize() {
  */
 void autonomous() {
   init_odom_printing();
+    if (!selector->is_auton_selected()) {
+    // Handle no selected auton
+    // TODO: Change to doNothing before comp
+    selector->select_auton(leftRush.name);
+  }
   //bot.moveToPoint({0, 24, 0}, 2000);
   //bot.turnToHeading(90, 2000);
-  autons::skills();
+  // autons::skills();
   //bot.odomLift.extend();
-  //selector->run_selected_auton();
+  selector->run_selected_auton();
 }
 
 /**
