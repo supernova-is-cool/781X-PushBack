@@ -17,6 +17,7 @@ ts::auton skillsPark("Skills Park", autons::skillsPark);
 ts::auton soloWinPoint("SAWP", autons::soloWinPoint);
 ts::auton center("Center????", autons::center);
 ts::auton doNothing("Do Nothing", autons::doNothing);
+ts::auton skills("Skills", autons::skills);
 
 void screen() {
   while (true) {
@@ -86,7 +87,7 @@ void competition_initialize() {
   if (!selector->is_auton_selected()) {
     // Handle no selected auton
     // TODO: Change to doNothing before comp
-    selector->select_auton(leftRush.name);
+    selector->select_auton(skills.name);
   }
 }
 
