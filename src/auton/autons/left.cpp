@@ -20,30 +20,31 @@ using namespace auton::util;
 using lemlib::Pose;
 using AngDir = lemlib::AngularDirection;
 
+// Programmed from right blue perspective
 void autons::leftMiddle() {
   // --- Starting Pose ---
-  const Pose startingPosition = {2 * TILE + DRIVE_LENGTH / 2, -0.7 * TILE + 1.5,
-                                 270};
+  const Pose startingPosition = {2 * TILE + DRIVE_LENGTH / 2 + .5,
+                                 -TILE + DRIVE_WIDTH / 2 - .5, RED_STATION};
   bot.setPose(startingPosition);
 
   // --- Go to Balls ---
-  const Pose theBalls = {
+  const Pose leftCenterBalls = {
       1 * TILE,
       -1 * TILE,
   };
-
   bot.intake.goToStoring();
-  bot.moveToPoint(theBalls, 1200, {.maxSpeed = 90});
-  bot.waitUntil(20);
+  bot.moveToPoint(leftCenterBalls, 1200, {.maxSpeed = 90});
+  
+  // Once within 6in of target, capture the balls with ML mech
+  waitUntilDistToPose(leftCenterBalls, 9);
   bot.matchLoader.extend();
   bot.waitUntilDone();
-  // pros::delay(750);
 
   // --- Middle Goal Setup ---
-  const Pose middleGoal = Pose::fromPolar(18, 135) + Pose{0, 0, 0};
+  const Pose middleGoal = Pose::fromPolar(15, 135) + Pose{0, 0, 0};
 
   // Turn first for cleaner pathing
-  bot.turnToPoint(middleGoal, 1200, {.forwards = false});
+  bot.turnToPoint(middleGoal, 1200, {.forwards = false, .earlyExitRange = 15});
   bot.waitUntilDone();
 
   // Now drive backwards cleanly
@@ -59,7 +60,7 @@ void autons::leftMiddle() {
   bot.intake.goToOutaking();
   pros::delay(100);
   bot.tank(0, 0);
-  bot.intake.goToTOP();
+  bot.intake.goToMIDDLE();
   pros::delay(1600);
   bot.intake.goToIdle();
   pros::delay(150);
@@ -73,7 +74,7 @@ void autons::leftMiddle() {
   bot.turnToPoint(matchLoader, 1000);
   bot.waitUntilDone();
   bot.intake.goToStoring();
-  bot.moveToPoint(matchLoader, 1100, {.maxSpeed = 45});
+  bot.moveToPoint(matchLoader, 1100, {.maxSpeed = 60});
   bot.waitUntilDone();
   bot.tank(15, 15);
   pros::delay(400);
@@ -103,24 +104,40 @@ void autons::leftMiddle() {
   // Don't cross auton line when descoring
   bot.matchLoader.retract();
 
-  // Exit long goal, and align descore mech
-  bot.moveToPoint({1.7 * TILE, -36}, 1000);
+  const Pose scoringPose = longGoal;
+
+  const float distanceFromGoalToDescore = 12;
+  // Exit long goal and align with long goal
+  const Pose descoreAlignTarget =
+      (scoringPose + Pose{0, distanceFromGoalToDescore})
+          .withX(TILE - DRIVE_LENGTH + 2);
+  bot.swingToPoint(descoreAlignTarget, DriveSide::RIGHT, 500);
+  bot.moveToPoint(descoreAlignTarget.withX(1.7 * TILE), 1000);
   bot.waitUntilDone();
 
-  // Rotate to face descore angle long goal
-  bot.turnToHeading(RED_STATION, 1000);
-  // Push blocks with descore
-  bot.moveToPoint({DRIVE_LENGTH / 2 + 1, bot.getPose().y}, 2500,
-                  {.maxSpeed = 67});
-  bot.waitUntil(25);
-  // Put descore down
+  // Don't extend descore, since retracted descore is at the correct height now
   bot.descore.retract();
+
+  /** If on left side, should face towards center. */
+  const float descoreHeading = RED_STATION;
+  bot.waitUntilDone();
+  bot.turnToHeading(descoreHeading, 1000);
+  bot.waitUntilDone();
+
+  const Pose pushBlocksTarget{DRIVE_LENGTH / 2, bot.getPose().y};
+  bot.moveToPoint(pushBlocksTarget, 2500, {.forwards = true, .maxSpeed = 67});
   bot.waitUntilDone();
 
   // Repeatedly run moveToPose to hold position against pushes
   // (When auton stage ends, this will also end)
-  const Pose currentPose = bot.getPose().withTheta(RED_STATION);
+  const Pose holdPose = [&] {
+    const Pose currentPose = bot.getPose();
+    return currentPose
+        .withTheta(descoreHeading)
+        // Do not go further than target and risk crossing auton line
+        .withX(std::max(currentPose.x, pushBlocksTarget.x));
+  }();
   while (true) {
-    bot.moveToPose(currentPose, 1000);
+    bot.moveToPose(holdPose, 1000, {}, false);
   }
 }

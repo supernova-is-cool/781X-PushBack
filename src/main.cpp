@@ -87,7 +87,7 @@ void competition_initialize() {
   if (!selector->is_auton_selected()) {
     // Handle no selected auton
     // TODO: Change to doNothing before comp
-    selector->select_auton(skills.name);
+    selector->select_auton(leftRush.name);
   }
 }
 
@@ -104,7 +104,7 @@ void competition_initialize() {
  */
 void autonomous() {
   init_odom_printing();
-    if (!selector->is_auton_selected()) {
+  if (!selector->is_auton_selected()) {
     // Handle no selected auton
     // TODO: Change to doNothing before comp
     selector->select_auton(leftRush.name);
