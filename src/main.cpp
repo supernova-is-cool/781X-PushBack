@@ -11,11 +11,11 @@ ts::auton rightRush("Right Rush", autons::rightRush);
 ts::auton leftRush("Left Rush", autons::leftRush);
 // ts::auton right9Ball("Right 9 Ball", autons::right9Ball);
 ts::auton leftMiddle("Left Middle", autons::leftMiddle);
-ts::auton skillsawp("Skill SAWP", autons::skillsAWP);
+// ts::auton skillsawp("Skill SAWP", autons::skillsAWP);
 // ts::auton skills("[[BAD!!!]] Skills", autons::skills);
-ts::auton skillsPark("Skills Park", autons::skillsPark);
-ts::auton soloWinPoint("SAWP", autons::soloWinPoint);
-ts::auton center("Center????", autons::center);
+// ts::auton skillsPark("Skills Park", autons::skillsPark);
+// ts::auton soloWinPoint("SAWP", autons::soloWinPoint);
+// ts::auton center("Center????", autons::center);
 ts::auton doNothing("Do Nothing", autons::doNothing);
 ts::auton skills("Skills", autons::skills);
 
