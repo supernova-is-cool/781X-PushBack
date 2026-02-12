@@ -60,8 +60,8 @@ void Intake::runTask() {
   case State::MIDDLE:
     m_bottom_gate.extend();
     m_top_gate.extend();
-    m_top.move(POWER * 0.65);
-    m_bottom.move(POWER * 0.65);
+    m_top.move(POWER * 0.9);
+    m_bottom.move(POWER * 0.9);
     break;
 
   case State::TOP:
