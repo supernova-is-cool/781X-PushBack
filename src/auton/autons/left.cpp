@@ -34,7 +34,7 @@ void autons::leftMiddle() {
   };
   bot.intake.goToStoring();
   bot.moveToPoint(leftCenterBalls, 1200, {.maxSpeed = 90});
-  
+
   // Once within 6in of target, capture the balls with ML mech
   waitUntilDistToPose(leftCenterBalls, 9);
   bot.matchLoader.extend();
@@ -55,7 +55,7 @@ void autons::leftMiddle() {
 
   // Score + reset intake
   bot.tank(-10, -10);
-  bot.intake.goToTOP();
+  bot.intake.goToMIDDLE();
   pros::delay(100);
   bot.intake.goToOutaking();
   pros::delay(100);
