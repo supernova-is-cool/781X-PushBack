@@ -48,7 +48,7 @@ void autons::leftMiddle() {
   bot.waitUntilDone();
 
   // Now drive backwards cleanly
-  bot.moveToPoint(middleGoal, 1500, {.forwards = false, .maxSpeed = 80});
+  bot.moveToPoint(middleGoal, 1500, {.forwards = false, .maxSpeed = 60});
   bot.waitUntilDone();
   bot.turnToPoint({0, 0}, 500, {.forwards = false});
   bot.waitUntilDone();
@@ -77,7 +77,7 @@ void autons::leftMiddle() {
   bot.moveToPoint(matchLoader, 1100, {.maxSpeed = 60});
   bot.waitUntilDone();
   bot.tank(15, 15);
-  pros::delay(400);
+  pros::delay(500);
   bot.tank(0, 0);
 
   const Pose longGoal = {TILE + DRIVE_LENGTH / 2 - 4, -2 * TILE - 2,
@@ -124,7 +124,7 @@ void autons::leftMiddle() {
   bot.turnToHeading(descoreHeading, 1000);
   bot.waitUntilDone();
 
-  const Pose pushBlocksTarget{DRIVE_LENGTH / 2, bot.getPose().y};
+  const Pose pushBlocksTarget{DRIVE_LENGTH / 2 + 4, bot.getPose().y};
   bot.moveToPoint(pushBlocksTarget, 2500, {.forwards = true, .maxSpeed = 67});
   bot.waitUntilDone();
 

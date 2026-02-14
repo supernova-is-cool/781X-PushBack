@@ -53,7 +53,7 @@ static void rush(auton::SignTransform::SIGN sign) {
   waitUntilDistToPose(centerBallsTarget, 6);
   bot.matchLoader.extend();
 
-  const Pose matchLoader = {MIN_X + DRIVE_LENGTH / 2 + 3.5, -2 * TILE - 2.5,
+  const Pose matchLoader = {MIN_X + DRIVE_LENGTH / 2 + 3.5, -2 * TILE ,
                             RED_STATION};
   const Pose alignmentPoint = matchLoader.withX(-2 * TILE + 1);
   bot.turnToPoint(alignmentPoint, 500,
@@ -68,12 +68,12 @@ static void rush(auton::SignTransform::SIGN sign) {
   bot.turnToHeading(RED_STATION, 1000);
   bot.waitUntilDone();
 
-  bot.moveToPoint(matchLoader.withY(bot.getPose().y), 1100,
-                  {.maxSpeed = 72, .minSpeed = 16});
+  bot.moveToPoint(matchLoader, 1100,
+                  {.maxSpeed = 60, .minSpeed = 16});
   bot.waitUntilDone();
 
   bot.tank(10, 10);
-  pros::delay(700);
+  pros::delay(550);
   bot.tank(0, 0);
 
   const Pose longGoal = {-TILE - DRIVE_LENGTH / 2 + 4, -2 * TILE - 2,
@@ -85,14 +85,14 @@ static void rush(auton::SignTransform::SIGN sign) {
   // Smooth outaking sequence
   bot.tank(-10, -10);
 
-  bot.intake.goToTOP();
-  pros::delay(400);
-  bot.intake.goToOutaking();
-  pros::delay(200);
+  //bot.intake.goToTOP();
+  //pros::delay(400);
+  //bot.intake.goToOutaking();
+  //pros::delay(200);
   bot.intake.goToTOP();
   pros::delay(2500);
-  bot.intake.goToOutaking();
-  pros::delay(200);
+  //bot.intake.goToOutaking();
+  //pros::delay(200);
   bot.intake.goToTOP();
 
   bot.intake.goToIdle();
@@ -105,7 +105,7 @@ static void rush(auton::SignTransform::SIGN sign) {
   // Do not cross auton line when descoring
   bot.matchLoader.retract();
 
-  const float distanceFromGoalToDescore = 12;
+  const float distanceFromGoalToDescore = 11;
   // Exit long goal and align with long goal
   const Pose descoreAlignTarget =
       (scoringPose + Pose{0, distanceFromGoalToDescore})
@@ -125,7 +125,7 @@ static void rush(auton::SignTransform::SIGN sign) {
   bot.waitUntilDone();
 
   const Pose pushBlocksTarget{-DRIVE_LENGTH / 2, bot.getPose().y};
-  bot.moveToPoint({-DRIVE_LENGTH / 2, bot.getPose().y}, 2500,
+  bot.moveToPoint({-DRIVE_LENGTH / 2 - 3, bot.getPose().y}, 2500,
                   {.forwards = faceCenter, .maxSpeed = 67});
   bot.waitUntilDone();
 
