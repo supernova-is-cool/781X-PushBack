@@ -4,6 +4,7 @@
 #include "lemlib/api.hpp"
 #include "liblvgl/llemu.hpp"
 #include "pros/misc.hpp"
+#include "pros/motor_group.hpp"
 #include "robot.h"
 
 ts::selector *selector = nullptr;
@@ -20,6 +21,33 @@ ts::auton doNothing("Do Nothing", autons::doNothing);
 ts::auton skills("Skills", autons::skills);
 
 void screen() {
+  struct LabeledMotor {
+    std::string name;
+    pros::MotorGroup &motor;
+
+    float mean_temp() const {
+      auto temps = motor.get_temperature_all();
+      float sum = 0;
+      for (auto temp : temps) {
+        sum += temp;
+      }
+      return sum / temps.size();
+    }
+  };
+  std::vector<int8_t> intake_ports =
+      bot.m_config.motors.bottomStage.get_port_all();
+  {
+    std::vector<int8_t> top_intake_ports =
+        bot.m_config.motors.topStage.get_port_all();
+    intake_ports.insert(intake_ports.end(), top_intake_ports.begin(),
+                        top_intake_ports.end());
+  }
+  pros::MotorGroup intake{intake_ports};
+  std::vector<LabeledMotor> motors{
+      LabeledMotor{"Left", bot.m_config.motors.left},
+      LabeledMotor{"Right", bot.m_config.motors.right},
+      LabeledMotor{"Intake", intake},
+  };
   while (true) {
     if (pros::lcd::is_initialized()) {
       pros::lcd::print(0, "Auton:\t%s",
@@ -27,6 +55,19 @@ void screen() {
       pros::lcd::print(3, "x:\t%fin", bot.getPose().x);
       pros::lcd::print(4, "y:\t%fin", bot.getPose().y);
       pros::lcd::print(5, "theta:\t%fdeg", bot.getPose().theta);
+
+      std::string labels = "";
+      std::string temps = "";
+      for (const auto &motor : motors) {
+        labels += motor.name;
+        temps += std::format("{:.1f}C", motor.mean_temp());
+        // Even out the lengths
+        size_t max_len = std::max(labels.size(), temps.size()) + 2;
+        labels += std::string(max_len - labels.size(), ' ');
+        temps += std::string(max_len - temps.size(), ' ');
+      }
+      pros::lcd::print(6, "%s", labels.c_str());
+      pros::lcd::print(7, "%s", temps.c_str());
     }
     pros::delay(50);
   }
@@ -51,7 +92,6 @@ void initialize() {
   // ensure robot is initialized
   Robot::get();
 
-  
   if (pros::competition::is_connected() && pros::competition::is_disabled()) {
     selector->display();
   } else {
