@@ -108,6 +108,7 @@ void autons::skills() {
   bot.moveToPoint({1.5 * TILE, bot.getPose().y}, 1500,
                   {.maxSpeed = 70, .minSpeed = 40, .earlyExitRange = 5});
   bot.waitUntilDone();
+  bot.intake.goToIdle();
 
   bot.swingToHeading(180, lemlib::DriveSide::RIGHT, 1200,
                      {.maxSpeed = 55, .minSpeed = 25});
@@ -120,6 +121,10 @@ void autons::skills() {
   // 3RD MATCHLOAD (RIGHT CLOSE)
   bot.turnToPoint(closeRightMatchLoader, 1000,
                   {.maxSpeed = 50, .minSpeed = 20});
+  bot.waitUntilDone();
+
+  bot.intake.goToStoring();
+  bot.moveToPose(closeRightMatchLoader, 3000, {.maxSpeed = 45, .minSpeed = 15});
   bot.waitUntilDone();
 
   bot.intake.goToStoring();
@@ -187,8 +192,6 @@ void autons::skills() {
   bot.waitUntilDone();
 
   bot.park.extend();
-
-  
 
   bot.tank(70, 70);
   pros::delay(2000);
