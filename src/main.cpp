@@ -87,7 +87,7 @@ void competition_initialize() {
   if (!selector->is_auton_selected()) {
     // Handle no selected auton
     // TODO: Change to doNothing before comp
-    //selector->select_auton(rightRush.name);
+    selector->select_auton(skills.name);
   }
 }
 
@@ -107,7 +107,7 @@ void autonomous() {
   if (!selector->is_auton_selected()) {
     // Handle no selected auton
     // TODO: Change to doNothing before comp
-    selector->select_auton(leftRush.name);
+    selector->select_auton(skills.name);
   }
   //bot.moveToPoint({0, 24, 0}, 2000);
   //bot.turnToHeading(90, 2000);

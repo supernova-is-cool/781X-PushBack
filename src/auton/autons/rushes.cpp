@@ -124,8 +124,8 @@ static void rush(auton::SignTransform::SIGN sign) {
   bot.turnToHeading(descoreHeading, 1000);
   bot.waitUntilDone();
 
-  const Pose pushBlocksTarget{-DRIVE_LENGTH / 2, bot.getPose().y};
-  bot.moveToPoint({-DRIVE_LENGTH / 2 - 3, bot.getPose().y}, 2500,
+  const Pose pushBlocksTarget{-DRIVE_LENGTH / 2 - 8, bot.getPose().y};
+  bot.moveToPoint(pushBlocksTarget, 2500,
                   {.forwards = faceCenter, .maxSpeed = 67});
   bot.waitUntilDone();
 
