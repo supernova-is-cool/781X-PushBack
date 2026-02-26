@@ -35,16 +35,24 @@ void autons::skills() {
   const Pose startingPosition = {-2 * TILE - 1.5, TILE - DRIVE_LENGTH + 8.5, 0};
   bot.setPose(startingPosition);
 
-  // 1st Matchload
+  // 1ST MATCHLOAD
   bot.descore.extend();
-  bot.moveToPoint({-2 * TILE, 2 * TILE + 1}, 1500, {.maxSpeed = 80});
+
+  bot.moveToPoint({-2 * TILE, 2 * TILE + 1}, 1500,
+                  {.maxSpeed = 80, .minSpeed = 35, .earlyExitRange = 3});
   bot.waitUntilDone();
-  bot.turnToPoint(farLeftMatchLoader, 1500);
+  pros::delay(40);
+
+  bot.turnToPoint(farLeftMatchLoader, 1500, {.maxSpeed = 60, .minSpeed = 25});
   bot.waitUntilDone();
+  pros::delay(40);
+
   bot.matchLoader.extend();
   bot.intake.goToStoring();
-  bot.moveToPoint(farLeftMatchLoader, 1200, {.maxSpeed = 50});
+
+  bot.moveToPoint(farLeftMatchLoader, 1200, {.maxSpeed = 45, .minSpeed = 10});
   bot.waitUntilDone();
+
   bot.tank(7, 7);
   pros::delay(1200);
   bot.tank(0, 0);
@@ -83,11 +91,11 @@ void autons::skills() {
   bot.intake.goToStoring();
   bot.matchLoader.extend();
 
-  bot.moveToPoint(farRightMatchLoader, 1300, {.maxSpeed = 45, .minSpeed = 10});
+  bot.moveToPoint(farRightMatchLoader, 1200, {.maxSpeed = 45, .minSpeed = 10});
   bot.waitUntilDone();
 
   bot.tank(7, 7);
-  pros::delay(1300);
+  pros::delay(1200);
   bot.tank(0, 0);
 
   bot.moveToPoint(farLongGoalRight, 1700,
@@ -121,10 +129,6 @@ void autons::skills() {
   // 3RD MATCHLOAD (RIGHT CLOSE)
   bot.turnToPoint(closeRightMatchLoader, 1000,
                   {.maxSpeed = 50, .minSpeed = 20});
-  bot.waitUntilDone();
-
-  bot.intake.goToStoring();
-  bot.moveToPose(closeRightMatchLoader, 3000, {.maxSpeed = 45, .minSpeed = 15});
   bot.waitUntilDone();
 
   bot.intake.goToStoring();
@@ -188,14 +192,10 @@ void autons::skills() {
 
   bot.matchLoader.retract();
 
-  bot.moveToPose({-1.8 * TILE, 0, RED_STATION}, 4000, {.maxSpeed = 65});
+  bot.moveToPose({-1.8 * TILE, 0, RED_STATION}, 3000, {.maxSpeed = 65});
   bot.waitUntilDone();
 
   bot.park.extend();
-
-  bot.tank(70, 70);
-  pros::delay(2000);
-  bot.tank(0, 0);
   /*
 
   bot.moveToPose(
