@@ -15,7 +15,7 @@ ts::auton leftMiddle("Left Middle", autons::leftMiddle);
 // ts::auton skillsawp("Skill SAWP", autons::skillsAWP);
 // ts::auton skills("[[BAD!!!]] Skills", autons::skills);
 // ts::auton skillsPark("Skills Park", autons::skillsPark);
-// ts::auton soloWinPoint("SAWP", autons::soloWinPoint);
+ts::auton soloWinPoint("SAWP", autons::soloWinPoint);
 // ts::auton center("Center????", autons::center);
 ts::auton doNothing("Do Nothing", autons::doNothing);
 ts::auton skills("Skills", autons::skills);
@@ -127,7 +127,7 @@ void competition_initialize() {
   if (!selector->is_auton_selected()) {
     // Handle no selected auton
     // TODO: Change to doNothing before comp
-    selector->select_auton(leftRush.name);
+    selector->select_auton(soloWinPoint.name);
   }
 }
 
@@ -147,7 +147,7 @@ void autonomous() {
   if (!selector->is_auton_selected()) {
     // Handle no selected auton
     // TODO: Change to doNothing before comp
-    selector->select_auton(leftRush.name);
+    selector->select_auton(soloWinPoint.name);
   }
   //bot.moveToPoint({0, 24, 0}, 2000);
   //bot.turnToHeading(90, 2000);
