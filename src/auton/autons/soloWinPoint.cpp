@@ -49,14 +49,14 @@ void autons::soloWinPoint() {
   // === STARTING POSE ===
 
   // TODO: Determine good sawp starting pose
-  const Pose startingPose{-2 * TILE - DRIVE_LENGTH / 2 + .5, -TILE + 6.5,
-                          RED_STATION};
-  bot.setPose(startingPose);
+  const Pose startingPosition = {-2 * TILE - 1.5, -(TILE - DRIVE_LENGTH + 8),
+                                 AUDIENCE};
+  bot.setPose(startingPosition);
 
   const Pose rightMatchloader = {MIN_X + DRIVE_LENGTH / 2 + 3.5,
-                                 -2 * TILE - 2.5, RED_STATION};
+                                 -2 * TILE, RED_STATION};
   // Align in front of matchloader
-  bot.moveToY(rightMatchloader.y, 1000);
+  bot.moveToY(rightMatchloader.y, 5000);
   bot.waitUntilDone();
 
   // Prepare matchloader mech and intake for scoring
