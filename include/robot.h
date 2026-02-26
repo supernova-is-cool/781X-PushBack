@@ -6,8 +6,31 @@
 #include "pros/adi.hpp"
 #include "pros/distance.hpp"
 #include "subsystems/intake.h"
+#include <functional>
 #include <memory>
 
+/**
+ * @brief Parameters for Robot::moveStraight
+ *
+ * We use a struct to simplify customization. Robot::moveStraight has many
+ * parameters and specifying them all just to set one optional param harms
+ * readability. By passing a struct to the function, we can have named
+ * parameters, overcoming the c/c++ limitation.
+ */
+struct MoveStraightParams {
+  /** the maximum speed the robot can travel at. Value between 0-127. 127 by
+   * default */
+  float maxSpeed = 127;
+  /** the minimum speed the robot can travel at. If set to a non-zero value, the
+   * exit conditions will switch to less accurate but smoother ones. Value
+   * between 0-127. 0 by default */
+  float minSpeed = 0;
+  /** distance between the robot and target point where the movement will exit.
+   * Only has an effect if minSpeed is non-zero.*/
+  float earlyExitRange = 0;
+};
+
+typedef std::function<std::function<float()>()> MoveStraightErrorFuncFactory;
 /**
  * @brief Provides an abstracted interface for controlling the robot and reading
  * from sensors. Follows the singleton pattern.
@@ -83,6 +106,23 @@ public:
   using lemlib::Chassis::tank;
   using lemlib::Chassis::waitUntil;
   using lemlib::Chassis::waitUntilDone;
+
+  /**
+   * @brief Drives straight, using the provided error function to determine when
+   * to stop.
+   *
+   * @param errorFuncFactory A factory function that returns an error function
+   * to determine when to stop. This enables the error func to record the
+   * initial state.
+   */
+  void moveStraight(MoveStraightErrorFuncFactory errorFuncFactory, int timeout,
+                    MoveStraightParams params = {}, bool async = true);
+  void moveToX(float targetX, int timeout, MoveStraightParams params = {},
+               bool async = true);
+  void moveToY(float targetY, int timeout, MoveStraightParams params = {},
+               bool async = true);
+  void moveDistance(float distance, int timeout, MoveStraightParams params = {},
+                    bool async = true);
 
   void setPose(lemlib::Pose pose, bool radians = false);
   lemlib::Pose getPose(bool radians = false);
