@@ -7,14 +7,14 @@ using namespace lemlib;
 void Robot::moveToX(float targetX, int timeout, MoveStraightParams params,
                     bool async) {
   auto errorFuncFactory = [this, targetX]() {
-    return [this, targetX]() { return targetX - this->getPose().x; };
+    return [this, targetX]() { return this->getPose().x - targetX ; };
   };
   this->moveStraight(errorFuncFactory, timeout, params, async);
 }
 void Robot::moveToY(float targetY, int timeout, MoveStraightParams params,
                     bool async) {
   auto errorFuncFactory = [this, targetY]() {
-    return [this, targetY]() { return targetY - this->getPose().y; };
+    return [this, targetY]() { return this->getPose().y - targetY; };
   };
   this->moveStraight(errorFuncFactory, timeout, params, async);
 }
