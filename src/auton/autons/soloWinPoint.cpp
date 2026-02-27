@@ -49,14 +49,22 @@ void autons::soloWinPoint() {
   // === STARTING POSE ===
 
   // TODO: Determine good sawp starting pose
-  const Pose startingPosition = {-2 * TILE - 1.5, -(TILE - DRIVE_LENGTH + 8),
-                                 AUDIENCE};
+  const Pose startingPosition = {-2 * TILE,
+                                 -(TILE - DRIVE_LENGTH / 2) + 2, AUDIENCE};
   bot.setPose(startingPosition);
 
-  const Pose rightMatchloader = {MIN_X + DRIVE_LENGTH / 2 + 3.5,
-                                 -2 * TILE, RED_STATION};
+  const Pose rightMatchloader = {MIN_X + DRIVE_LENGTH / 2, -2 * TILE,
+                                 RED_STATION};
+
+  const auto lateralSettings = bot.lateralSettings;
+  const auto angularSettings = bot.angularSettings;
+
+  bot.lateralSettings.kP *= .8;
+  bot.lateralPID = lemlib::PID{bot.lateralSettings.kP, bot.lateralSettings.kI,
+                               bot.lateralSettings.kD,
+                               bot.lateralSettings.windupRange, false};
   // Align in front of matchloader
-  bot.moveToY(rightMatchloader.y, 5000);
+  bot.moveToY(rightMatchloader.y, 2000);
   bot.waitUntilDone();
 
   // Prepare matchloader mech and intake for scoring
@@ -67,7 +75,7 @@ void autons::soloWinPoint() {
   bot.turnToHeading(RED_STATION, 1000);
   bot.waitUntilDone();
   // Move into matchloader to pick up blocks
-  bot.moveToX(rightMatchloader.x, 1000, {.maxSpeed = 50});
+  bot.moveToX(rightMatchloader.x, 2000, {.maxSpeed = 50});
   bot.waitUntilDone();
 
   // Give time to yoink the blocks
@@ -79,7 +87,7 @@ void autons::soloWinPoint() {
                               RED_STATION};
 
   // Score 4 blocks on long goal
-  bot.moveToPoint(rightLongGoal, 1500,
+  bot.moveToPoint(rightLongGoal, 2000,
                   {.forwards = false, .maxSpeed = 70, .minSpeed = 30});
   bot.waitUntilDone();
 
@@ -101,16 +109,16 @@ void autons::soloWinPoint() {
   bot.tank(0, 0);
 
   const Pose rightCenterBallsTarget{
-      -TILE - BALL_INNER_DIAM / 2 + DRIVE_WIDTH / 2 - 1, -TILE};
+      -TILE + BALL_INNER_DIAM / 2 - DRIVE_WIDTH / 2 + 1, -TILE};
   const Pose leftCenterBallsTarget{rightCenterBallsTarget.x, TILE};
   // Exit long goal
   bot.swingToPoint(rightCenterBallsTarget, lemlib::DriveSide::RIGHT, 1000,
                    {.minSpeed = 48, .earlyExitRange = 30});
   // Scoop up the center balls
   bot.matchLoader.retract();
-  bot.moveToPoint(rightCenterBallsTarget, 1000,
+  bot.moveToPoint(rightCenterBallsTarget, 3000,
                   {.maxSpeed = 60, .minSpeed = 40, .earlyExitRange = 6});
-  bot.moveToPoint(leftCenterBallsTarget, 1000,
+  bot.moveToPoint(leftCenterBallsTarget, 2000,
                   {.maxSpeed = 60, .minSpeed = 40, .earlyExitRange = 6});
   // Wait until facing left center balls
   waitUntil(
