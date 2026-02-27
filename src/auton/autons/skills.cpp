@@ -19,6 +19,15 @@ using namespace auton::util;
 
 using lemlib::Pose;
 // using AngDir = lemlib::AngularDirection;
+void wiggle() {
+  for (int i = 0; i < 2; i++) {
+    bot.tank(-25, 25);
+    pros::delay(300);
+    bot.tank(25, -25);
+    pros::delay(300);
+  }
+  bot.tank(0, 0);
+}
 
 void autons::skills() {
 
@@ -39,7 +48,7 @@ void autons::skills() {
   bot.descore.extend();
 
   bot.moveToPoint({-2 * TILE, 2 * TILE + 1}, 1500,
-                  {.maxSpeed = 80, .minSpeed = 35, .earlyExitRange = 3});
+                  {.maxSpeed = 80, .minSpeed = 35, .earlyExitRange = 13});
   bot.waitUntilDone();
   pros::delay(40);
 
@@ -50,11 +59,11 @@ void autons::skills() {
   bot.matchLoader.extend();
   bot.intake.goToStoring();
 
-  bot.moveToPoint(farLeftMatchLoader, 1200, {.maxSpeed = 45, .minSpeed = 10});
+  bot.moveToPoint(farLeftMatchLoader, 2000, {.maxSpeed = 45, .minSpeed = 10});
   bot.waitUntilDone();
 
-  bot.tank(7, 7);
-  pros::delay(1200);
+  bot.tank(10, 10);
+  pros::delay(1300);
   bot.tank(0, 0);
 
   // BACK OUT + TRANSITION
@@ -82,20 +91,24 @@ void autons::skills() {
   bot.waitUntilDone();
 
   bot.intake.goToTOP();
-  bot.tank(-15, -15);
+  bot.tank(-20, -20);
   pros::delay(2000);
   bot.tank(0, 0);
+
+  Pose temp = bot.getPose();
+  bot.setPose({30, 47, temp.theta});
+  pros::delay(100);
   bot.intake.goToIdle();
 
   // 2ND MATCHLOAD (RIGHT)
   bot.intake.goToStoring();
   bot.matchLoader.extend();
 
-  bot.moveToPoint(farRightMatchLoader, 1200, {.maxSpeed = 45, .minSpeed = 10});
+  bot.moveToPoint(farRightMatchLoader, 2000, {.maxSpeed = 45, .minSpeed = 10});
   bot.waitUntilDone();
 
-  bot.tank(7, 7);
-  pros::delay(1200);
+  bot.tank(10, 10);
+  pros::delay(1300);
   bot.tank(0, 0);
 
   bot.moveToPoint(farLongGoalRight, 1700,
@@ -103,12 +116,12 @@ void autons::skills() {
   bot.waitUntilDone();
 
   bot.intake.goToTOP();
-  bot.tank(-15, -15);
+  bot.tank(-20, -20);
   pros::delay(2000);
   bot.tank(0, 0);
 
   // FIELD MIRROR RESET FOR RIGHT SIDE
-  Pose temp = bot.getPose();
+  temp = bot.getPose();
   bot.setPose({30, 47, temp.theta});
   pros::delay(100);
 
@@ -123,7 +136,7 @@ void autons::skills() {
   bot.waitUntilDone();
 
   bot.moveToPoint({bot.getPose().x, -2 * TILE + 1}, 5000,
-                  {.maxSpeed = 80, .minSpeed = 40, .earlyExitRange = 8});
+                  {.maxSpeed = 80, .minSpeed = 40, .earlyExitRange = 10});
   bot.waitUntilDone();
 
   // 3RD MATCHLOAD (RIGHT CLOSE)
@@ -132,11 +145,11 @@ void autons::skills() {
   bot.waitUntilDone();
 
   bot.intake.goToStoring();
-  bot.moveToPose(closeRightMatchLoader, 3000, {.maxSpeed = 45, .minSpeed = 15});
+  bot.moveToPose(closeRightMatchLoader, 2000, {.maxSpeed = 45, .minSpeed = 15});
   bot.waitUntilDone();
 
-  bot.tank(7, 7);
-  pros::delay(1200);
+  bot.tank(10, 10);
+  pros::delay(1300);
   bot.tank(0, 0);
 
   // OUT → CLOSE LONG GOAL
@@ -161,9 +174,13 @@ void autons::skills() {
   bot.waitUntilDone();
 
   bot.intake.goToTOP();
-  bot.tank(-15, -15);
+  bot.tank(-20, -20);
   pros::delay(2000);
   bot.tank(0, 0);
+
+  temp = bot.getPose();
+  bot.setPose({-30, -47, temp.theta});
+  pros::delay(100);
 
   // 4TH MATCHLOAD (LEFT CLOSE)
   bot.intake.goToStoring();
@@ -172,8 +189,8 @@ void autons::skills() {
   bot.moveToPoint(closeLeftMatchLoader, 2000, {.maxSpeed = 45, .minSpeed = 10});
   bot.waitUntilDone();
 
-  bot.tank(7, 7);
-  pros::delay(1200);
+  bot.tank(10, 10);
+  pros::delay(1300);
   bot.tank(0, 0);
 
   bot.moveToPoint(closeLongGoal, 1700,
@@ -181,7 +198,7 @@ void autons::skills() {
   bot.waitUntilDone();
 
   bot.intake.goToTOP();
-  bot.tank(-15, -15);
+  bot.tank(-20, -20);
   pros::delay(2000);
   bot.tank(0, 0);
 
@@ -192,10 +209,17 @@ void autons::skills() {
 
   bot.matchLoader.retract();
 
-  bot.moveToPose({-1.8 * TILE, 0, RED_STATION}, 3000, {.maxSpeed = 65});
+  bot.moveToPoint({-1.75 * TILE, bot.getPose().y}, 1000);
+  bot.waitUntilDone();
+  bot.moveToPose({-1.8 * TILE, 0, 0}, 4000, {.maxSpeed = 65});
+  bot.waitUntilDone();
+  bot.turnToHeading(RED_STATION, 1500);
   bot.waitUntilDone();
 
   bot.park.extend();
+  bot.tank(70, 70);
+  pros::delay(2400);
+  wiggle();
   /*
 
   bot.moveToPose(
