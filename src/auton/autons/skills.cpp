@@ -21,9 +21,9 @@ using lemlib::Pose;
 // using AngDir = lemlib::AngularDirection;
 void wiggle() {
   for (int i = 0; i < 2; i++) {
-    bot.tank(-25, 25);
+    bot.tank(-40, 40);
     pros::delay(300);
-    bot.tank(25, -25);
+    bot.tank(40, -40);
     pros::delay(300);
   }
   bot.tank(0, 0);
@@ -41,10 +41,36 @@ void autons::skills() {
   const Pose closeLongGoal = {-TILE, -2 * TILE, RED_STATION};
   const Pose centerGoal = {-7, 7};
 
-  const Pose startingPosition = {-2 * TILE - 1.5, TILE - DRIVE_LENGTH + 8.5, 0};
+  const Pose middleGoal = {-10, 8, 45};
+  const Pose inFrontPark = {-47.5, 0, RED_STATION};
+
+  //const Pose startingPosition = {-2 * TILE - 1.5, TILE - DRIVE_LENGTH + 8.5, 0};
+  const Pose startingPosition = {0, 0, RED_STATION};
   bot.setPose(startingPosition);
+  bot.park.extend();
+  
+  bot.intake.goToStoring();
+  bot.tank(60, 60);
+  pros::delay(1600);
+  wiggle();
+
+  bot.tank(-70, -70);
+  pros::delay(1500);
+  bot.tank(0, 0);
+  
+  pros::delay(100);
+  bot.turnToHeading(RED_STATION, 1000);
+  bot.waitUntilDone();
+
+  bot.tank(15, 15);
+  pros::delay(1500);
+  bot.tank(0, 0);
+  bot.setPose({-47.5, 0, bot.getPose().theta});
+  pros::delay(100);
+
 
   // 1ST MATCHLOAD
+  /*
   bot.descore.extend();
 
   bot.moveToPoint({-2 * TILE, 2 * TILE + 1}, 1500,
