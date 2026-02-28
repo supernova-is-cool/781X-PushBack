@@ -80,6 +80,10 @@ public:
   pros::Distance &left;
   pros::Distance &right;
 
+  /** Resets all PID controller settings and horizontal drift to config values.
+   */
+  void resetControllerSettings();
+
   void setTransform(std::shared_ptr<auton::Transformation> transform);
   /** @brief Sets the transformation to an AllianceTransform with the
    * specified alliance. */

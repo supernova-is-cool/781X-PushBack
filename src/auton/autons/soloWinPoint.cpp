@@ -56,13 +56,8 @@ void autons::soloWinPoint() {
   const Pose rightMatchloader = {MIN_X + DRIVE_LENGTH / 2, -2 * TILE,
                                  RED_STATION};
 
-  const auto lateralSettings = bot.lateralSettings;
-  const auto angularSettings = bot.angularSettings;
+  bot.lateralPID.kP *= .75;
 
-  bot.lateralSettings.kP *= .8;
-  bot.lateralPID = lemlib::PID{bot.lateralSettings.kP, bot.lateralSettings.kI,
-                               bot.lateralSettings.kD,
-                               bot.lateralSettings.windupRange, false};
   // Align in front of matchloader
   bot.moveToY(rightMatchloader.y, 2000);
   bot.waitUntilDone();

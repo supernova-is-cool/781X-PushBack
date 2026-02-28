@@ -149,10 +149,8 @@ void autonomous() {
     // TODO: Change to doNothing before comp
     selector->select_auton(skills.name);
   }
-  //bot.moveToPoint({0, 24, 0}, 2000);
-  //bot.turnToHeading(90, 2000);
-  // autons::skills();
-  //bot.odomLift.extend();
+
+  bot.resetControllerSettings();
   selector->run_selected_auton();
 }
 

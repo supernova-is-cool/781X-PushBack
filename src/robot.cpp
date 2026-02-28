@@ -66,3 +66,20 @@ Robot::Robot(const robotConfig &m_config)
       intake(m_intake) {}
 
 Robot Robot::instance{robotConfig::config};
+
+/**  Creates a LemLib PID object from the provided controller settings. */
+static lemlib::PID pidFromSettings(const lemlib::ControllerSettings &settings) {
+  return lemlib::PID{settings.kP, settings.kI, settings.kD,
+                     settings.windupRange, false};
+}
+
+void Robot::resetControllerSettings() {
+  lemlib::Chassis::lateralSettings = m_config.tunables.lateralController;
+  lemlib::Chassis::angularSettings = m_config.tunables.angularController;
+  lemlib::Chassis::lateralPID =
+      pidFromSettings(m_config.tunables.lateralController);
+  lemlib::Chassis::angularPID =
+      pidFromSettings(m_config.tunables.angularController);
+  lemlib::Chassis::drivetrain.horizontalDrift =
+      m_config.tunables.horizontalDrift;
+}
