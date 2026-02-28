@@ -24,8 +24,8 @@ void autons::soloWinPoint() {
   // === STARTING POSE ===
 
   // TODO: Determine good sawp starting pose
-  const Pose startingPosition = {-2 * TILE,
-                                 -(TILE - DRIVE_LENGTH / 2) + 2, AUDIENCE};
+  const Pose startingPosition = {-2 * TILE, -(TILE - DRIVE_LENGTH / 2) + 2,
+                                 AUDIENCE};
   bot.setPose(startingPosition);
 
   const Pose rightMatchloader = {MIN_X + DRIVE_LENGTH / 2, -2 * TILE,
@@ -79,8 +79,9 @@ void autons::soloWinPoint() {
   bot.tank(0, 0);
 
   const Pose rightCenterBallsTarget{
-      -TILE + BALL_INNER_DIAM / 2 - DRIVE_WIDTH / 2 + 1, -TILE};
-  const Pose leftCenterBallsTarget{rightCenterBallsTarget.x, TILE};
+      -TILE + 1.5 * BALL_INNER_DIAM - DRIVE_WIDTH / 2, -TILE};
+  const Pose leftCenterBallsTarget{rightCenterBallsTarget.x,
+                                   -rightCenterBallsTarget.y};
   // Exit long goal
   bot.swingToPoint(rightCenterBallsTarget, lemlib::DriveSide::RIGHT, 1000,
                    {.minSpeed = 48, .earlyExitRange = 30});
@@ -94,11 +95,10 @@ void autons::soloWinPoint() {
   waitUntil(
       [&] {
         return !bot.isInMotion() ||
-               std::abs(lemlib::radToDeg(lemlib::angleError(
-                   bot.getPose().angle(leftCenterBallsTarget),
-                   ((lemlib::Chassis *)(&bot))->getPose().theta))) < 10;
+               robotAngDist(90.0 - lemlib::radToDeg(bot.getPose().angle(
+                                       leftCenterBallsTarget))) < 10;
       },
-      100, INT_MAX, true);
+      100, 5000, true);
   bot.cancelMotion();
 
   const float middleGoalTargetTheta = (RED_STATION + REFEREE) / 2;
