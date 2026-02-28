@@ -46,7 +46,7 @@ void Robot::moveToLine(lemlib::Pose line, int timeout,
           "Since the robot is facing parallel to the line in moveToLine(),"
           "the bot cannot reach line, and thus therefore motion will be "
           "skipped. Line theta: {}, Robot theta: {}",
-          realLine.theta, startTheta.theta);
+          realLine.theta, bot.getPose().theta);
       return []() { return 0; };
     }
     return [this, radianLine, v_vec, u_cross_v]() -> float {
