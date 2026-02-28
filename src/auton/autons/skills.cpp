@@ -44,8 +44,10 @@ void autons::skills() {
   const Pose middleGoal = {-10, 8, 45};
   const Pose inFrontPark = {-47.5, 0, RED_STATION};
 
-  //const Pose startingPosition = {-2 * TILE - 1.5, TILE - DRIVE_LENGTH + 8.5, 0};
-  const Pose startingPosition = {0, 0, RED_STATION};
+  const Pose startingPosition = {-2 * TILE - 1.5, TILE - DRIVE_LENGTH + 8.5, 0};
+  bot.setPose(startingPosition);
+
+  /*const Pose startingPosition = {0, 0, RED_STATION};
   bot.setPose(startingPosition);
   bot.park.extend();
   
@@ -67,10 +69,10 @@ void autons::skills() {
   bot.tank(0, 0);
   bot.setPose({-47.5, 0, bot.getPose().theta});
   pros::delay(100);
+  */
 
 
   // 1ST MATCHLOAD
-  /*
   bot.descore.extend();
 
   bot.moveToPoint({-2 * TILE, 2 * TILE + 1}, 1500,

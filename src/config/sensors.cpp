@@ -3,7 +3,7 @@
 
 robotConfig::Sensors robotConfig::Sensors::sensors{
     .intakeDistance{1},
-    .vert{14},
+    .vert{-14},
     .hori{-16},
     .imu{21},
     .front{3},

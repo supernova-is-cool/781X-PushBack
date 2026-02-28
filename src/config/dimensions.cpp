@@ -8,7 +8,7 @@ robotConfig::Dimensions robotConfig::Dimensions::dimensions = {
     .driveWheelRpm = 450,
     .vertEncDiameter = 2 * 71.5 / 72.5,
 
-    .vertEncDistance = -0.f,
+    .vertEncDistance = 0.5f,
     .vertEncGearRatio = 1.f,
     .horiEncDiameter = 2 * 71.5 / 72.5,
 
