@@ -36,8 +36,8 @@ void Robot::moveToLine(lemlib::Pose line, int timeout,
   const Pose radianLine = realLine.withTheta(radToDeg(M_PI_2 - realLine.theta));
   const Vector v_vec = Vector::fromAngle(radianLine.theta);
   auto errorFuncFactory = [&]() -> std::function<float()> {
-    const Pose startTheta = lemlib::Chassis::getPose(true, true);
-    const Vector u_vec = Vector::fromAngle(startTheta.theta);
+    const float startTheta = lemlib::Chassis::getPose(true, true).theta;
+    const Vector u_vec = Vector::fromAngle(startTheta);
     const float u_cross_v = u_vec.cross(v_vec);
     if (std::abs(u_cross_v) < sin(degToRad(1))) {
       // If the robot is facing parallel to the line, return 0 for the error
