@@ -20,31 +20,6 @@ using namespace auton::util;
 using lemlib::Pose;
 using AngDir = lemlib::AngularDirection;
 
-/** Pose thetas in standard radians */
-std::optional<float> signed_ray_distance(const Pose ray, const Pose line) {
-  // Based on:
-  // https://github.com/darkMatter781x/HighStakes/blob/bb707b52cfde57a23899ca5c580d8f667b7515e9/src/pf/util/lines.cpp#L22
-  const float q_x = ray.x;
-  const float q_y = ray.y;
-  const float s_x = cos(ray.theta);
-  const float s_y = sin(ray.theta);
-  const float p_x = line.x;
-  const float p_y = line.y;
-  const float r_x = cos(line.theta);
-  const float r_y = sin(line.theta);
-
-  const float r_cross_s = r_x * s_y - r_y * s_x;
-  if (r_cross_s == 0)
-    return std::nullopt;
-  const auto q_minus_p_x = q_x - p_x;
-  const auto q_minus_p_y = q_y - p_y;
-
-  const float q_minus_p_cross_s = q_minus_p_x * s_y - q_minus_p_y * s_x;
-  const float t = q_minus_p_cross_s / r_cross_s;
-
-  return t;
-}
-
 void autons::soloWinPoint() {
   // === STARTING POSE ===
 
@@ -128,18 +103,7 @@ void autons::soloWinPoint() {
 
   const float middleGoalTargetTheta = (RED_STATION + REFEREE) / 2;
   // Move to be directly in front of middle goal
-  bot.moveStraight(
-      [&] {
-        const float initialTheta = bot.getPose().theta;
-        const Pose line{0, 0, middleGoalTargetTheta};
-        return [&] {
-          const Pose currentPose = bot.getPose();
-          const std::optional<float> rayDist = signed_ray_distance(
-              currentPose, {currentPose.x, currentPose.y, initialTheta});
-          return rayDist.value_or(currentPose.distance(leftCenterBallsTarget));
-        };
-      },
-      1500);
+  bot.moveToLine({0, 0, middleGoalTargetTheta}, 1500);
   bot.waitUntilDone();
 
   // Go into middle goal

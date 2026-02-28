@@ -113,7 +113,8 @@ public:
 
   /**
    * @brief Drives straight, using the provided error function to determine when
-   * to stop.
+   * to stop. The robot will attempt to maintain the same heading that it
+   * started with.
    *
    * @param errorFuncFactory A factory function that returns an error function
    * to determine when to stop. This enables the error func to record the
@@ -125,6 +126,16 @@ public:
                bool async = true);
   void moveToY(float targetY, int timeout, MoveStraightParams params = {},
                bool async = true);
+  /**
+   * @brief Moves straight to a line defined by the provided Pose. The robot
+   * will attempt to maintain the same heading that it started with, and will
+   * exit only once it reaches the line.
+   *
+   * @param line This pose is a point on the line with a heading parallel to the
+   * line. Should be in compass degrees (0deg facing +y, 90deg facing +x).
+   */
+  void moveToLine(lemlib::Pose line, int timeout,
+                  MoveStraightParams params = {}, bool async = true);
   void moveDistance(float distance, int timeout, MoveStraightParams params = {},
                     bool async = true);
 
