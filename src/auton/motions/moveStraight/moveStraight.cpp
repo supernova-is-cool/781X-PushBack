@@ -1,3 +1,4 @@
+#include "./common.h"
 #include "lemlib/chassis/chassis.hpp"
 #include "lemlib/logger/logger.hpp"
 #include "lemlib/util.hpp"
@@ -14,49 +15,19 @@ void Robot::moveToY(float targetY, int timeout, MoveStraightParams params,
                     bool async) {
   this->moveToLine(lemlib::Pose(0, targetY, 0), timeout, params, async);
 }
-
-struct Vector {
-  float x;
-  float y;
-
-  static Vector between(const Pose &from, const Pose &to) {
-    return Vector{to.x - from.x, to.y - from.y};
-  }
-  static Vector fromAngle(float angle) {
-    return Vector(cos(angle), sin(angle));
-  }
-
-  float cross(const Vector &other) const { return x * other.y - y * other.x; }
-};
+static void errorSink(const std::string &msg) { infoSink()->error("{}", msg); }
 
 void Robot::moveToLine(lemlib::Pose line, int timeout,
                        MoveStraightParams params, bool async) {
   const Pose realLine = m_transform->transformPose(line);
   /** Line pose with theta in standard radians */
-  const Pose radianLine = realLine.withTheta(radToDeg(M_PI_2 - realLine.theta));
-  const Vector v_vec = Vector::fromAngle(radianLine.theta);
-  auto errorFuncFactory = [&]() -> std::function<float()> {
-    const float startTheta = lemlib::Chassis::getPose(true, true).theta;
-    const Vector u_vec = Vector::fromAngle(startTheta);
-    const float u_cross_v = u_vec.cross(v_vec);
-    if (std::abs(u_cross_v) < sin(degToRad(1))) {
-      // If the robot is facing parallel to the line, return 0 for the error
-      // function, since we won't be able to reach the line by driving straight.
-      infoSink()->error(
-          "Since the robot is facing parallel to the line in moveToLine(),"
-          "the bot cannot reach line, and thus therefore motion will be "
-          "skipped. Line theta: {}, Robot theta: {}",
-          realLine.theta, bot.getPose().theta);
-      return []() { return 0; };
-    }
-    return [this, radianLine, v_vec, u_cross_v]() -> float {
-      const Vector PQ_vec =
-          Vector::between(lemlib::Chassis::getPose(), radianLine);
-      return PQ_vec.cross(v_vec) / u_cross_v;
-    };
-  };
+  const Pose radianLine = realLine.withTheta(degToRad(90 - realLine.theta));
+  auto errorFuncFactory = MoveToLineErrorFactory(
+      NlPose(radianLine), [this]() { return Chassis::getPose(true, true); },
+      errorSink);
   this->moveStraight(errorFuncFactory, timeout, params, async);
 }
+
 void Robot::moveDistance(float distance, int timeout, MoveStraightParams params,
                          bool async) {
   auto errorFuncFactory = [this, distance]() {
