@@ -73,7 +73,10 @@ public:
                          std::function<void(const std::string &)> errorSink)
       : m_point(line), m_v(Vector::fromAngle(line.theta)), m_getPose(getPose),
         m_errorSink(errorSink) {};
-  std::function<float()> operator()(const float targetHeading) {
+  std::function<float()> operator()(float targetHeading = NAN) {
+    if (std::isnan(targetHeading)) {
+      targetHeading = m_getPose().theta;
+    }
     const Vector u = Vector::fromAngle(targetHeading);
     const float u_cross_v = u.cross(m_v);
     if (std::abs(u_cross_v) < sin(1 * M_PI / 180)) {
