@@ -9,11 +9,11 @@ using namespace lemlib;
 
 void Robot::moveToX(float targetX, int timeout, MoveStraightParams params,
                     bool async) {
-  this->moveToLine({targetX, 0, 90}, timeout, params, async);
+  this->moveToLine({targetX, 0, 0}, timeout, params, async);
 }
 void Robot::moveToY(float targetY, int timeout, MoveStraightParams params,
                     bool async) {
-  this->moveToLine(lemlib::Pose(0, targetY, 0), timeout, params, async);
+  this->moveToLine(lemlib::Pose(0, targetY, 90), timeout, params, async);
 }
 static void errorSink(const std::string &msg) { infoSink()->error("{}", msg); }
 
