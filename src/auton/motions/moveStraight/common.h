@@ -87,7 +87,7 @@ public:
           m_point.theta, m_getPose().theta));
       return []() { return 0; };
     }
-    return [&]() -> float {
+    return [=]() -> float {
       const Vector PQ_vec = Vector::between(m_getPose(), m_point);
       return PQ_vec.cross(m_v) / u_cross_v;
     };
