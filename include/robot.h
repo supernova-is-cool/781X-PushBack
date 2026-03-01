@@ -28,9 +28,11 @@ struct MoveStraightParams {
   /** distance between the robot and target point where the movement will exit.
    * Only has an effect if minSpeed is non-zero.*/
   float earlyExitRange = 0;
+
+  std::optional<float> targetHeading;
 };
 
-typedef std::function<std::function<float()>()> MoveStraightErrorFuncFactory;
+typedef std::function<std::function<float()>(float targetHeading)> MoveStraightErrorFuncFactory;
 /**
  * @brief Provides an abstracted interface for controlling the robot and reading
  * from sensors. Follows the singleton pattern.

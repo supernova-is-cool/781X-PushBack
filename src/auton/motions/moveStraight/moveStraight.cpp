@@ -30,7 +30,7 @@ void Robot::moveToLine(lemlib::Pose line, int timeout,
 
 void Robot::moveDistance(float distance, int timeout, MoveStraightParams params,
                          bool async) {
-  auto errorFuncFactory = [this, distance]() {
+  auto errorFuncFactory = [this, distance](float _targetHeading) {
     const Pose startPose = this->getPose();
     return [this, distance, startPose]() {
       const Pose currPose = this->getPose();
@@ -76,8 +76,9 @@ void Robot::moveStraight(MoveStraightErrorFuncFactory errorFuncFactory,
   std::optional<bool> prevSide = std::nullopt;
 
   // We will try to maintain this theta throughout the motion
-  const float targetTheta = lastPose.theta;
-  const auto errorFunc = errorFuncFactory();
+  const float targetTheta = degToRad(
+      90 - params.targetHeading.value_or(Chassis::getPose(false, false).theta));
+  const auto errorFunc = errorFuncFactory(targetTheta);
 
   // main loop
   while (!timer.isDone() &&
@@ -142,8 +143,10 @@ void Robot::moveStraight(MoveStraightErrorFuncFactory errorFuncFactory,
     prevAngularOut = angularOut;
     prevLateralOut = lateralOut;
 
-    infoSink()->debug("Angular Out: {}, Lateral Out: {}", angularOut,
-                      lateralOut);
+    infoSink()->debug("Angular Out: {}, Lateral Out: {}, Lin Err: {}, Ang Err: "
+                      "{}, \n\t Pose: {}",
+                      angularOut, lateralOut, linearError, angularError,
+                      currPose);
 
     // ratio the speeds to respect the max speed
     float leftPower = lateralOut + angularOut;
