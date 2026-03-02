@@ -41,36 +41,102 @@ void autons::skills() {
   const Pose closeLongGoal = {-TILE, -2 * TILE, RED_STATION};
   const Pose centerGoal = {-7, 7};
 
-  const Pose middleGoal = {-10, 8, 45};
+  const Pose middleGoal = {-9, 11, 310};
   const Pose inFrontPark = {-47.5, 0, RED_STATION};
 
-  const Pose startingPosition = {-2 * TILE - 1.5, TILE - DRIVE_LENGTH + 8.5, 0};
+  // const Pose startingPosition = {-2 * TILE - 1.5, TILE - DRIVE_LENGTH + 8.5,
+  // 0}; bot.setPose(startingPosition);
+
+  const Pose startingPosition = {0, 0, RED_STATION};
   bot.setPose(startingPosition);
 
-  /*const Pose startingPosition = {0, 0, RED_STATION};
-  bot.setPose(startingPosition);
+  // === PARK → CENTER LANE ===
   bot.park.extend();
-  
   bot.intake.goToStoring();
-  bot.tank(60, 60);
-  pros::delay(1600);
-  wiggle();
 
-  bot.tank(-70, -70);
-  pros::delay(1500);
+  // Smooth motor bias wiggle (reduced + symmetric)
+  bot.tank(30, 30);
+  pros::delay(225);
   bot.tank(0, 0);
-  
-  pros::delay(100);
-  bot.turnToHeading(RED_STATION, 1000);
+  pros::delay(650);
+  bot.tank(30, 30);
+  pros::delay(650);
+  // bot.tank(20, 20); pros::delay(400);
+  wiggle();
+  bot.tank(0, 0);
+
+  // Clean reverse (straight + damped)
+  bot.tank(-55, -55);
+  pros::delay(1200);
+  bot.tank(0, 0);
+
+  // Aim robot for straight drive
+  bot.turnToHeading(RED_STATION, 700);
   bot.waitUntilDone();
 
-  bot.tank(15, 15);
-  pros::delay(1500);
-  bot.tank(0, 0);
-  bot.setPose({-47.5, 0, bot.getPose().theta});
-  pros::delay(100);
-  */
+  // Small controlled push forward to clear bumper
+  bot.moveToPoint({-11, 0}, 1000, {.maxSpeed = 25, .minSpeed = 20});
+  bot.waitUntilDone();
 
+  // Retract parking mech + reset pose to known clean spot
+  bot.park.retract();
+  bot.setPose({-47.5, 0, RED_STATION});
+
+  // 1) Smooth reverse into center lane
+  bot.moveToPoint(
+      {-TILE - 3, 0}, 1300,
+      {.forwards = false, .maxSpeed = 55, .minSpeed = 40, .earlyExitRange = 6});
+
+  // 2) Smooth 225° swing into goal approach vector
+  bot.swingToHeading(
+      225, lemlib::DriveSide::RIGHT, 900,
+      {.direction = lemlib::AngularDirection::CCW_COUNTERCLOCKWISE,
+       .maxSpeed = 55,
+       .minSpeed = 40,
+       .earlyExitRange = 8});
+  // bot.waitUntilDone();
+
+  // 3) Main arc into the middle goal entrance
+
+  bot.moveToPoint({-17, 7}, 1500,
+                  {.forwards = false, .maxSpeed = 55, .minSpeed = 40});
+  bot.waitUntilDone();
+
+  bot.swingToHeading(310, lemlib::DriveSide::LEFT, 1500, {.minSpeed = 40});
+  bot.waitUntilDone();
+  pros::delay(100);
+  // pros::delay(100);
+
+  // =====================
+  // === INTAKE BLOCK #2 ===
+  // =====================
+
+  // The second block is deeper inside.
+  // Drive forward slowly to intake it.
+  Pose intakeDeep = {middleGoal.x - 6, middleGoal.y + 6}; // 7–10 in deeper
+
+  bot.moveToPoint(intakeDeep, 1500, {.maxSpeed = 30, .minSpeed = 25});
+  bot.waitUntilDone();
+
+  // Intake the block
+  pros::delay(250);
+
+  // Back out slightly to clear the wall + realign
+  bot.moveToPoint(middleGoal, 1200,
+                  {.forwards = false, .maxSpeed = 35, .minSpeed = 30});
+  bot.waitUntilDone();
+
+  // =====================
+  // === SCORE IN MIDDLE ===
+  // =====================
+
+  bot.intake.goToMIDDLE();
+  bot.tank(-15, -15);
+  pros::delay(3000);
+  bot.tank(0, 0);
+
+  bot.setPose({middleGoal.x, middleGoal.y, bot.getPose().theta});
+  pros::delay(100);
 
   // 1ST MATCHLOAD
   bot.descore.extend();
@@ -104,7 +170,7 @@ void autons::skills() {
 
   bot.moveToPoint(
       {TILE + 12, bot.getPose().y}, 5000,
-      {.forwards = false, .maxSpeed = 80, .minSpeed = 40, .earlyExitRange = 8});
+      {.forwards = false, .maxSpeed = 80, .minSpeed = 50, .earlyExitRange = 12});
   bot.waitUntilDone();
 
   bot.swingToHeading(BLUE_STATION, lemlib::DriveSide::LEFT, 2000,
@@ -124,7 +190,7 @@ void autons::skills() {
   bot.tank(0, 0);
 
   Pose temp = bot.getPose();
-  bot.setPose({30, 47, temp.theta});
+  bot.setPose({32, 47, temp.theta});
   pros::delay(100);
   bot.intake.goToIdle();
 
@@ -150,21 +216,20 @@ void autons::skills() {
 
   // FIELD MIRROR RESET FOR RIGHT SIDE
   temp = bot.getPose();
-  bot.setPose({30, 47, temp.theta});
+  bot.setPose({32, 47, temp.theta});
   pros::delay(100);
 
   // TRANSITION
-  bot.moveToPoint({1.5 * TILE, bot.getPose().y}, 1500,
+  bot.moveToPoint({1.65 * TILE, bot.getPose().y}, 1500,
                   {.maxSpeed = 70, .minSpeed = 40, .earlyExitRange = 5});
   bot.waitUntilDone();
   bot.intake.goToIdle();
 
-  bot.swingToHeading(180, lemlib::DriveSide::RIGHT, 1200,
-                     {.maxSpeed = 55, .minSpeed = 25});
+  bot.swingToHeading(180, lemlib::DriveSide::RIGHT, 1200, {.maxSpeed = 55});
   bot.waitUntilDone();
 
   bot.moveToPoint({bot.getPose().x, -2 * TILE + 1}, 5000,
-                  {.maxSpeed = 80, .minSpeed = 40, .earlyExitRange = 10});
+                  {.maxSpeed = 80, .minSpeed = 30, .earlyExitRange = 12});
   bot.waitUntilDone();
 
   // 3RD MATCHLOAD (RIGHT CLOSE)
@@ -189,7 +254,7 @@ void autons::skills() {
 
   bot.moveToPoint(
       {-TILE - 12, bot.getPose().y}, 5000,
-      {.forwards = false, .maxSpeed = 80, .minSpeed = 40, .earlyExitRange = 8});
+      {.forwards = false, .maxSpeed = 80, .minSpeed = 50, .earlyExitRange = 12});
   bot.waitUntilDone();
 
   bot.swingToHeading(RED_STATION, lemlib::DriveSide::LEFT, 2000,
@@ -207,7 +272,7 @@ void autons::skills() {
   bot.tank(0, 0);
 
   temp = bot.getPose();
-  bot.setPose({-30, -47, temp.theta});
+  bot.setPose({-32, -47, temp.theta});
   pros::delay(100);
 
   // 4TH MATCHLOAD (LEFT CLOSE)
@@ -232,7 +297,7 @@ void autons::skills() {
 
   // FINAL RESET + PARK
   temp = bot.getPose();
-  bot.setPose({-30, -47, temp.theta});
+  bot.setPose({-32, -47, temp.theta});
   pros::delay(100);
 
   bot.matchLoader.retract();
@@ -245,7 +310,7 @@ void autons::skills() {
   bot.waitUntilDone();
 
   bot.park.extend();
-  bot.tank(70, 70);
+  bot.tank(80, 80);
   pros::delay(2400);
   wiggle();
   /*
