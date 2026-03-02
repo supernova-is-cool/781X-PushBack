@@ -1,5 +1,6 @@
 #include "auton/autons.h"
 #include "lemlib/pose.hpp"
+#include "pros/motors.h"
 #include "robot.h"
 #include <cstdio>
 
@@ -41,7 +42,7 @@ void autons::leftMiddle() {
   bot.waitUntilDone();
 
   // --- Middle Goal Setup ---
-  const Pose middleGoal = Pose::fromPolar(15, 135) + Pose{0, 0, 0};
+  const Pose middleGoal = Pose::fromPolar(14, 135) + Pose{0, 0, 0};
 
   // Turn first for cleaner pathing
   bot.turnToPoint(middleGoal, 1200, {.forwards = false, .earlyExitRange = 15});
@@ -61,27 +62,26 @@ void autons::leftMiddle() {
   pros::delay(100);
   bot.tank(0, 0);
   bot.intake.goToMIDDLE();
-  pros::delay(1600);
+  pros::delay(1200);
   bot.intake.goToIdle();
   pros::delay(150);
   // bot.tank(0, 0);
 
-  const Pose matchLoader = {MAX_X - DRIVE_LENGTH / 2 - 4, -2 * TILE - 1,
+  const Pose matchLoader = {MAX_X - DRIVE_LENGTH / 2 - 5, -2 * TILE + 1,
                             BLUE_STATION};
+  // Align with left matchloader
+  bot.moveToY(matchLoader.y, 2000);
 
-  bot.moveToPoint({2 * TILE + 2, -2 * TILE - 2}, 2500, {.maxSpeed = 90});
-  bot.waitUntilDone();
-  bot.turnToPoint(matchLoader, 1000);
+  bot.turnToHeading(BLUE_STATION, 1000);
   bot.waitUntilDone();
   bot.intake.goToStoring();
   bot.moveToPoint(matchLoader, 1100, {.maxSpeed = 60});
   bot.waitUntilDone();
   bot.tank(15, 15);
-  pros::delay(500);
+  pros::delay(300);
   bot.tank(0, 0);
 
-  const Pose longGoal = {TILE + DRIVE_LENGTH / 2 - 4, -2 * TILE - 2,
-                         RED_STATION};
+  const Pose longGoal = {TILE + DRIVE_LENGTH / 2, matchLoader.y, RED_STATION};
 
   bot.moveToPoint(longGoal, 1500,
                   {.forwards = false, .maxSpeed = 70, .minSpeed = 30});
