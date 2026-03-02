@@ -124,6 +124,10 @@ static void rush(auton::SignTransform::SIGN sign) {
   bot.turnToHeading(descoreHeading, 1000);
   bot.waitUntilDone();
 
+  // When descoring, do not coast. This is especially important if we time out
+  // while descoring, as we are at risk of crossing.
+  bot.setBrakeMode(pros::E_MOTOR_BRAKE_BRAKE);
+
   const Pose pushBlocksTarget{-DRIVE_LENGTH / 2 - 8, bot.getPose().y};
   bot.moveToPoint(pushBlocksTarget, 2500,
                   {.forwards = faceCenter, .maxSpeed = 67});

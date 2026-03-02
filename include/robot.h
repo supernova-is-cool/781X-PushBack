@@ -82,7 +82,9 @@ public:
   pros::Distance &left;
   pros::Distance &right;
 
-  /** Resets all PID controller settings and horizontal drift to config values.
+  /**
+   * Resets all PID controller settings and horizontal drift to config values.
+   * Also resets the brake mode to coasting.
    */
   void resetControllerSettings();
 

@@ -82,4 +82,6 @@ void Robot::resetControllerSettings() {
       pidFromSettings(m_config.tunables.angularController);
   lemlib::Chassis::drivetrain.horizontalDrift =
       m_config.tunables.horizontalDrift;
+  // Default to coasting
+  lemlib::Chassis::setBrakeMode(pros::E_MOTOR_BRAKE_COAST);
 }
