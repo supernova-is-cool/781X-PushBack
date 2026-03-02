@@ -33,6 +33,13 @@ void screen() {
       }
       return sum / temps.size();
     }
+    float max_temp() const {
+      auto temps = motor.get_temperature_all();
+      double max = 0;
+      for (auto temp : temps)
+        max = std::max(max, temp);
+      return max;
+    }
   };
   std::vector<int8_t> intake_ports =
       bot.m_config.motors.bottomStage.get_port_all();
@@ -60,7 +67,20 @@ void screen() {
       std::string temps = "";
       for (const auto &motor : motors) {
         labels += motor.name;
+
         temps += std::format("{:.1f}C", motor.mean_temp());
+        {
+          const float max_temp = motor.max_temp();
+          // Indicate that current limiting is being applied
+          if (max_temp >= 55)
+            temps += "!";
+          if (max_temp >= 60)
+            temps += "!";
+          if (max_temp >= 65)
+            temps += "!";
+          if (max_temp >= 70)
+            temps += "!";
+        }
         // Even out the lengths
         size_t max_len = std::max(labels.size(), temps.size()) + 2;
         labels += std::string(max_len - labels.size(), ' ');
