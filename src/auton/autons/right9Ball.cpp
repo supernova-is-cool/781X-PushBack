@@ -70,16 +70,16 @@
 //                   {.forwards = false, .maxSpeed = 70, .minSpeed = 30});
 //   bot.waitUntilDone();
 
-//   // Smooth outaking sequence
+//   // Smooth outtaking sequence
 //   bot.tank(-10, -10);
 
 //   bot.intake.goToScoring();
 //   pros::delay(400);
-//   bot.intake.goToOutaking();
+//   bot.intake.goToOuttaking();
 //   pros::delay(200);
 //   bot.intake.goToScoring();
 //   pros::delay(2500);
-//   bot.intake.goToOutaking();
+//   bot.intake.goToOuttaking();
 //   pros::delay(200);
 //   bot.intake.goToScoring();
 

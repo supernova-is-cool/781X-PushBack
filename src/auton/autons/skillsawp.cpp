@@ -27,7 +27,7 @@ static void soloWinPointForSkills() {
   bot.setPose(startingPosition);
   // pros::delay(75);
 
-  bot.intake.goToOutaking();
+  bot.intake.goToOuttaking();
 
   // === MATCH LOADER INTAKE #1 ===
   const Pose matchLoader = {MIN_X + DRIVE_LENGTH / 2 + 4, -2 * TILE,
@@ -65,12 +65,12 @@ static void soloWinPointForSkills() {
                   {.forwards = false, .maxSpeed = 70, .minSpeed = 30});
   bot.waitUntilDone();
 
-  // Smooth outaking sequence
+  // Smooth outtaking sequence
   bot.tank(-10, -10);
   /*
   bot.intake.goToScoring();
   pros::delay(200);
-  bot.intake.goToOutaking();
+  bot.intake.goToOuttaking();
   pros::delay(200);
   */
   bot.intake.goToTOP();
@@ -127,7 +127,7 @@ static void soloWinPointForSkills() {
   bot.tank(-10, -10);
   bot.intake.goToMIDDLE();
   pros::delay(100);
-  bot.intake.goToOutaking();
+  bot.intake.goToOuttaking();
   pros::delay(100);
   bot.tank(0, 0);
   bot.intake.goToMIDDLE();
@@ -168,7 +168,7 @@ static void soloWinPointForSkills() {
   /*
   bot.intake.goToScoring();
   pros::delay(200);
-  bot.intake.goToOutaking();
+  bot.intake.goToOuttaking();
   pros::delay(200);
   bot.intake.goToScoring();
   */

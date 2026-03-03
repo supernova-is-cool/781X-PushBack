@@ -153,7 +153,7 @@ void autons::soloWinPoint() {
   bot.intake.goToMIDDLE();
   tank(-10, -10, 1250, 0);
   // Push blocks a bit maybe with trapdoor, and hold onto any remaining blocks
-  bot.intake.goToOutaking();
+  bot.intake.goToOuttaking();
   stop();
   pros::delay(100);
   // Recover any outtaked blocks

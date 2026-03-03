@@ -13,8 +13,8 @@ public:
     IDLE,
     INTAKING,
     SLOW_INTAKING,
-    OUTAKING,
-    SLOW_OUTAKING,
+    OUTTAKING,
+    SLOW_OUTTAKING,
     EMERGENCY_STOP
   };
   enum class GateState { STORING, MIDDLE_GOAL, LONG_GOAL };
@@ -45,7 +45,7 @@ public:
   void goToStoring();
   void goToTOP();
   void goToMIDDLE();
-  void goToOutaking();
+  void goToOuttaking();
 
   void enableFiltering();
   void disableFiltering();

@@ -58,7 +58,7 @@ void autons::leftMiddle() {
   bot.tank(-10, -10);
   bot.intake.goToMIDDLE();
   pros::delay(100);
-  bot.intake.goToOutaking();
+  bot.intake.goToOuttaking();
   pros::delay(100);
   bot.tank(0, 0);
   bot.intake.goToMIDDLE();
@@ -87,11 +87,11 @@ void autons::leftMiddle() {
                   {.forwards = false, .maxSpeed = 70, .minSpeed = 30});
   bot.waitUntilDone();
 
-  // Smooth outaking sequence
+  // Smooth outtaking sequence
   bot.tank(-10, -10);
   bot.intake.goToTOP();
   pros::delay(150);
-  bot.intake.goToOutaking();
+  bot.intake.goToOuttaking();
   pros::delay(150);
   bot.intake.goToTOP();
   pros::delay(1700);

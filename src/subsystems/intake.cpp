@@ -30,7 +30,7 @@ void Intake::runTask() {
   case SpinState::IDLE:
     m_motors.brake();
     break;
-  case SpinState::OUTAKING:
+  case SpinState::OUTTAKING:
     m_motors.move(-POWER);
     break;
   case SpinState::INTAKING:
@@ -39,7 +39,7 @@ void Intake::runTask() {
   case SpinState::SLOW_INTAKING:
     m_motors.move(SLOW_POWER);
     break;
-  case SpinState::SLOW_OUTAKING:
+  case SpinState::SLOW_OUTTAKING:
     m_motors.move(-SLOW_POWER);
     break;
   }
@@ -66,7 +66,7 @@ void Intake::setGateState(GateState state) { m_gateState = state; }
 
 void Intake::emergencyStop() { setSpinState(SpinState::EMERGENCY_STOP); }
 void Intake::goToIdle() { setSpinState(SpinState::IDLE); }
-void Intake::goToOutaking() { setSpinState(SpinState::OUTAKING); }
+void Intake::goToOuttaking() { setSpinState(SpinState::OUTTAKING); }
 void Intake::goToTOP() {
   setSpinState(SpinState::INTAKING);
   setGateState(GateState::LONG_GOAL);

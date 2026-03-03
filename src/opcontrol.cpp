@@ -20,7 +20,7 @@ constexpr axis_t LEFT_DRIVE = pros::E_CONTROLLER_ANALOG_LEFT_Y;
 constexpr axis_t RIGHT_DRIVE = pros::E_CONTROLLER_ANALOG_RIGHT_Y;
 constexpr button_t MIDDLE_GOAL = pros::E_CONTROLLER_DIGITAL_X;
 constexpr button_t DESCORE = pros::E_CONTROLLER_DIGITAL_R2;
-constexpr button_t OUTAKE = pros::E_CONTROLLER_DIGITAL_L2;
+constexpr button_t OUTTAKE = pros::E_CONTROLLER_DIGITAL_L2;
 constexpr button_t STORE = pros::E_CONTROLLER_DIGITAL_L1;
 constexpr button_t HIGH_GOAL = pros::E_CONTROLLER_DIGITAL_R1;
 constexpr button_t MATCH_LOADER = pros::E_CONTROLLER_DIGITAL_UP;
@@ -65,8 +65,8 @@ void opcontrol() {
 
     if (master.get_digital(map::HIGH_GOAL)) {
       bot.intake.goToTOP();
-    } else if (master.get_digital(map::OUTAKE)) {
-      bot.intake.goToOutaking();
+    } else if (master.get_digital(map::OUTTAKE)) {
+      bot.intake.goToOuttaking();
     } else if (master.get_digital(map::STORE)) {
       bot.intake.goToStoring();
     } else if (master.get_digital(map::MIDDLE_GOAL)) {
