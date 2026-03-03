@@ -9,98 +9,76 @@
 #include <optional>
 
 #define POWER 127
+#define SLOW_POWER 127 * .8
 
-Intake::Intake(pros::Motor &top, pros::Motor &bottom,
-               pros::adi::Pneumatics &bottom_gate,
+Intake::Intake(pros::MotorGroup &motors, pros::adi::Pneumatics &bottom_gate,
                pros::adi::Pneumatics &top_gate)
-    : m_top(top), m_bottom(bottom), m_state(IDLE), m_bottom_gate(bottom_gate),
+    : m_motors(motors), m_spinState(SpinState::IDLE),
+      m_gateState(GateState::STORING), m_bottom_gate(bottom_gate),
       m_top_gate(top_gate) {}
 
 void Intake::runTask() {
+  if (m_spinState == SpinState::EMERGENCY_STOP)
+    m_motors.set_brake_mode(pros::E_MOTOR_BRAKE_BRAKE);
+  else
+    m_motors.set_brake_mode(pros::E_MOTOR_BRAKE_COAST);
 
-  /*
-  while (true) {
-    bool blockDetected = (m_distance.get() < 80);
-    auto sensedBlock = getSensedRing();
-    printf("%i\n", (int)blockDetected);
-
-    if (sensedBlock.has_value() && enableFilter) {
-      COLOR color = sensedBlock.value();
-
-      if (color != m_targetColor) {
-        m_filter.retract();
-        isOpen = true;
-      } else {
-        m_filter.extend();
-        isOpen = false;
-      }
-    }
-    */
-
-  switch (m_state) {
-  case State::EMERGENCY_STOP:
-    m_top.set_brake_mode(pros::E_MOTOR_BRAKE_BRAKE);
-    m_bottom.set_brake_mode(pros::E_MOTOR_BRAKE_BRAKE);
-    m_top.brake();
-    m_bottom.brake();
-    return;
-
-  case State::IDLE:
-    m_top.brake();
-    m_bottom.brake();
+  switch (m_spinState) {
+  case SpinState::EMERGENCY_STOP:
+    m_motors.brake();
     break;
-
-  case State::OUTAKE:
-    m_bottom_gate.retract();
-    m_top_gate.retract();
-    m_top.move(-POWER);
-    m_bottom.move(-POWER);
+  case SpinState::IDLE:
+    m_motors.brake();
     break;
-
-  case State::MIDDLE:
-    m_bottom_gate.extend();
-    m_top_gate.extend();
-    m_top.move(POWER * 0.8);
-    m_bottom.move(POWER * 0.8);
+  case SpinState::OUTAKING:
+    m_motors.move(-POWER);
     break;
-
-  case State::TOP:
-    m_bottom_gate.retract();
-    m_top_gate.retract();
-    m_top.move(POWER);
-    m_bottom.move(POWER);
+  case SpinState::INTAKING:
+    m_motors.move(POWER);
     break;
-
-  case State::STORING:
-    m_bottom_gate.extend();
-    m_top_gate.retract();
-    m_bottom.move(POWER);
-    m_top.move(POWER);
+  case SpinState::SLOW_INTAKING:
+    m_motors.move(SLOW_POWER);
     break;
-
-  case State::SLOW_OUTAKE:
-    m_bottom.move(-80);
-    m_top.move(-80);
-
-  default:
+  case SpinState::SLOW_OUTAKING:
+    m_motors.move(-SLOW_POWER);
     break;
   }
-
-  m_top.set_brake_mode(pros::E_MOTOR_BRAKE_COAST);
-  m_bottom.set_brake_mode(pros::E_MOTOR_BRAKE_COAST);
-
-  pros::delay(10);
+  switch (m_gateState) {
+  case GateState::STORING:
+    m_bottom_gate.extend();
+    m_top_gate.retract();
+    break;
+  case GateState::MIDDLE_GOAL:
+    m_bottom_gate.extend();
+    m_top_gate.extend();
+    break;
+  case GateState::LONG_GOAL:
+    m_bottom_gate.retract();
+    m_top_gate.retract();
+    break;
+  }
 }
 
-const Intake::State &Intake::getState() { return m_state; }
-void Intake::setState(State state) { m_state = state; }
+const Intake::SpinState &Intake::getSpinState() const { return m_spinState; }
+const Intake::GateState &Intake::getGateState() const { return m_gateState; }
+void Intake::setSpinState(SpinState state) { m_spinState = state; }
+void Intake::setGateState(GateState state) { m_gateState = state; }
 
-void Intake::emergencyStop() { setState(State::EMERGENCY_STOP); }
-void Intake::goToIdle() { setState(State::IDLE); }
-void Intake::goToOutaking() { setState(State::OUTAKE); }
-void Intake::goToTOP() { setState(State::TOP); }
-void Intake::goToMIDDLE() { setState(State::MIDDLE); }
-void Intake::goToStoring() { setState(State::STORING); }
+void Intake::emergencyStop() { setSpinState(SpinState::EMERGENCY_STOP); }
+void Intake::goToIdle() { setSpinState(SpinState::IDLE); }
+void Intake::goToOutaking() { setSpinState(SpinState::OUTAKING); }
+void Intake::goToTOP() {
+  setSpinState(SpinState::INTAKING);
+  setGateState(GateState::LONG_GOAL);
+}
+void Intake::goToMIDDLE() {
+  setSpinState(SpinState::SLOW_INTAKING);
+  setGateState(GateState::MIDDLE_GOAL);
+}
+void Intake::goToStoring() {
+  setSpinState(SpinState::INTAKING);
+  setGateState(GateState::STORING);
+}
 
 void Intake::enableFiltering() { enableFilter = true; }
 void Intake::disableFiltering() { enableFilter = false; }

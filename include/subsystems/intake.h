@@ -2,33 +2,43 @@
 #include "color.h"
 #include "pros/adi.hpp"
 #include "pros/distance.hpp"
+#include "pros/motor_group.hpp"
 #include "pros/optical.hpp"
 #include "subsystems.h"
 #include <optional>
 
 class Intake : public subsystem {
-
 public:
-  enum State { IDLE, STORING, MIDDLE, TOP, OUTAKE, SLOW_OUTAKE, EMERGENCY_STOP };
-
+  enum class SpinState {
+    IDLE,
+    INTAKING,
+    SLOW_INTAKING,
+    OUTAKING,
+    SLOW_OUTAKING,
+    EMERGENCY_STOP
+  };
+  enum class GateState { STORING, MIDDLE_GOAL, LONG_GOAL };
 
 private:
-  State m_state;
-  pros::Motor &m_top;
-  pros::Motor &m_bottom;
+  SpinState m_spinState;
+  GateState m_gateState;
+  pros::MotorGroup &m_motors;
   COLOR m_targetColor = COLOR::RED;
   bool enableFilter = false;
   pros::adi::Pneumatics &m_bottom_gate;
   pros::adi::Pneumatics &m_top_gate;
 
 public:
-  explicit Intake(pros::Motor &top, pros::Motor &bottom,
-                  pros::adi::Pneumatics &bottom_gate, pros::adi::Pneumatics &top_gate);
+  explicit Intake(pros::MotorGroup &motors, pros::adi::Pneumatics &bottom_gate,
+                  pros::adi::Pneumatics &top_gate);
 
   void runTask() override;
 
-  const State &getState();
-  void setState(State state);
+  const SpinState &getSpinState() const;
+  void setSpinState(SpinState state);
+
+  const GateState &getGateState() const;
+  void setGateState(GateState state);
 
   void emergencyStop();
   void goToIdle();
