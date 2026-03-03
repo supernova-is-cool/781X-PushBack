@@ -59,8 +59,7 @@ Robot::Robot(const robotConfig &m_config)
       m_transform(std::make_shared<auton::AllianceTransform>(COLOR::RED)),
       m_config(robotConfig::config),
 
-      m_intake(robotConfig::config.motors.topStage,
-               robotConfig::config.motors.bottomStage,
+      m_intake(robotConfig::config.motors.intake,
                robotConfig::config.pneumatics.bottom_gate,
                robotConfig::config.pneumatics.top_gate),
       intake(m_intake) {}

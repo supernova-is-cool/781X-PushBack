@@ -41,19 +41,10 @@ void screen() {
       return max;
     }
   };
-  std::vector<int8_t> intake_ports =
-      bot.m_config.motors.bottomStage.get_port_all();
-  {
-    std::vector<int8_t> top_intake_ports =
-        bot.m_config.motors.topStage.get_port_all();
-    intake_ports.insert(intake_ports.end(), top_intake_ports.begin(),
-                        top_intake_ports.end());
-  }
-  pros::MotorGroup intake{intake_ports};
   std::vector<LabeledMotor> motors{
       LabeledMotor{"Left", bot.m_config.motors.left},
       LabeledMotor{"Right", bot.m_config.motors.right},
-      LabeledMotor{"Intake", intake},
+      LabeledMotor{"Intake", bot.m_config.motors.intake},
   };
   while (true) {
     if (pros::lcd::is_initialized()) {

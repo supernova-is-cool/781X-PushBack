@@ -25,8 +25,7 @@ struct robotConfig {
   struct Motors {
     pros::MotorGroup left;
     pros::MotorGroup right;
-    pros::Motor topStage;
-    pros::Motor bottomStage;
+    pros::MotorGroup intake;
 
   private:
     friend struct robotConfig;
