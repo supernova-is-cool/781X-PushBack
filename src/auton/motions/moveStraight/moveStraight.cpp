@@ -21,35 +21,10 @@ void Robot::moveToLine(lemlib::Pose line, int timeout,
                        MoveStraightParams params, bool async) {
   const Pose realLine = m_transform->transformPose(line);
   /** Line pose with theta in standard radians */
-<<<<<<< HEAD:src/auton/motions/moveStraight/moveStraight.cpp
   const Pose radianLine = realLine.withTheta(degToRad(90 - realLine.theta));
   auto errorFuncFactory = MoveToLineErrorFactory(
       NlPose(radianLine), [this]() { return Chassis::getPose(true, true); },
       errorSink);
-=======
-  const Pose radianLine = realLine.withTheta(radToDeg(M_PI_2 - realLine.theta));
-  const Vector v_vec = Vector::fromAngle(radianLine.theta);
-  auto errorFuncFactory = [&]() -> std::function<float()> {
-    const float startTheta = lemlib::Chassis::getPose(true, true).theta;
-    const Vector u_vec = Vector::fromAngle(startTheta);
-    const float u_cross_v = u_vec.cross(v_vec);
-    if (std::abs(u_cross_v) < sin(degToRad(1))) {
-      // If the robot is facing parallel to the line, return 0 for the error
-      // function, since we won't be able to reach the line by driving straight.
-      infoSink()->error(
-          "Since the robot is facing parallel to the line in moveToLine(),"
-          "the bot cannot reach line, and thus therefore motion will be "
-          "skipped. Line theta: {}, Robot theta: {}",
-          realLine.theta, bot.getPose().theta);
-      return []() { return 0; };
-    }
-    return [this, radianLine, v_vec, u_cross_v]() -> float {
-      const Vector PQ_vec =
-          Vector::between(lemlib::Chassis::getPose(), radianLine);
-      return - PQ_vec.cross(v_vec) / u_cross_v;
-    };
-  };
->>>>>>> b97ddae (feat:):src/auton/motions/moveStraight.cpp
   this->moveStraight(errorFuncFactory, timeout, params, async);
 }
 
