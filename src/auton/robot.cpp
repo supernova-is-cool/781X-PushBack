@@ -23,8 +23,12 @@ void Robot::setPose(lemlib::Pose newPose, bool radians) {
   lemlib::Chassis::setPose(m_transform->transformPose(newPose), radians);
 }
 
-lemlib::Pose Robot::getPose(bool radians) {
-  return m_transform->transformPose(lemlib::Chassis::getPose(radians));
+lemlib::Pose Robot::getPose(bool radians, bool standardPosition) {
+  const lemlib::Pose compassPose =
+      m_transform->transformPose(lemlib::Chassis::getPose(radians));
+  if (standardPosition)
+    return compassPose.withTheta((radians ? M_PI_2 : 90) - compassPose.theta);
+  return compassPose;
 }
 
 void Robot::turnToPoint(lemlib::Pose target, int timeout,

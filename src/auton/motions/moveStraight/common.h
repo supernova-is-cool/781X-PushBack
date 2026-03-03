@@ -5,50 +5,13 @@
  * testing it on pc.
  */
 
+#pragma once
+
 #include <cmath>
 #include <format>
 #include <functional>
 #include <string>
-
-#ifndef GTEST
-#include "lemlib/pose.hpp"
-#endif
-
-/** Not lemlib pose. Lets us test on pc. */
-struct NlPose {
-  float x;
-  float y;
-  /** Should always be in standard radians. */
-  float theta;
-
-  float distance(const NlPose &other) const {
-    return std::hypot(other.x - x, other.y - y);
-  }
-  float angle(const NlPose &other) const {
-    return std::atan2(other.y - y, other.x - x) - theta;
-  }
-
-  NlPose(float x, float y, float theta) : x(x), y(y), theta(theta) {}
-  // Conversions between lemlib::Pose and NlPose
-#ifndef GTEST
-  operator lemlib::Pose() const { return lemlib::Pose(x, y, theta); }
-  NlPose(lemlib::Pose pose) : x(pose.x), y(pose.y), theta(pose.theta) {}
-#endif
-};
-
-struct Vector {
-  float x;
-  float y;
-
-  static Vector between(const NlPose &from, const NlPose &to) {
-    return Vector{to.x - from.x, to.y - from.y};
-  }
-  static Vector fromAngle(float angle) {
-    return Vector{float(cos(angle)), float(sin(angle))};
-  }
-
-  float cross(const Vector &other) const { return x * other.y - y * other.x; }
-};
+#include "math/Vector.h"
 
 class MoveToLineErrorFactory {
 private:

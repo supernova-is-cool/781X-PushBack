@@ -6,6 +6,7 @@
 #include "pros/misc.hpp"
 #include "pros/motor_group.hpp"
 #include "robot.h"
+#include <print>
 
 ts::selector *selector = nullptr;
 ts::auton rightRush("Right Rush", autons::rightRush);
@@ -80,6 +81,25 @@ void screen() {
       pros::lcd::print(6, "%s", labels.c_str());
       pros::lcd::print(7, "%s", temps.c_str());
     }
+    // // Print Distance Reset values for debugging
+    // {
+    //   const float theta = bot.getPose(true, true).theta;
+    //   if (std::abs(sin(theta)) > 1) {
+    //     std::println(
+    //         "DSR: theta={}\n\tX:back={},\tfront={}\n\tY:left={},\tright={}",
+    //         theta, bot.back.getBotX(theta).value_or(NAN),
+    //         bot.front.getBotX(theta).value_or(NAN),
+    //         bot.left.getBotY(theta).value_or(NAN),
+    //         bot.right.getBotY(theta).value_or(NAN));
+    //   } else {
+    //     std::println(
+    //         "DSR: theta={}\n\tY:back={},\tfront={}\n\tX:left={},\tright={}",
+    //         theta, bot.back.getBotY(theta).value_or(NAN),
+    //         bot.front.getBotY(theta).value_or(NAN),
+    //         bot.left.getBotX(theta).value_or(NAN),
+    //         bot.right.getBotX(theta).value_or(NAN));
+    //   }
+    // }
     pros::delay(50);
   }
 }
@@ -114,7 +134,7 @@ void initialize() {
   pros::delay(250);
 
   bot.setAlliance(ALLIANCE::RED);
-  bot.setPose({0, 0, 0}, 72);
+  bot.setPose({0, 0, 0});
   pros::delay(250);
 }
 

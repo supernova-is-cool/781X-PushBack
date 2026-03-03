@@ -1,11 +1,7 @@
 #pragma once
 
+#include "auton/laser.h"
 #include "lemlib/chassis/chassis.hpp"
-#include "pros/adi.hpp"
-#include "pros/distance.hpp"
-#include "pros/imu.hpp"
-#include "pros/optical.hpp"
-#include <vector>
 
 struct robotConfig {
 
@@ -37,10 +33,10 @@ struct robotConfig {
     pros::Rotation vert;
     pros::Rotation hori;
     pros::IMU imu;
-    pros::Distance front;
-    pros::Distance back;
-    pros::Distance left;
-    pros::Distance right;
+    Laser front;
+    Laser back;
+    Laser left;
+    Laser right;
 
   private:
     friend struct robotConfig;

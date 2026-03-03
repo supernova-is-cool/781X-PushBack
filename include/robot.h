@@ -32,7 +32,8 @@ struct MoveStraightParams {
   std::optional<float> targetHeading;
 };
 
-typedef std::function<std::function<float()>(float targetHeading)> MoveStraightErrorFuncFactory;
+typedef std::function<std::function<float()>(float targetHeading)>
+    MoveStraightErrorFuncFactory;
 /**
  * @brief Provides an abstracted interface for controlling the robot and reading
  * from sensors. Follows the singleton pattern.
@@ -77,10 +78,10 @@ public:
 
   pros::Controller &gamepad;
 
-  pros::Distance &front;
-  pros::Distance &back;
-  pros::Distance &left;
-  pros::Distance &right;
+  Laser &front;
+  Laser &back;
+  Laser &left;
+  Laser &right;
 
   /**
    * Resets all PID controller settings and horizontal drift to config values.
@@ -144,7 +145,7 @@ public:
                     bool async = true);
 
   void setPose(lemlib::Pose pose, bool radians = false);
-  lemlib::Pose getPose(bool radians = false);
+  lemlib::Pose getPose(bool radians = false, bool standardPosition = false);
 
   void turnToPoint(lemlib::Pose target, int timeout,
                    lemlib::TurnToPointParams params = {}, bool async = true);

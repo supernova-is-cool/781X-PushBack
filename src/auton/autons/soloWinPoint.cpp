@@ -70,12 +70,9 @@ void autons::soloWinPoint() {
   bot.intake.goToIdle();
 
   // Reset y position
-  /** Distance from left laser's sensor to center of bot, in the sideways
-   * direction */
-  const float LEFT_LASER_X_DIST = 5.5;
-  const float MM_TO_IN = 0.0393700787;
-  bot.setPose(bot.getPose().withY(MIN_Y + bot.left.get_distance() * MM_TO_IN +
-                                  LEFT_LASER_X_DIST));
+  bot.setPose(
+      bot.getPose().withY(bot.left.getBotY(bot.getPose(true, true).theta)
+                              .value_or(bot.getPose().y)));
 
   pros::delay(100);
   bot.tank(0, 0);
@@ -184,10 +181,11 @@ void autons::soloWinPoint() {
   bot.moveToX(leftMatchloader.x, 1000,
               {.maxSpeed = 64, .targetHeading = RED_STATION});
   bot.waitUntilDone();
-  const float RIGHT_LASER_X_DIST = 5.5;
 
-  bot.setPose(bot.getPose().withY(MAX_Y - bot.right.get_distance() * MM_TO_IN -
-                                  RIGHT_LASER_X_DIST));
+  // Reset y position
+  bot.setPose(
+      bot.getPose().withY(bot.right.getBotY(bot.getPose(true, true).theta)
+                              .value_or(bot.getPose().y)));
 
   // Give time to yoink the blocks
   tank(10, 10, matchloaderTimeToStore, 0);
