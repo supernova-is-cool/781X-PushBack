@@ -138,7 +138,8 @@ void competition_initialize() {
   if (!selector->is_auton_selected()) {
     // Handle no selected auton
     // TODO: Change to doNothing before comp
-    selector->select_auton(skills.name);
+    // SELECTED_AUTO is a macro specified in selectedAuto.txt file
+    selector->select_auton(SELECTED_AUTO.name);
   }
 }
 
@@ -158,7 +159,8 @@ void autonomous() {
   if (!selector->is_auton_selected()) {
     // Handle no selected auton
     // TODO: Change to doNothing before comp
-    selector->select_auton(skills.name);
+    // SELECTED_AUTO is a macro specified in selectedAuto.txt file
+    selector->select_auton(SELECTED_AUTO.name);
   }
 
   bot.resetControllerSettings();

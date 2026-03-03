@@ -22,3 +22,6 @@ temp.errors
 
 # CMake build stuff
 build/
+
+# User-specific
+selectedAuto.txt
