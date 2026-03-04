@@ -77,8 +77,21 @@ void Robot::resetControllerSettings() {
   lemlib::Chassis::angularSettings = m_config.tunables.angularController;
   lemlib::Chassis::lateralPID =
       pidFromSettings(m_config.tunables.lateralController);
+  lemlib::Chassis::lateralLargeExit = {
+      m_config.tunables.lateralController.largeError,
+      (int)m_config.tunables.lateralController.largeErrorTimeout};
+  lemlib::Chassis::lateralSmallExit = {
+      m_config.tunables.lateralController.smallError,
+      (int)m_config.tunables.lateralController.smallErrorTimeout};
   lemlib::Chassis::angularPID =
       pidFromSettings(m_config.tunables.angularController);
+  lemlib::Chassis::angularLargeExit = {
+      m_config.tunables.angularController.largeError,
+      (int)m_config.tunables.angularController.largeErrorTimeout};
+  lemlib::Chassis::angularSmallExit = {
+      m_config.tunables.angularController.smallError,
+      (int)m_config.tunables.angularController.smallErrorTimeout};
+
   lemlib::Chassis::drivetrain.horizontalDrift =
       m_config.tunables.horizontalDrift;
   // Default to coasting
