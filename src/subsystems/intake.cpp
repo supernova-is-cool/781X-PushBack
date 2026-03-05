@@ -9,7 +9,7 @@
 #include <optional>
 
 #define POWER 127
-#define SLOW_POWER 127 * .8
+#define SLOW_POWER 127 * .85
 
 Intake::Intake(pros::MotorGroup &motors, pros::adi::Pneumatics &bottom_gate,
                pros::adi::Pneumatics &top_gate)
@@ -42,6 +42,8 @@ void Intake::runTask() {
   case SpinState::SLOW_OUTTAKING:
     m_motors.move(-SLOW_POWER);
     break;
+  case SpinState::EVEN_SLOWER:
+    m_motors.move(POWER * 0.60);
   }
   switch (m_gateState) {
   case GateState::STORING:
@@ -67,6 +69,11 @@ void Intake::setGateState(GateState state) { m_gateState = state; }
 void Intake::emergencyStop() { setSpinState(SpinState::EMERGENCY_STOP); }
 void Intake::goToIdle() { setSpinState(SpinState::IDLE); }
 void Intake::goToOuttaking() { setSpinState(SpinState::OUTTAKING); }
+
+void Intake::goToSlow() {
+  setSpinState(SpinState::EVEN_SLOWER);
+  setGateState(GateState::MIDDLE_GOAL);
+}
 void Intake::goToTOP() {
   setSpinState(SpinState::INTAKING);
   setGateState(GateState::LONG_GOAL);
