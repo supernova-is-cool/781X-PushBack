@@ -1,4 +1,5 @@
 #include "auton/autons.h"
+#include "lemlib/chassis/odom.hpp"
 #include "lemlib/pose.hpp"
 #include "robot.h"
 #include <cstdio>
@@ -40,106 +41,110 @@ void autons::skills() {
   const Pose closeRightMatchLoader = {MAX_X, -2 * TILE + 1, BLUE_STATION};
   const Pose farLongGoalLeft = {-TILE - DRIVE_LENGTH, 2 * TILE - 1,
                                 RED_STATION};
-  const Pose farLongGoalRight = {TILE, 2 * TILE - 1,
-                                 BLUE_STATION};
+  const Pose farLongGoalRight = {TILE, 2 * TILE - 1, BLUE_STATION};
   const Pose closeLongGoal = {-TILE, -2 * TILE + 1, RED_STATION};
   const Pose centerGoal = {-7, 7};
 
   const Pose middleGoal = {-9, 9, 310};
   const Pose inFrontPark = {-47.5, 0, RED_STATION};
 
-  //const Pose startingPosition = {-2 * TILE - 1.5, TILE - DRIVE_LENGTH + 8.5,
-  //0}; bot.setPose(startingPosition);
+  // const Pose startingPosition = {-2 * TILE - 1.5, TILE - DRIVE_LENGTH + 8.5,
+  // 0}; bot.setPose(startingPosition);
 
   const Pose startingPosition = {0, 0, RED_STATION};
   bot.setPose(startingPosition);
 
-/*
-  // === PARK → CENTER LANE ===
-  bot.park.extend();
-  bot.intake.goToStoring();
+  /*
+    // === PARK → CENTER LANE ===
+    bot.park.extend();
+    bot.intake.goToStoring();
 
-  // Smooth motor bias wiggle (reduced + symmetric)
-  bot.tank(30, 30);
-  pros::delay(225);
-  bot.tank(0, 0);
-  pros::delay(650);
-  bot.tank(30, 30);
-  pros::delay(750);
-  // bot.tank(20, 20); pros::delay(400);
-  wiggle();
-  bot.tank(0, 0);
+    // Smooth motor bias wiggle (reduced + symmetric)
+    bot.tank(30, 30);
+    pros::delay(225);
+    bot.tank(0, 0);
+    pros::delay(650);
+    bot.tank(30, 30);
+    pros::delay(750);
+    // bot.tank(20, 20); pros::delay(400);
+    wiggle();
+    bot.tank(0, 0);
 
-  // Clean reverse (straight + damped)
-  bot.tank(-55, -55);
-  pros::delay(1200);
-  bot.tank(0, 0);
+    // Clean reverse (straight + damped)
+    bot.tank(-55, -55);
+    pros::delay(1200);
+    bot.tank(0, 0);
 
 
-  // Aim robot for straight drive
-  bot.turnToHeading(RED_STATION, 700);
-  bot.waitUntilDone();
+    // Aim robot for straight drive
+    bot.turnToHeading(RED_STATION, 700);
+    bot.waitUntilDone();
 
-  // Small controlled push forward to clear bumper
-  bot.moveToPoint({-13, 0}, 1200, {.maxSpeed = 27, .minSpeed = 20});
-  bot.waitUntilDone();
-  */
+    // Small controlled push forward to clear bumper
+    bot.moveToPoint({-13, 0}, 1200, {.maxSpeed = 27, .minSpeed = 20});
+    bot.waitUntilDone();
+    */
 
   // Retract parking mech + reset pose to known clean spot
   bot.intake.goToStoring();
   bot.park.retract();
   bot.setPose({-47.5, 0, RED_STATION});
 
-  // 1) Smooth reverse into center lane
-  bot.moveToPoint(
-      {-TILE - 3, 0}, 1300,
-      {.forwards = false, .maxSpeed = 55, .minSpeed = 40, .earlyExitRange = 6});
-
-  // 2) Smooth 225° swing into goal approach vector
-  bot.swingToHeading(
-      225, lemlib::DriveSide::RIGHT, 900,
-      {.direction = lemlib::AngularDirection::CCW_COUNTERCLOCKWISE,
-       .maxSpeed = 55,
-       .minSpeed = 40,
-       .earlyExitRange = 8});
-  // bot.waitUntilDone();
-
-  // 3) Main arc into the middle goal entrance
-
-  bot.moveToPoint({-17, 7}, 1500,
-                  {.forwards = false, .maxSpeed = 55, .minSpeed = 40});
+  // Turn towards middle goal
+  bot.swingToPoint(middleGoal + Pose::fromPolar(1, -45),
+                   lemlib::DriveSide::RIGHT, 500,
+                   {.forwards = false, .earlyExitRange = 20});
   bot.waitUntilDone();
-
-  bot.swingToHeading(310, lemlib::DriveSide::LEFT, 1500,
-                     {.maxSpeed = 50, .minSpeed = 40});
+  bot.moveToLine(
+      {0, 0, -45}, 1000,
+      {.maxSpeed = 60,
+       .targetHeading =
+           (90 - lemlib::radToDeg(bot.getPose().angle(middleGoal))) + 180});
+  waitUntil(
+      [] {
+        return lemlib::getSpeed(false).distance({0, 0}) < .02 ||
+               !bot.isInMotion();
+      },
+      100, INT_MAX, true);
   bot.waitUntilDone();
-  pros::delay(100);
-  // pros::delay(100);
+  bot.lateralPID.kP *= .1;
+  // Turn and push into middle goal to align
+  bot.moveToLine({0, 0, 45}, 1000, {.targetHeading = -45});
+  waitUntil(
+      [] {
+        return lemlib::getSpeed(false).distance({0, 0}) < .01 ||
+               !bot.isInMotion();
+      },
+      100, INT_MAX, true);
+  bot.cancelMotion();
+  bot.lateralPID.kP /= .1;
 
   // =====================
   // === INTAKE BLOCK #2 ===
   // =====================
 
-  // The second block is deeper inside.
-  // Drive forward slowly to intake it.
-  Pose intakeDeep = {middleGoal.x - 6, middleGoal.y + 6}; // 7–10 in deeper
-
-  bot.moveToPoint(intakeDeep, 1500, {.maxSpeed = 30, .minSpeed = 25});
+  // Drive forward slowly to intake center block
+  bot.moveToLine((middleGoal + Pose::fromPolar(9, -45)).withTheta(45), 1500,
+                 {.maxSpeed = 40, .minSpeed = 15, .targetHeading = -45});
   bot.waitUntilDone();
 
   // Intake the block
   pros::delay(250);
 
-  // Back out slightly to clear the wall + realign
-  bot.moveToPoint(middleGoal, 1200,
-                  {.forwards = false, .maxSpeed = 35, .minSpeed = 30});
+  // Realign into center goal
+  bot.moveToLine(middleGoal.withTheta(45), 1500,
+                 {.maxSpeed = 40, .minSpeed = 15, .targetHeading = -45});
   bot.waitUntilDone();
 
   // =====================
   // === SCORE IN MIDDLE ===
   // =====================
 
+  // Slowly push into middle goal
+  tank(-20, -20, 0, 0);
+
   bot.intake.goToMIDDLE();
+  bot.intake.setSpinState(Intake::SpinState::INTAKING);
   pros::delay(900);
   bot.intake.goToSlow();
   pros::delay(2200);
@@ -148,15 +153,20 @@ void autons::skills() {
   bot.setPose({middleGoal.x, middleGoal.y, bot.getPose().theta});
   pros::delay(100);
   bot.intake.goToStoring();
-  
 
   // 1ST MATCHLOAD
   bot.descore.extend();
 
-  bot.moveToPoint({-2 * TILE, 2 * TILE + 1}, 1500,
-                  {.maxSpeed = 80, .minSpeed = 35, .earlyExitRange = 15});
-  bot.waitUntilDone();
-  pros::delay(40);
+  // Go around center blocks
+  bot.swingToHeading(RED_STATION, lemlib::DriveSide::LEFT, 500,
+                     {.maxSpeed = 96, .minSpeed = 48, .earlyExitRange = 20});
+  const Pose farLeftMlAlignTarget =
+      (farLeftMatchLoader + Pose{TILE, 0}).withTheta(REFEREE);
+  bot.moveToPose(farLeftMlAlignTarget, 2000, {.maxSpeed = 80, .minSpeed = 40});
+  // Once around the blocks, align precisely with the ML
+  waitUntilDistToPose(farLeftMlAlignTarget, TILE * .75, 0, true);
+  bot.cancelMotion();
+  bot.moveToY(farLeftMatchLoader.y, 1000);
 
   bot.turnToPoint(farLeftMatchLoader, 1500, {.maxSpeed = 60, .minSpeed = 25});
   bot.waitUntilDone();
