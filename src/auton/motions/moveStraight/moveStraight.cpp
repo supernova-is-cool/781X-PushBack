@@ -96,9 +96,10 @@ void Robot::moveStraight(MoveStraightErrorFuncFactory errorFuncFactory,
     const float linearError = errorFunc();
 
     // check if the robot is close enough to the target to start settling
-    if (linearError < 7.5 && close == false) {
+    if (std::abs(linearError) < 7.5 && close == false) {
+      infoSink()->debug("Setting to close. Lin Err={}", linearError);
       close = true;
-      params.maxSpeed = fmax(fabs(prevLateralOut), 60);
+      // params.maxSpeed = fmax(fabs(prevLateralOut), 60);
     }
 
     // motion chaining
@@ -142,11 +143,12 @@ void Robot::moveStraight(MoveStraightErrorFuncFactory errorFuncFactory,
     // update previous output
     prevAngularOut = angularOut;
     prevLateralOut = lateralOut;
-
-    infoSink()->debug("Angular Out: {}, Lateral Out: {}, Lin Err: {}, Ang Err: "
-                      "{}, \n\t Pose: {}",
-                      angularOut, lateralOut, linearError, angularError,
-                      currPose);
+    if (pros::millis() % 200 < 11)
+      infoSink()->debug(
+          "[{}] Angular Out: {}, Lateral Out: {}, Lin Err: {}, Ang Err: "
+          "{}, \n\t Pose: {}",
+          pros::millis(), angularOut, lateralOut, linearError, angularError,
+          currPose);
 
     // ratio the speeds to respect the max speed
     float leftPower = lateralOut + angularOut;
