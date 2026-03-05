@@ -21,7 +21,8 @@ ts::auton soloWinPoint("SAWP", autons::soloWinPoint);
 ts::auton doNothing("Do Nothing", autons::doNothing);
 ts::auton skills("Skills", autons::skills);
 
-void screen() {
+/** Prints odometery, temps, and selected auto */
+void printLoop() {
   struct LabeledMotor {
     std::string name;
     pros::MotorGroup &motor;
@@ -47,6 +48,7 @@ void screen() {
       LabeledMotor{"Right", bot.m_config.motors.right},
       LabeledMotor{"Intake", bot.m_config.motors.intake},
   };
+  pros::Controller gamepad(pros::E_CONTROLLER_MASTER);
   while (true) {
     if (pros::lcd::is_initialized()) {
       pros::lcd::print(0, "Auton:\t%s",
@@ -81,6 +83,21 @@ void screen() {
       pros::lcd::print(6, "%s", labels.c_str());
       pros::lcd::print(7, "%s", temps.c_str());
     }
+    // Print selected auton to controller screen when disabled
+    if (pros::c::competition_is_disabled() ||
+        !pros::c::competition_is_connected()) {
+      // Print every 200ms
+      if (pros::millis() % 200 < 50) {
+        std::string name = selector->get_selected_auton_name();
+        static std::string prev_name = name;
+        if (name != prev_name) {
+          gamepad.clear_line(0);
+        } else {
+          gamepad.print(0, 0, "%s", name.c_str());
+        }
+        prev_name = name;
+      }
+    }
     // // Print Distance Reset values for debugging
     // {
     //   const float theta = bot.getPose(true, true).theta;
@@ -108,7 +125,6 @@ void init_odom_printing() {
   if (!pros::lcd::is_initialized()) {
     selector->hide();
     pros::lcd::initialize();
-    new pros::Task{screen};
   }
 }
 
@@ -128,6 +144,12 @@ void initialize() {
   } else {
     init_odom_printing();
   }
+  if (!selector->is_auton_selected()) {
+    // Automatically select an auton
+    // TODO: Change to doNothing before comp
+    // SELECTED_AUTO is a macro specified in selectedAuto.txt file
+    selector->select_auton(SELECTED_AUTO.name);
+  }
 
   pros::delay(250);
   bot.calibrate();
@@ -135,7 +157,7 @@ void initialize() {
 
   bot.setAlliance(ALLIANCE::RED);
   bot.setPose({0, 0, 0});
-  pros::delay(250);
+  new pros::Task{printLoop};
 }
 
 /**
@@ -154,14 +176,7 @@ void disabled() {}
  * This task will exit when the robot is enabled and autonomous or opcontrol
  * starts.
  */
-void competition_initialize() {
-  if (!selector->is_auton_selected()) {
-    // Handle no selected auton
-    // TODO: Change to doNothing before comp
-    // SELECTED_AUTO is a macro specified in selectedAuto.txt file
-    selector->select_auton(SELECTED_AUTO.name);
-  }
-}
+void competition_initialize() {}
 
 /**
  * Runs the user autonomous code. This function will be started in its own task
@@ -176,13 +191,6 @@ void competition_initialize() {
  */
 void autonomous() {
   init_odom_printing();
-  if (!selector->is_auton_selected()) {
-    // Handle no selected auton
-    // TODO: Change to doNothing before comp
-    // SELECTED_AUTO is a macro specified in selectedAuto.txt file
-    selector->select_auton(SELECTED_AUTO.name);
-  }
-
   bot.resetControllerSettings();
   selector->run_selected_auton();
 }
