@@ -1,4 +1,6 @@
 #include "auton/autons.h"
+#include "lemlib/logger/logger.hpp"
+#include "lemlib/logger/message.hpp"
 #include "lemlib/pose.hpp"
 #include "robot.h"
 #include <cstdio>
@@ -31,20 +33,27 @@ void autons::soloWinPoint() {
   bot.intake.goToStoring();
   bot.moveToY(startingPosition.y + BALL_INNER_DIAM + 2, 2000, {.minSpeed = 48});
   bot.waitUntilDone();
-  const Pose rightMatchloader = {MIN_X + DRIVE_LENGTH / 2 + 4.5, -2 * TILE,
+  const Pose rightMatchloader = {MIN_X + DRIVE_LENGTH / 2 + 3, -2 * TILE + 4,
                                  RED_STATION};
-  bot.lateralPID.kP *= .75;
 
+  bot.lateralPID.kP *= .75;
+  bot.lateralPID.kD *= 1.1;
   // Align in front of matchloader
-  bot.moveToY(rightMatchloader.y, 2000, {.minSpeed = 1, .earlyExitRange = 2});
+  lemlib::infoSink()->setLowestLevel(lemlib::Level::INFO);
+  bot.moveToY(rightMatchloader.y, 2000);
+  bot.waitUntil(TILE);
+  bot.matchLoader.extend();
   bot.waitUntilDone();
+  bot.lateralPID.kD /= 1.1;
+  lemlib::infoSink()->setLowestLevel(lemlib::Level::WARN);
+  bot.lateralLargeExit.time = 200;
+  bot.lateralSmallExit.time = 50;
 
   // Prepare matchloader mech and intake for storing
   bot.intake.goToStoring();
-  bot.matchLoader.extend();
 
   // Face matchloader to prepare for storing
-  bot.turnToHeading(RED_STATION, 1000, {.minSpeed = 32, .earlyExitRange = 15});
+  bot.turnToHeading(RED_STATION, 1000, {.earlyExitRange = 10});
   bot.waitUntilDone();
   // Move into matchloader to pick up blocks
   bot.moveToX(rightMatchloader.x, 1500,
@@ -54,20 +63,24 @@ void autons::soloWinPoint() {
   // Give time to yoink the blocks
   tank(10, 10, matchloaderTimeToStore, 0);
 
-  const Pose rightLongGoal = {-TILE - DRIVE_LENGTH / 2 + 4, rightMatchloader.y,
-                              RED_STATION};
+  const Pose rightLongGoal = {-TILE - 6, -2 * TILE, RED_STATION};
 
   // Score 4 blocks on long goal
-  bot.moveToPoint(rightLongGoal, 2000,
-                  {.forwards = false, .maxSpeed = 70, .minSpeed = 30});
-  bot.waitUntilDone();
-
+  bot.moveToPoint(
+      rightLongGoal, 2000,
+      {.forwards = false, .maxSpeed = 96, .minSpeed = 16, .earlyExitRange = 3});
+  waitUntilDistToPose(rightLongGoal, 9, 0, true);
   bot.intake.goToTOP();
+  waitUntilDistToPose(rightLongGoal, 3, 0, true);
+  bot.cancelMotion();
+
   // Push into long goal while scoring and try to maintain a heading of
   // RED_STATION
   bot.moveToX(0, 1250, {.maxSpeed = 20, .targetHeading = RED_STATION});
   bot.waitUntilDone();
   bot.intake.goToIdle();
+  // Retract matchloader to prep for center balls
+  bot.matchLoader.retract();
 
   // Reset y position
   bot.setPose(
@@ -78,67 +91,47 @@ void autons::soloWinPoint() {
   bot.tank(0, 0);
 
   const Pose rightCenterBallsTarget{
-      -TILE /* + 1.25 * BALL_INNER_DIAM - DRIVE_WIDTH / 2 */, -TILE};
+      -TILE + DRIVE_WIDTH / 2 - 2 * BALL_INNER_DIAM, -TILE};
   const Pose leftCenterBallsTarget{rightCenterBallsTarget.x,
                                    -rightCenterBallsTarget.y};
   // Exit long goal
-  tank(48, 16, 100, 0);
-
-  // Prepare to scoop up the center balls
-  bot.matchLoader.retract();
+  bot.turnToPoint(rightCenterBallsTarget, 1000,
+                  {.minSpeed = 32, .earlyExitRange = 20});
+  bot.waitUntilDone();
   bot.intake.goToStoring();
+  bot.moveToPoint(rightCenterBallsTarget, 1500,
+                  {.minSpeed = 32, .earlyExitRange = 9});
+  bot.waitUntilDone();
 
-  // Go to the right of the right center balls
-  bot.swingToPoint(rightCenterBallsTarget, lemlib::DriveSide::RIGHT, 750
-                   /* {.minSpeed = 48, .earlyExitRange = 45} */);
-  // // bot.turnToPoint(rightCenterBallsTarget, 500);
-  // {
-  //   const float startTheta = bot.getPose().theta;
-  //   const float finalCenterX = rightCenterBallsTarget.x;
-  //   const float leftDriveX = finalCenterX - TRACK_WIDTH / 2;
-  //   const float intermediateCenterX =
-  //       leftDriveX + TRACK_WIDTH / 2 * cos(lemlib::degToRad(startTheta));
-  //   bot.moveToX(intermediateCenterX, 2000,
-  //               {.minSpeed = 32, .earlyExitRange = 5});
-  // }
-  bot.moveToPoint(rightCenterBallsTarget, 1500, {.minSpeed = 32});
-  // Wait until near the right center balls to trap with matchloader
-  waitUntil([&] {
-    return !bot.isInMotion() ||
-           bot.getPose().distance(rightCenterBallsTarget) <
-               BALL_INNER_DIAM + MATCHLOADER_DIST_TO_CENTER - 2;
-  });
-  bot.matchLoader.extend();
+  //   bot.moveToPoint(leftCenterBallsTarget, 2000,
+  //                   {.maxSpeed = 60, .minSpeed = 40, .earlyExitRange = 8});
+  //   // Wait until facing and near left center balls
+  //   waitUntil([&] { return !bot.isInMotion() || bot.getPose().y > -TILE *
+  //   .25; },
+  //             0, 5000);
+  //   bot.cancelMotion();
+  //   bot.matchLoader.retract();
 
-  // Aim to scoop up left center balls
-  bot.swingToPoint(leftCenterBallsTarget, lemlib::DriveSide::LEFT, 500,
-                   {.minSpeed = 32, .earlyExitRange = 30});
-  bot.moveToPoint(leftCenterBallsTarget, 2000,
-                  {.maxSpeed = 60, .minSpeed = 40, .earlyExitRange = 6});
-  // Wait until facing and near left center balls
-  waitUntil(
-      [&] {
-        return !bot.isInMotion() ||
-               (robotAngDist(90.0 - lemlib::radToDeg(bot.getPose().angle(
-                                        leftCenterBallsTarget))) < 10 &&
-                leftCenterBallsTarget.y - bot.getPose().y < 1.5 * TILE);
-      },
-      100, 5000, true);
-  bot.cancelMotion();
-  bot.matchLoader.retract();
+  const float middleGoalTargetTheta = REFEREE - 45;
 
-  const float middleGoalTargetTheta = -45;
+  //   bot.lateralPID.kP *= 1.25;
+  bot.lateralPID.kD *= 1.25;
   // Move to be directly in front of middle goal
-  bot.moveToLine({0, 0, middleGoalTargetTheta}, 1500,
+  // Adjust odom pose
+  bot.setPose(bot.getPose() + Pose{0, 2, 0});
+  bot.moveToLine({0, 0, middleGoalTargetTheta}, 2000,
                  {.targetHeading = REFEREE});
-  // Wait until matchloader is in position to trap leftCenterBalls with ML mech
+  // Wait until matchloader is in position to trap leftCenterBalls with ML
+  // mech
   waitUntil([&] {
     return !bot.isInMotion() || leftCenterBallsTarget.y + BALL_INNER_DIAM / 2 -
-                                        MATCHLOADER_DIST_TO_CENTER + 2 <
+                                        MATCHLOADER_DIST_TO_CENTER - 5 <
                                     bot.getPose().y;
   });
   bot.matchLoader.extend();
   bot.waitUntilDone();
+  //   bot.lateralPID.kP /= 1.25;
+  bot.lateralPID.kD /= 1.25;
 
   // Go into middle goal
   bot.turnToHeading(middleGoalTargetTheta, 1000);
@@ -148,23 +141,23 @@ void autons::soloWinPoint() {
 
   // Score on middle goal
   bot.intake.goToMIDDLE();
-  tank(-10, -10, 1250, 0);
-  // Push blocks a bit maybe with trapdoor, and hold onto any remaining blocks
-  bot.intake.goToOuttaking();
-  stop();
-  pros::delay(100);
-  // Recover any outtaked blocks
-  bot.intake.goToStoring();
-
-  // Adjust odom pose
-  bot.setPose(bot.getPose() + Pose{0, 2, 0});
+  bot.intake.setSpinState(Intake::SpinState::INTAKING);
+  bot.moveToY(
+      0, 1250,
+      {.maxSpeed = 20, .minSpeed = 12, .targetHeading = middleGoalTargetTheta});
+  bot.waitUntilDone();
 
   const Pose leftMatchloader = {rightMatchloader.x, -rightMatchloader.y,
                                 RED_STATION};
-  const Pose leftMatchloaderAlignTarget = leftMatchloader.withX(-2 * TILE);
 
+  // Recover any outtaked blocks
+  bot.intake.goToOuttaking();
   // Align with left matchloader
-  bot.moveToY(leftMatchloader.y, 2000);
+  bot.moveToY(leftMatchloader.y, 2000,
+              {.targetHeading = middleGoalTargetTheta + 10});
+  // Let outtake spin to hold onto blocjks
+  pros::delay(300);
+  bot.intake.goToStoring();
   bot.waitUntilDone();
 
   // Prepare matchloader mech and intake for scoring
@@ -173,7 +166,7 @@ void autons::soloWinPoint() {
 
   bot.angularPID.kP *= 1.25;
   // Face matchloader to prepare for scoring
-  bot.turnToHeading(RED_STATION, 1000);
+  bot.turnToHeading(RED_STATION, 1000, {.earlyExitRange = 10});
   bot.waitUntilDone();
   bot.angularPID.kP /= 1.25;
 
@@ -194,15 +187,21 @@ void autons::soloWinPoint() {
   const Pose leftLongGoal = {rightLongGoal.x, -rightLongGoal.y, RED_STATION};
 
   // Score 4 blocks on long goal
-  bot.moveToPoint(leftLongGoal, 1500,
-                  {.forwards = false, .maxSpeed = 70, .minSpeed = 30});
-  bot.waitUntilDone();
-
+  bot.moveToPoint(
+      leftLongGoal, 2000,
+      {.forwards = false, .maxSpeed = 96, .minSpeed = 16, .earlyExitRange = 3});
+  waitUntilDistToPose(leftLongGoal, 9, 0, true);
   bot.intake.goToTOP();
-  tank(-10, -10, 1250, 0);
+  waitUntilDistToPose(leftLongGoal, 3, 0, true);
+  bot.cancelMotion();
+
+  // Push into long goal while scoring and try to maintain a heading of
+  // RED_STATION
+  bot.moveToX(0, 1250, {.maxSpeed = 20, .targetHeading = RED_STATION});
+  bot.waitUntilDone();
   bot.intake.goToIdle();
 
   // Leave Long goal to avoid touching our blocks
-  tank(48, 48, 100, 0);
+  tank(64, 64, 200, 0);
   stop();
 }
