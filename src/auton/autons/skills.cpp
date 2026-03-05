@@ -38,28 +38,26 @@ void autons::skills() {
   const Pose farRightMatchLoader = {MAX_X, 2 * TILE - 1, BLUE_STATION};
   const Pose closeLeftMatchLoader = {MIN_X, -2 * TILE + 1, RED_STATION};
   const Pose closeRightMatchLoader = {MAX_X, -2 * TILE + 1, BLUE_STATION};
-  const Pose farLongGoalLeft = {-TILE - DRIVE_LENGTH, 2 * TILE, RED_STATION};
-  const Pose farLongGoalRight = {TILE, 2 * TILE, BLUE_STATION};
-  const Pose closeLongGoal = {-TILE, -2 * TILE, RED_STATION};
+  const Pose farLongGoalLeft = {-TILE - DRIVE_LENGTH, 2 * TILE - 1,
+                                RED_STATION};
+  const Pose farLongGoalRight = {TILE, 2 * TILE - 1,
+                                 BLUE_STATION};
+  const Pose closeLongGoal = {-TILE, -2 * TILE + 1, RED_STATION};
   const Pose centerGoal = {-7, 7};
 
   const Pose middleGoal = {-9, 9, 310};
   const Pose inFrontPark = {-47.5, 0, RED_STATION};
 
-  // const Pose startingPosition = {-2 * TILE - 1.5, TILE - DRIVE_LENGTH + 8.5,
-  // 0}; bot.setPose(startingPosition);
+  //const Pose startingPosition = {-2 * TILE - 1.5, TILE - DRIVE_LENGTH + 8.5,
+  //0}; bot.setPose(startingPosition);
 
   const Pose startingPosition = {0, 0, RED_STATION};
   bot.setPose(startingPosition);
 
-  
-
-
+/*
   // === PARK → CENTER LANE ===
   bot.park.extend();
   bot.intake.goToStoring();
-
-
 
   // Smooth motor bias wiggle (reduced + symmetric)
   bot.tank(30, 30);
@@ -77,6 +75,7 @@ void autons::skills() {
   pros::delay(1200);
   bot.tank(0, 0);
 
+
   // Aim robot for straight drive
   bot.turnToHeading(RED_STATION, 700);
   bot.waitUntilDone();
@@ -84,10 +83,10 @@ void autons::skills() {
   // Small controlled push forward to clear bumper
   bot.moveToPoint({-13, 0}, 1200, {.maxSpeed = 27, .minSpeed = 20});
   bot.waitUntilDone();
-
-
+  */
 
   // Retract parking mech + reset pose to known clean spot
+  bot.intake.goToStoring();
   bot.park.retract();
   bot.setPose({-47.5, 0, RED_STATION});
 
@@ -136,13 +135,11 @@ void autons::skills() {
                   {.forwards = false, .maxSpeed = 35, .minSpeed = 30});
   bot.waitUntilDone();
 
-
   // =====================
   // === SCORE IN MIDDLE ===
   // =====================
 
   bot.intake.goToMIDDLE();
-  bot.moveToX(0, 3000, {.targetHeading = 310});
   pros::delay(900);
   bot.intake.goToSlow();
   pros::delay(2200);
@@ -151,7 +148,7 @@ void autons::skills() {
   bot.setPose({middleGoal.x, middleGoal.y, bot.getPose().theta});
   pros::delay(100);
   bot.intake.goToStoring();
-
+  
 
   // 1ST MATCHLOAD
   bot.descore.extend();
@@ -181,13 +178,13 @@ void autons::skills() {
       {.forwards = false, .maxSpeed = 70, .minSpeed = 35, .earlyExitRange = 3});
   bot.waitUntilDone();
 
-  // bot.matchLoader.retract();
+  bot.matchLoader.retract();
 
   bot.moveToPoint({TILE + 12, bot.getPose().y}, 5000,
                   {.forwards = false,
                    .maxSpeed = 80,
                    .minSpeed = 50,
-                   .earlyExitRange = 12});
+                   .earlyExitRange = 11});
   bot.waitUntilDone();
 
   bot.swingToHeading(BLUE_STATION, lemlib::DriveSide::LEFT, 2000,
@@ -222,10 +219,12 @@ void autons::skills() {
   bot.tank(10, 10);
   pros::delay(1300);
   bot.tank(0, 0);
+  bot.turnToHeading(BLUE_STATION, 200);
+  bot.waitUntilDone();
 
   bot.moveToX(farLongGoalRight.x, 1700,
-                  { .maxSpeed = 55, .minSpeed = 20, .targetHeading =
-  BLUE_STATION}); bot.waitUntilDone();
+              {.maxSpeed = 55, .minSpeed = 20, .targetHeading = BLUE_STATION});
+  bot.waitUntilDone();
 
   bot.intake.goToTOP();
   bot.moveToX(0, 1900, {.maxSpeed = 30, .targetHeading = BLUE_STATION});
@@ -247,11 +246,11 @@ void autons::skills() {
   bot.waitUntilDone();
 
   bot.moveToPoint({bot.getPose().x, -2 * TILE + 1}, 5500,
-                  {.maxSpeed = 80, .minSpeed = 30, .earlyExitRange = 14});
+                  {.maxSpeed = 80, .minSpeed = 30, .earlyExitRange = 15});
   bot.waitUntilDone();
 
   // 3RD MATCHLOAD (RIGHT CLOSE)
-  bot.turnToHeading(BLUE_STATION, 2000, {.maxSpeed = 50});
+  bot.turnToHeading(BLUE_STATION, 2200, {.maxSpeed = 50});
   bot.waitUntilDone();
 
   bot.intake.goToStoring();
@@ -263,7 +262,7 @@ void autons::skills() {
   bot.tank(0, 0);
 
   // OUT → CLOSE LONG GOAL
-  bot.moveToPose({1.25 * TILE, -2.5 * TILE - 1, BLUE_STATION}, 1500,
+  bot.moveToPose({1.25 * TILE, -2.5 * TILE, BLUE_STATION}, 1500,
                  {.forwards = false, .minSpeed = 35, .earlyExitRange = 3});
   bot.waitUntilDone();
 
@@ -273,16 +272,18 @@ void autons::skills() {
                   {.forwards = false,
                    .maxSpeed = 80,
                    .minSpeed = 50,
-                   .earlyExitRange = 12});
+                   .earlyExitRange = 11});
   bot.waitUntilDone();
 
   bot.swingToHeading(RED_STATION, lemlib::DriveSide::LEFT, 2000,
                      {.direction = AngularDirection::CW_CLOCKWISE,
                       .maxSpeed = 55,
-                      .minSpeed = 20});
+                      .minSpeed = 20,
+                      .earlyExitRange = 3});
   bot.waitUntilDone();
 
-  bot.moveToPoint(closeLongGoal, 1700, {.forwards = false, .maxSpeed = 55});
+  bot.moveToPoint(closeLongGoal, 1700,
+                  {.forwards = false, .maxSpeed = 55, .minSpeed = 20});
   bot.waitUntilDone();
 
   bot.intake.goToTOP();
@@ -298,22 +299,24 @@ void autons::skills() {
   bot.intake.goToStoring();
   bot.matchLoader.extend();
 
-  bot.moveToX(closeLeftMatchLoader.x, 2000, {.maxSpeed = 45, .minSpeed = 10,
-  .targetHeading = RED_STATION}); bot.waitUntilDone();
+  bot.moveToX(closeLeftMatchLoader.x, 2000,
+              {.maxSpeed = 45, .minSpeed = 10, .targetHeading = RED_STATION});
+  bot.waitUntilDone();
 
   bot.tank(10, 10);
   pros::delay(1300);
   bot.tank(0, 0);
+  bot.turnToHeading(RED_STATION, 200);
+  bot.waitUntilDone();
 
   bot.moveToX(closeLongGoal.x, 1700,
-                  { .maxSpeed = 55, .minSpeed = 20, .targetHeading =
-  RED_STATION}); bot.waitUntilDone();
+              {.maxSpeed = 55, .minSpeed = 20, .targetHeading = RED_STATION});
+  bot.waitUntilDone();
 
   bot.intake.goToTOP();
   bot.moveToX(0, 1900, {.maxSpeed = 30, .targetHeading = RED_STATION});
   bot.waitUntilDone();
   pros::delay(100);
-  
 
   // FINAL RESET + PARK
   temp = bot.getPose();
@@ -335,29 +338,19 @@ void autons::skills() {
   bot.tank(80, 80);
   pros::delay(2400);
   wiggle();
-
   */
 
-  
-  
+  /*
 
-  bot.moveToPose({-2.4 * TILE, -1.2 * TILE, -33}, 1100,
-                 {.maxSpeed = 100, .minSpeed = 50, .earlyExitRange = 15});
-
-  bot.swingToHeading(
-      -70, lemlib::DriveSide::LEFT, 1500,
-      {.direction = lemlib::AngularDirection::CCW_COUNTERCLOCKWISE,
-       .maxSpeed = 70});
+  bot.moveToPose(
+      {-2.5 * TILE, -TILE - 2, -20}, 2000,
+      {.lead = 0.35, .maxSpeed = 90, .minSpeed = 60, .earlyExitRange = 7});
   bot.waitUntilDone();
 
-  bot.swingToHeading(0, lemlib::DriveSide::RIGHT, 1500, {.maxSpeed = 70});
-  bot.waitUntilDone();
-
-  pros::delay(100);
-  // bot.matchLoader.extend();
+  // bot.turnToHeading(-20, 1000);
+  // bot.waitUntilDone(); // bot.matchLoader.extend();
   bot.park.extend();
 
-  
   // bot.intake.goToStoring();
   //  bot.park.extend();
   //  1650
@@ -366,9 +359,8 @@ void autons::skills() {
   // waitUntil([] { return bot.front.get_distance() < 1670; });
   pros::delay(1000);
   bot.matchLoader.retract();
-  pros::delay(300);
+  pros::delay(200);
   bot.tank(0, 0);
-  
 
   /*
   // drive into park zone and intake the 6 balls
