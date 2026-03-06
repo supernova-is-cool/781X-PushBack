@@ -33,7 +33,7 @@ void autons::soloWinPoint() {
   bot.intake.goToStoring();
   bot.moveToY(startingPosition.y + BALL_INNER_DIAM + 2, 2000, {.minSpeed = 48});
   bot.waitUntilDone();
-  const Pose rightMatchloader = {MIN_X + DRIVE_LENGTH / 2 + 3, -2 * TILE + 4,
+  const Pose rightMatchloader = {MIN_X + DRIVE_LENGTH / 2 + 4, -2 * TILE + 1,
                                  RED_STATION};
 
   bot.lateralPID.kP *= .75;
@@ -119,7 +119,7 @@ void autons::soloWinPoint() {
   // Move to be directly in front of middle goal
   // Adjust odom pose
   bot.setPose(bot.getPose() + Pose{0, 2, 0});
-  bot.moveToLine({0, 0, middleGoalTargetTheta}, 2000,
+  bot.moveToLine({0, -2, middleGoalTargetTheta}, 2000,
                  {.targetHeading = REFEREE});
   // Wait until matchloader is in position to trap leftCenterBalls with ML
   // mech
@@ -142,12 +142,14 @@ void autons::soloWinPoint() {
   // Score on middle goal
   bot.intake.goToMIDDLE();
   bot.intake.setSpinState(Intake::SpinState::INTAKING);
-  bot.moveToY(
-      0, 1250,
-      {.maxSpeed = 20, .minSpeed = 12, .targetHeading = middleGoalTargetTheta});
+  bot.lateralPID.kP *= .5;
+  bot.moveToLine(
+      {0, 0, middleGoalTargetTheta + 90}, 1250,
+      {.maxSpeed = 40, .minSpeed = 12, .targetHeading = middleGoalTargetTheta});
   bot.waitUntilDone();
+  bot.lateralPID.kP /= .5;
 
-  const Pose leftMatchloader = {rightMatchloader.x, -rightMatchloader.y,
+  const Pose leftMatchloader = {rightMatchloader.x, -rightMatchloader.y - 1,
                                 RED_STATION};
 
   // Recover any outtaked blocks
