@@ -15,9 +15,9 @@
 
 #define CHECK_LLEMU_INIT(...)                                                  \
   if (pros::lcd::is_initialized()) {                                           \
-    lemlib::infoSink()->error("Attempted to perform auto selector printing "   \
+    lemlib::infoSink()->error("t={}; Attempted to print auto selector stuff "  \
                               "code when LCD is initialized ({}@{}:{})",       \
-                              __func__, __FILE__, __LINE__);                   \
+                              pros::millis(), __func__, __FILE__, __LINE__);   \
     return __VA_ARGS__;                                                        \
   }
 
@@ -269,12 +269,12 @@ std::vector<std::string> ts::selector::get_auton_names() {
 }
 
 bool ts::selector::select_auton(std::string name) {
-  CHECK_LLEMU_INIT(false)
   for (auton obj : registry_internal) {
     if (obj.name == name) {
       write_saved_auton(name);
       a_selected_auton = name;
       std::string format = SELECTOR_LABEL_TEXT + name;
+      CHECK_LLEMU_INIT(false)
       lv_label_set_text(l_selected_auton_label, format.c_str());
       return true;
     }
