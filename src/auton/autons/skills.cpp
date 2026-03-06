@@ -37,7 +37,7 @@ void wiggle() {
 void autons::skills() {
 
   const Pose blueBall = {-18, 18};
-  const Pose farLeftMatchLoader = {MIN_X, 2 * TILE - 2, RED_STATION};
+  const Pose farLeftMatchLoader = {MIN_X, 2 * TILE - 1, RED_STATION};
   const Pose farRightMatchLoader = {MAX_X, 2 * TILE - 1, BLUE_STATION};
   const Pose closeLeftMatchLoader = {MIN_X, -2 * TILE + 1, RED_STATION};
   const Pose closeRightMatchLoader = {MAX_X, -2 * TILE + 1, BLUE_STATION};
@@ -150,14 +150,14 @@ void autons::skills() {
 
   bot.intake.goToMIDDLE();
   bot.intake.setSpinState(Intake::SpinState::INTAKING);
-  pros::delay(400);
+  pros::delay(200);
   bot.intake.goToSlow();
-  pros::delay(2700);
-  // bot.intake.goToIdle();
+  pros::delay(3000);
+  bot.intake.goToIdle();
 
   bot.setPose({middleGoal.x, middleGoal.y, bot.getPose().theta});
   pros::delay(100);
-  bot.intake.goToStoring();
+  //bot.intake.goToStoring();
 
   // 1ST MATCHLOAD
   bot.descore.extend();
@@ -174,7 +174,7 @@ void autons::skills() {
                      .minSpeed = 40,
                  });
   bot.waitUntil(3);
-  bot.intake.goToIdle();
+  //bot.intake.goToIdle();
 
   // Once around the blocks, align precisely with the ML
   waitUntilDistToPose(farLeftMlAlignTarget, TILE * .75, 0, true);
@@ -385,7 +385,7 @@ void autons::skills() {
   // waitUntil([] { return bot.front.get_distance() < 1670; });
   pros::delay(1000);
   bot.matchLoader.retract();
-  pros::delay(200);
+  pros::delay(100);
   bot.tank(0, 0);
 
   /*

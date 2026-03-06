@@ -43,7 +43,7 @@ void Intake::runTask() {
     m_motors.move(-SLOW_POWER);
     break;
   case SpinState::EVEN_SLOWER:
-    m_motors.move(POWER * 0.55);
+    m_motors.move(POWER * 0.5);
   }
   switch (m_gateState) {
   case GateState::STORING:
