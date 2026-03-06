@@ -9,7 +9,7 @@
 #include <optional>
 
 #define POWER 127
-#define SLOW_POWER 127 * .85
+#define SLOW_POWER 127 * .7
 
 Intake::Intake(pros::MotorGroup &motors, pros::adi::Pneumatics &bottom_gate,
                pros::adi::Pneumatics &top_gate)
@@ -43,7 +43,7 @@ void Intake::runTask() {
     m_motors.move(-SLOW_POWER);
     break;
   case SpinState::EVEN_SLOWER:
-    m_motors.move(POWER * 0.60);
+    m_motors.move(POWER * 0.55);
   }
   switch (m_gateState) {
   case GateState::STORING:
