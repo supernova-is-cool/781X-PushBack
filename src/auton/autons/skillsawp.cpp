@@ -26,7 +26,7 @@ static void soloWinPointForSkills() {
   bot.setPose(startingPosition);
   // pros::delay(75);
 
-  bot.intake.goToOuttaking();
+  bot.intake.outtake();
 
   // === MATCH LOADER INTAKE #1 ===
   const Pose matchLoader = {MIN_X + DRIVE_LENGTH / 2 + 4, -2 * TILE,
@@ -35,7 +35,7 @@ static void soloWinPointForSkills() {
   // Drop slightly first (consistency)
   bot.moveToPoint({-2 * TILE - DRIVE_WIDTH + 8, -2 * TILE}, 1600);
   bot.waitUntil(2);
-  bot.intake.goToStoring();
+  bot.intake.intake();
   bot.waitUntilDone();
   // pros::delay(100);
   bot.matchLoader.extend();
@@ -72,7 +72,7 @@ static void soloWinPointForSkills() {
   bot.intake.goToOuttaking();
   pros::delay(200);
   */
-  bot.intake.goToTOP();
+  // bot.intake.goToTOP();
   pros::delay(1400);
   bot.tank(0, 0);
 
@@ -94,7 +94,7 @@ static void soloWinPointForSkills() {
   bot.matchLoader.retract();
 
   bot.waitUntilDone();
-  bot.intake.goToStoring();
+  bot.intake.intake();
 
   // Controlled slow intake to stack
   bot.moveToPoint(closeStack, 2000, {.maxSpeed = 75, .minSpeed = 30});
@@ -124,14 +124,14 @@ static void soloWinPointForSkills() {
 
   // Score + reset intake
   bot.tank(-10, -10);
-  bot.intake.goToMIDDLE();
+  // bot.intake.goToMIDDLE();
   pros::delay(100);
-  bot.intake.goToOuttaking();
+  bot.intake.outtake();
   pros::delay(100);
   bot.tank(0, 0);
-  bot.intake.goToMIDDLE();
+  // bot.intake.goToMIDDLE();
   pros::delay(1600);
-  bot.intake.goToIdle();
+  bot.intake.stop();
   pros::delay(150);
 
   const Pose farMatchLoader = {MIN_X + DRIVE_LENGTH / 2 + 3, 2 * TILE + 2,
@@ -148,7 +148,7 @@ static void soloWinPointForSkills() {
   pros::delay(60);
 
   // Intake phase
-  bot.intake.goToStoring();
+  bot.intake.intake();
 
   bot.moveToPoint(farMatchLoader, 1100, {.maxSpeed = 45, .minSpeed = 15});
   bot.waitUntilDone();
@@ -163,7 +163,7 @@ static void soloWinPointForSkills() {
   bot.moveToPoint(farLongGoal, 1500, {.forwards = false, .maxSpeed = 70});
   bot.waitUntilDone();
   bot.tank(-10, -10);
-  bot.intake.goToTOP();
+  // bot.intake.goToTOP();
   /*
   bot.intake.goToScoring();
   pros::delay(200);
@@ -198,7 +198,7 @@ void autons::skillsAWP() {
   // Once away from long goal, prepare to park
   bot.waitUntil(6);
   bot.matchLoader.retract();
-  bot.intake.goToIdle();
+  bot.intake.stop();
   bot.waitUntilDone();
 
   // Turn to face park zone
@@ -239,7 +239,7 @@ void autons::skillsAWP() {
   // Use matchloader mech to clear blocks in park zone
   bot.matchLoader.extend();
   // Pickup any blocks not pushed out by matchloader
-  bot.intake.goToStoring();
+  bot.intake.intake();
   // Wait until back wheel is in park zone to stop, or until skills time runs
   // out
   waitUntil(

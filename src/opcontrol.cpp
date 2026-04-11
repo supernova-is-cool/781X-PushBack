@@ -1,13 +1,13 @@
 #include "autonSelector/selector.hpp"
+#include "main.h"
 #include "pros/misc.h"
 #include "pros/misc.hpp"
 #include "pros/rtos.hpp"
-#include <algorithm>
-#include <string>
-#include "main.h"
 #include "robot.h"
 #include "subsystems/intake.h"
+#include <algorithm>
 #include <print>
+#include <string>
 
 namespace controller_mapping {
 typedef pros::controller_analog_e_t axis_t;
@@ -15,14 +15,18 @@ typedef pros::controller_digital_e_t button_t;
 
 constexpr axis_t LEFT_DRIVE = pros::E_CONTROLLER_ANALOG_LEFT_Y;
 constexpr axis_t RIGHT_DRIVE = pros::E_CONTROLLER_ANALOG_RIGHT_Y;
-constexpr button_t MIDDLE_GOAL = pros::E_CONTROLLER_DIGITAL_X;
-constexpr button_t DESCORE = pros::E_CONTROLLER_DIGITAL_R2;
+
+// Scoring blocks functions
+constexpr button_t INTAKE = pros::E_CONTROLLER_DIGITAL_L1;
 constexpr button_t OUTTAKE = pros::E_CONTROLLER_DIGITAL_L2;
-constexpr button_t STORE = pros::E_CONTROLLER_DIGITAL_L1;
-constexpr button_t HIGH_GOAL = pros::E_CONTROLLER_DIGITAL_R1;
+constexpr button_t SLOW_OUTTAKE = pros::E_CONTROLLER_DIGITAL_B;
+constexpr button_t LEVER = pros::E_CONTROLLER_DIGITAL_R1;
+constexpr button_t LIFT = pros::E_CONTROLLER_DIGITAL_UP;
+
+// Other functions
 constexpr button_t MATCH_LOADER = pros::E_CONTROLLER_DIGITAL_UP;
+constexpr button_t DESCORE = pros::E_CONTROLLER_DIGITAL_R2;
 constexpr button_t PARK = pros::E_CONTROLLER_DIGITAL_DOWN;
-constexpr button_t CLAMP = pros::E_CONTROLLER_DIGITAL_B;
 
 constexpr button_t PREV_AUTON = pros::E_CONTROLLER_DIGITAL_LEFT;
 constexpr button_t NEXT_AUTON = pros::E_CONTROLLER_DIGITAL_RIGHT;
@@ -56,36 +60,41 @@ void opcontrol() {
 
   ts::selector *selector = ts::selector::get();
   while (true) {
+    // Drivetrain
     bot.tank(master.get_analog(map::LEFT_DRIVE),
              master.get_analog(map::RIGHT_DRIVE));
 
-    if (master.get_digital_new_press(map::MATCH_LOADER)) {
+    // Intake
+    if (master.get_digital(map::INTAKE))
+      bot.intake.intake();
+    else if (master.get_digital(map::OUTTAKE))
+      bot.intake.outtake();
+    else if (master.get_digital(map::SLOW_OUTTAKE))
+      bot.intake.slowOuttake();
+    else
+      bot.intake.stop();
+
+    // Lever
+    if (master.get_digital(map::LEVER))
+      bot.lever.scoreAll();
+    else
+      bot.lever.reset();
+
+    // Lift
+    if (master.get_digital_new_press(map::LIFT))
+      bot.lift.extend();
+
+    // Match loader
+    if (master.get_digital_new_press(map::MATCH_LOADER))
       bot.matchLoader.toggle();
-    }
 
-    if (master.get_digital(map::HIGH_GOAL)) {
-      bot.intake.goToTOP();
-    } else if (master.get_digital(map::OUTTAKE)) {
-      bot.intake.goToOuttaking();
-    } else if (master.get_digital(map::STORE)) {
-      bot.intake.goToStoring();
-    } else if (master.get_digital(map::MIDDLE_GOAL)) {
-      bot.intake.goToMIDDLE();
-    } else {
-      bot.intake.goToIdle();
-    }
-
-    if (master.get_digital_new_press(map::DESCORE)) {
+    // Descore
+    if (master.get_digital_new_press(map::DESCORE))
       bot.descore.toggle();
-    }
 
-    if (master.get_digital_new_press(map::CLAMP)) {
-      bot.clamp.toggle();
-    }
-
-    if (master.get_digital_new_press(map::PARK)) {
+    // Park
+    if (master.get_digital_new_press(map::PARK))
       bot.park.toggle();
-    }
 
     // Use controller to select auton if we are not playing a match
     if (!pros::competition::is_connected()) {

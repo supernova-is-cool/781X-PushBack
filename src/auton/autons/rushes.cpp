@@ -48,7 +48,7 @@ static void rush(auton::SignTransform::SIGN sign) {
 
   // Expand descore
   bot.descore.extend();
-  bot.intake.goToStoring();
+  bot.intake.intake();
   bot.moveToPoint(centerBallsTarget, 1200, {.minSpeed = 32});
   // Once near target, capture the balls with ML mech
   waitUntilDistToPose(centerBallsTarget, 9);
@@ -102,12 +102,12 @@ static void rush(auton::SignTransform::SIGN sign) {
                   {.forwards = false, .maxSpeed = 70, .minSpeed = 30});
   // Score on long goal once near
   waitUntilDistToPose(longGoal, 15, 0, true);
-  bot.intake.goToTOP();
+//   bot.intake.goToTOP();
   bot.waitUntilDone();
   // Smooth outtaking sequence
   bot.tank(-10, -10);
   pros::delay(1500);
-  bot.intake.goToIdle();
+  bot.intake.stop();
 
   pros::delay(100);
   bot.tank(0, 0);

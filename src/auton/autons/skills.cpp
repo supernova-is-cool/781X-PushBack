@@ -56,7 +56,7 @@ void autons::skills() {
 
   // === PARK → CENTER LANE ===
   bot.park.extend();
-  bot.intake.goToStoring();
+  bot.intake.intake();
 
   // Smooth motor bias wiggle (reduced + symmetric)
   bot.tank(30, 30);
@@ -89,7 +89,7 @@ void autons::skills() {
   bot.waitUntilDone();
 
   // Retract parking mech + reset pose to known clean spot
-  bot.intake.goToStoring();
+  bot.intake.intake();
   bot.park.retract();
   bot.setPose({-47.5, -1, RED_STATION});
 
@@ -146,12 +146,12 @@ void autons::skills() {
   // Slowly push into middle goal
   tank(-20, -20, 0, 0);
 
-  bot.intake.goToMIDDLE();
-  bot.intake.setSpinState(Intake::SpinState::INTAKING);
+//   bot.intake.goToMIDDLE();
+  bot.intake.intake();
   pros::delay(200);
-  bot.intake.goToSlow();
+//   bot.intake.goToSlow();
   pros::delay(3000);
-  bot.intake.goToIdle();
+  bot.intake.stop();
 
   bot.setPose({middleGoal.x, middleGoal.y, bot.getPose().theta});
   pros::delay(100);
@@ -188,7 +188,7 @@ void autons::skills() {
   pros::delay(40);
 
   bot.matchLoader.extend();
-  bot.intake.goToStoring();
+  bot.intake.intake();
 
   bot.moveToPoint(farLeftMatchLoader, 2000, {.maxSpeed = 45, .minSpeed = 10});
   bot.waitUntilDone();
@@ -223,7 +223,7 @@ void autons::skills() {
   bot.moveToX(farLongGoalRight.x, 1700, {.maxSpeed = 55, .minSpeed = 20});
   bot.waitUntilDone();
 
-  bot.intake.goToTOP();
+//   bot.intake.goToTOP();
   bot.moveToX(0, 1900, {.maxSpeed = 30, .targetHeading = BLUE_STATION});
   bot.waitUntilDone();
   pros::delay(100);
@@ -231,10 +231,10 @@ void autons::skills() {
   Pose temp = bot.getPose();
   bot.setPose({29, 48, temp.theta});
   pros::delay(100);
-  bot.intake.goToIdle();
+  bot.intake.stop();
 
   // 2ND MATCHLOAD (RIGHT)
-  bot.intake.goToStoring();
+  bot.intake.intake();
   bot.matchLoader.extend();
 
   bot.moveToX(farRightMatchLoader.x, 2000,
@@ -251,7 +251,7 @@ void autons::skills() {
               {.maxSpeed = 55, .minSpeed = 20, .targetHeading = BLUE_STATION});
   bot.waitUntilDone();
 
-  bot.intake.goToTOP();
+//   bot.intake.goToTOP();
   bot.moveToX(0, 1900, {.maxSpeed = 30, .targetHeading = BLUE_STATION});
   bot.waitUntilDone();
   pros::delay(100);
@@ -265,7 +265,7 @@ void autons::skills() {
   bot.moveToPoint({1.65 * TILE, bot.getPose().y}, 1500,
                   {.maxSpeed = 70, .minSpeed = 40, .earlyExitRange = 5});
   bot.waitUntilDone();
-  bot.intake.goToIdle();
+  bot.intake.stop();
 
   bot.swingToHeading(180, lemlib::DriveSide::RIGHT, 1200, {.maxSpeed = 55});
   bot.waitUntilDone();
@@ -278,7 +278,7 @@ void autons::skills() {
   bot.turnToHeading(BLUE_STATION, 2200, {.maxSpeed = 50});
   bot.waitUntilDone();
 
-  bot.intake.goToStoring();
+  bot.intake.intake();
   bot.moveToX(closeRightMatchLoader.x, 2000,
               {.maxSpeed = 45, .minSpeed = 15, .targetHeading = BLUE_STATION});
   bot.waitUntilDone();
@@ -312,7 +312,7 @@ void autons::skills() {
                   {.forwards = false, .maxSpeed = 55, .minSpeed = 20});
   bot.waitUntilDone();
 
-  bot.intake.goToTOP();
+//   bot.intake.goToTOP();
   bot.moveToX(0, 1900, {.maxSpeed = 30, .targetHeading = RED_STATION});
   bot.waitUntilDone();
   pros::delay(100);
@@ -322,7 +322,7 @@ void autons::skills() {
   pros::delay(100);
 
   // 4TH MATCHLOAD (LEFT CLOSE)
-  bot.intake.goToStoring();
+  bot.intake.intake();
   bot.matchLoader.extend();
 
   bot.moveToX(closeLeftMatchLoader.x, 2000,
@@ -339,7 +339,7 @@ void autons::skills() {
               {.maxSpeed = 55, .minSpeed = 20, .targetHeading = RED_STATION});
   bot.waitUntilDone();
 
-  bot.intake.goToTOP();
+//   bot.intake.goToTOP();
   bot.moveToX(0, 1900, {.maxSpeed = 30, .targetHeading = RED_STATION});
   bot.waitUntilDone();
   pros::delay(100);

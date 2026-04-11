@@ -1,9 +1,9 @@
 #include "config.h"
 
 robotConfig::Sensors robotConfig::Sensors::sensors{
-    .intakeDistance{1},
-    .vert{-14},
-    .hori{-16},
+    .intakeDistance{200},
+    .vert{-16},
+    .hori{-15},
     .imu{21},
     // TODO: Attach
     .front{3, {0, 0, 0}},

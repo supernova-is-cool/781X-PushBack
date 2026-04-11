@@ -9,10 +9,8 @@ struct robotConfig {
   struct Pneumatics {
     pros::adi::Pneumatics matchLoader;
     pros::adi::Pneumatics descore;
-    pros::adi::Pneumatics bottom_gate;
-    pros::adi::Pneumatics top_gate;
+    pros::adi::Pneumatics gate;
     pros::adi::Pneumatics park;
-    pros::adi::Pneumatics clamp;
     PneumaticGroup lift;
 
   private:
@@ -24,6 +22,7 @@ struct robotConfig {
     pros::MotorGroup left;
     pros::MotorGroup right;
     pros::MotorGroup intake;
+    pros::MotorGroup lever;
 
   private:
     friend struct robotConfig;

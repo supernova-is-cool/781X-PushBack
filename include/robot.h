@@ -3,6 +3,7 @@
 #include "color.h"
 #include "config.h"
 #include "subsystems/intake.h"
+#include "subsystems/lever.h"
 #include <functional>
 #include <memory>
 
@@ -46,9 +47,6 @@ public:
   const robotConfig &m_config;
 
 private:
-  pros::Controller m_gamepad;
-  Intake m_intake;
-
   ALLIANCE m_alliance;
 
 public:
@@ -62,16 +60,15 @@ public:
    */
   inline static Robot &get() { return instance; };
 
-  Intake &intake;
+  Intake intake;
+  Lever lever;
 
   /** Extended is down/active. */
   pros::adi::Pneumatics matchLoader;
   /** Extended is up/inactive. */
   pros::adi::Pneumatics descore;
   pros::adi::Pneumatics park;
-  pros::adi::Pneumatics clamp;
   PneumaticGroup &lift;
-  pros::Controller &gamepad;
 
   Laser &front;
   Laser &back;

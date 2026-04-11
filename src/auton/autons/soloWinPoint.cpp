@@ -28,7 +28,7 @@ void autons::soloWinPoint() {
   bot.setPose(startingPosition);
 
   // Push Alliance partner and pick up their preload
-  bot.intake.goToStoring();
+  bot.intake.intake();
   bot.moveToY(startingPosition.y + BALL_INNER_DIAM + 2, 2000, {.minSpeed = 48});
   bot.waitUntilDone();
   const Pose rightMatchloader = {MIN_X + DRIVE_LENGTH / 2 + 4, -2 * TILE + 1,
@@ -48,7 +48,7 @@ void autons::soloWinPoint() {
   bot.lateralSmallExit.time = 50;
 
   // Prepare matchloader mech and intake for storing
-  bot.intake.goToStoring();
+  bot.intake.intake();
 
   // Face matchloader to prepare for storing
   bot.turnToHeading(RED_STATION, 1000, {.earlyExitRange = 10});
@@ -68,7 +68,7 @@ void autons::soloWinPoint() {
       rightLongGoal, 2000,
       {.forwards = false, .maxSpeed = 96, .minSpeed = 16, .earlyExitRange = 3});
   waitUntilDistToPose(rightLongGoal, 9, 0, true);
-  bot.intake.goToTOP();
+  //   bot.intake.goToTOP();
   waitUntilDistToPose(rightLongGoal, 3, 0, true);
   bot.cancelMotion();
 
@@ -76,7 +76,7 @@ void autons::soloWinPoint() {
   // RED_STATION
   bot.moveToX(0, 1250, {.maxSpeed = 20, .targetHeading = RED_STATION});
   bot.waitUntilDone();
-  bot.intake.goToIdle();
+  bot.intake.stop();
   // Retract matchloader to prep for center balls
   bot.matchLoader.retract();
 
@@ -96,7 +96,7 @@ void autons::soloWinPoint() {
   bot.turnToPoint(rightCenterBallsTarget, 1000,
                   {.minSpeed = 32, .earlyExitRange = 20});
   bot.waitUntilDone();
-  bot.intake.goToStoring();
+  bot.intake.intake();
   bot.moveToPoint(rightCenterBallsTarget, 1500,
                   {.minSpeed = 32, .earlyExitRange = 9});
   bot.waitUntilDone();
@@ -138,8 +138,8 @@ void autons::soloWinPoint() {
   bot.waitUntilDone();
 
   // Score on middle goal
-  bot.intake.goToMIDDLE();
-  bot.intake.setSpinState(Intake::SpinState::INTAKING);
+  //   bot.intake.goToMIDDLE();
+  bot.intake.intake();
   bot.lateralPID.kP *= .5;
   bot.moveToLine(
       {0, 0, middleGoalTargetTheta + 90}, 1250,
@@ -151,17 +151,17 @@ void autons::soloWinPoint() {
                                 RED_STATION};
 
   // Recover any outtaked blocks
-  bot.intake.goToOuttaking();
+  bot.intake.outtake();
   // Align with left matchloader
   bot.moveToY(leftMatchloader.y, 2000,
               {.targetHeading = middleGoalTargetTheta + 10});
   // Let outtake spin to hold onto blocjks
   pros::delay(300);
-  bot.intake.goToStoring();
+  bot.intake.intake();
   bot.waitUntilDone();
 
   // Prepare matchloader mech and intake for scoring
-  bot.intake.goToStoring();
+  bot.intake.intake();
   bot.matchLoader.extend();
 
   bot.angularPID.kP *= 1.25;
@@ -191,7 +191,7 @@ void autons::soloWinPoint() {
       leftLongGoal, 2000,
       {.forwards = false, .maxSpeed = 96, .minSpeed = 16, .earlyExitRange = 3});
   waitUntilDistToPose(leftLongGoal, 9, 0, true);
-  bot.intake.goToTOP();
+  //   bot.intake.goToTOP();
   waitUntilDistToPose(leftLongGoal, 3, 0, true);
   bot.cancelMotion();
 
@@ -199,7 +199,7 @@ void autons::soloWinPoint() {
   // RED_STATION
   bot.moveToX(0, 1250, {.maxSpeed = 20, .targetHeading = RED_STATION});
   bot.waitUntilDone();
-  bot.intake.goToIdle();
+  bot.intake.stop();
 
   // Leave Long goal to avoid touching our blocks
   tank(64, 64, 200, 0);

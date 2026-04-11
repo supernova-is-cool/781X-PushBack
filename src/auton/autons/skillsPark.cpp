@@ -41,7 +41,7 @@ void autons::skillsPark() {
   // Retract odom to prevent impedance when parking
     //   bot.odomLift.retract();
   // Outtake to clear zone
-  bot.intake.goToTOP();
+  bot.intake.outtake();
 
   // Go into park zone
   tank(127, 127, 50, 0);
@@ -66,7 +66,7 @@ void autons::skillsPark() {
   bot.waitUntil(6);
   bot.matchLoader.retract();
 //   bot.lift.retract();
-  bot.intake.goToIdle();
+  bot.intake.stop();
   bot.waitUntilDone();
 
   // Turn to face park zone
@@ -107,7 +107,7 @@ void autons::skillsPark() {
   // Use matchloader mech to clear blocks in park zone
   bot.matchLoader.extend();
   // Pickup any blocks not pushed out by matchloader
-  bot.intake.goToStoring();
+  bot.intake.intake();
   // Wait until back wheel is in park zone to stop, or until skills time runs
   // out
   waitUntil(

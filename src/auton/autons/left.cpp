@@ -33,7 +33,7 @@ void autons::leftMiddle() {
       1 * TILE,
       -1 * TILE,
   };
-  bot.intake.goToStoring();
+  bot.intake.intake();
   bot.moveToPoint(leftCenterBalls, 1200, {.maxSpeed = 90});
 
   // Once within 6in of target, capture the balls with ML mech
@@ -56,15 +56,15 @@ void autons::leftMiddle() {
 
   // Score + reset intake
   bot.tank(-10, -10);
-  bot.intake.goToMIDDLE();
+  // bot.intake.goToMIDDLE();
   // Intake quickly
-  bot.intake.setSpinState(Intake::SpinState::INTAKING);
+  bot.intake.intake();
   pros::delay(500);
 
   // Hold onto any remaining balls
-  bot.intake.goToOuttaking();
+  bot.intake.outtake();
   pros::delay(200);
-  bot.intake.goToStoring();
+  bot.intake.intake();
   // bot.tank(0, 0);
 
   const Pose matchLoader = {MAX_X - DRIVE_LENGTH / 2 - 2, -2 * TILE + 1,
@@ -74,7 +74,7 @@ void autons::leftMiddle() {
 
   bot.turnToHeading(BLUE_STATION, 1000);
   bot.waitUntilDone();
-  bot.intake.goToStoring();
+  bot.intake.intake();
 
   // Go into match loader to pick up balls
   bot.moveToPoint(matchLoader, 2000, {.maxSpeed = 60});
@@ -99,15 +99,15 @@ void autons::leftMiddle() {
                   {.forwards = false, .maxSpeed = 70, .minSpeed = 30});
   // Score early
   waitUntilDistToPose(longGoal, 9, 0, true);
-  bot.intake.goToTOP();
+  // bot.intake.goToTOP();
   bot.waitUntilDone();
 
   // Smooth scoring sequence
   bot.tank(-10, -10);
-  bot.intake.goToTOP();
+  // bot.intake.goToTOP();
   pros::delay(1700);
   bot.tank(0, 0);
-  bot.intake.goToIdle();
+  bot.intake.stop();
 
   // Don't extend descore, since retracted descore is at the correct height now
   bot.descore.retract();
