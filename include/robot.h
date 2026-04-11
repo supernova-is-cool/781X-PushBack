@@ -71,11 +71,9 @@ public:
   pros::adi::Pneumatics matchLoader;
   /** Extended is up/inactive. */
   pros::adi::Pneumatics descore;
-
   pros::adi::Pneumatics park;
-
   pros::adi::Pneumatics clamp;
-
+  PneumaticGroup &lift;
   pros::Controller &gamepad;
 
   Laser &front;

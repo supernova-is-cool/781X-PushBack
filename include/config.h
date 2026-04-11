@@ -2,6 +2,7 @@
 
 #include "auton/laser.h"
 #include "lemlib/chassis/chassis.hpp"
+#include "subsystems/pneumatics.h"
 
 struct robotConfig {
 
@@ -12,6 +13,7 @@ struct robotConfig {
     pros::adi::Pneumatics top_gate;
     pros::adi::Pneumatics park;
     pros::adi::Pneumatics clamp;
+    PneumaticGroup lift;
 
   private:
     friend struct robotConfig;

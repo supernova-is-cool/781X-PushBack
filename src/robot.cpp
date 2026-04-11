@@ -68,6 +68,7 @@ Robot::Robot(const robotConfig &m_config)
       back(robotConfig::config.sensors.back),
       left(robotConfig::config.sensors.left),
       right(robotConfig::config.sensors.right),
+      lift(robotConfig::config.pneumatics.lift),
       m_gamepad(pros::E_CONTROLLER_MASTER), gamepad(m_gamepad),
       m_transform(std::make_shared<auton::AllianceTransform>(COLOR::RED)),
       m_config(robotConfig::config),

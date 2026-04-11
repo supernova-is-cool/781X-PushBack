@@ -1,5 +1,4 @@
 #include "config.h"
-#include "pros/adi.hpp"
 
 robotConfig::Pneumatics robotConfig::Pneumatics::pneumatics{
     .matchLoader = pros::adi::Pneumatics('H', false),
@@ -7,5 +6,5 @@ robotConfig::Pneumatics robotConfig::Pneumatics::pneumatics{
     .bottom_gate = pros::adi::Pneumatics{'A', false},
     .top_gate = pros::adi::Pneumatics{'F', false},
     .park = pros::adi::Pneumatics{'D', false},
-    .clamp = pros::adi::Pneumatics{'C', false}
-};
+    .clamp = pros::adi::Pneumatics{'C', false},
+    .lift = PneumaticGroup{{'B', 'E'}, false, true}};
