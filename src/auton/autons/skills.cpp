@@ -7,14 +7,12 @@
 
 #include "auton/autons.h"
 #include "auton/util.h"
-#include "color.h"
 #include "dimensions.h"
 #include "lemlib/chassis/chassis.hpp"
 #include "lemlib/util.hpp"
 #include "pros/rtos.hpp"
 #include "robot.h"
 #include "subsystems/intake.h"
-#include <print>
 
 using namespace dimensions::all;
 using namespace DIR;
@@ -215,7 +213,7 @@ void autons::skills() {
   bot.waitUntilDone();
 
   bot.swingToHeading(BLUE_STATION, lemlib::DriveSide::LEFT, 2000,
-                     {.direction = AngularDirection::CW_CLOCKWISE,
+                     {.direction = lemlib::AngularDirection::CW_CLOCKWISE,
                       .maxSpeed = 55,
                       .minSpeed = 30});
   bot.waitUntilDone();
@@ -304,7 +302,7 @@ void autons::skills() {
   bot.waitUntilDone();
 
   bot.swingToHeading(RED_STATION, lemlib::DriveSide::LEFT, 2000,
-                     {.direction = AngularDirection::CW_CLOCKWISE,
+                     {.direction = lemlib::AngularDirection::CW_CLOCKWISE,
                       .maxSpeed = 55,
                       .minSpeed = 30,
                       .earlyExitRange = 3});

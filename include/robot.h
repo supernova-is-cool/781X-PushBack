@@ -2,9 +2,6 @@
 #include "auton/transform.h"
 #include "color.h"
 #include "config.h"
-#include "lemlib/chassis/chassis.hpp"
-#include "pros/adi.hpp"
-#include "pros/distance.hpp"
 #include "subsystems/intake.h"
 #include <functional>
 #include <memory>

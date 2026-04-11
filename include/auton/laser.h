@@ -1,6 +1,5 @@
 #pragma once
 
-#include "math/Vector.h"
 #include "math/nlpose.h"
 #include "pros/distance.hpp"
 

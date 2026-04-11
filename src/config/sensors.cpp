@@ -1,5 +1,4 @@
 #include "config.h"
-#include "pros/adi.hpp"
 
 robotConfig::Sensors robotConfig::Sensors::sensors{
     .intakeDistance{1},

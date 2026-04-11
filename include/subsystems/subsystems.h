@@ -1,7 +1,7 @@
 #pragma once
 
-#include "lemlib/api.hpp"
 #include "lemlib/timer.hpp"
+#include "pros/rtos.hpp"
 #include <memory>
 
 class subsystem {

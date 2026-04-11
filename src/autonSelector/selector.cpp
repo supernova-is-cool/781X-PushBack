@@ -1,16 +1,12 @@
 #include "../../include/autonSelector/selector.hpp"
-#include "../../include/liblvgl/lvgl.h"
 #include "../../include/pros/misc.hpp"
 #include "../../include/pros/rtos.hpp"
 #include "lemlib/logger/logger.hpp"
 #include "liblvgl/llemu.hpp"
 #include <cstring>
-#include <filesystem>
 #include <fstream>
 #include <functional>
-#include <print>
 #include <string>
-#include <utility>
 #include <vector>
 
 #define CHECK_LLEMU_INIT(...)                                                  \

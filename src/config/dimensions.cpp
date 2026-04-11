@@ -1,6 +1,5 @@
 #include "dimensions.h"
 #include "config.h"
-#include "lemlib/chassis/trackingWheel.hpp"
 
 robotConfig::Dimensions robotConfig::Dimensions::dimensions = {
     .trackWidth = dimensions::robot::TRACK_WIDTH,

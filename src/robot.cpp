@@ -1,12 +1,7 @@
 #include "robot.h"
 #include "config.h"
-#include "lemlib/chassis/trackingWheel.hpp"
-#include "pros/error.h"
-#include "pros/motor_group.hpp"
-#include "pros/motors.h"
-#include <cstdint>
+ #include "pros/motors.h"
 #include <memory>
-#include <vector>
 
 class CustomIMU : public pros::IMU {
   public:

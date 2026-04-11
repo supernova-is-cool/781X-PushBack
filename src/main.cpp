@@ -1,12 +1,10 @@
 #include "main.h"
 #include "auton/autons.h"
 #include "autonSelector/selector.hpp"
-#include "lemlib/api.hpp"
 #include "liblvgl/llemu.hpp"
 #include "pros/misc.hpp"
 #include "pros/motor_group.hpp"
 #include "robot.h"
-#include <print>
 
 ts::selector *selector = nullptr;
 ts::auton rightRush("Right Rush", autons::rightRush);

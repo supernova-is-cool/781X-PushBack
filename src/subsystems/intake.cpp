@@ -1,12 +1,7 @@
 #include "subsystems/intake.h"
-#include "color.h"
 #include "pros/adi.hpp"
-#include "pros/distance.hpp"
-#include "pros/optical.hpp"
-#include "robot.h"
 #include <cmath>
 #include <cstdio>
-#include <optional>
 
 #define POWER 127
 #define SLOW_POWER 127 * .7

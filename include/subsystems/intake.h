@@ -1,11 +1,9 @@
 #pragma once
+
 #include "color.h"
 #include "pros/adi.hpp"
-#include "pros/distance.hpp"
 #include "pros/motor_group.hpp"
-#include "pros/optical.hpp"
 #include "subsystems.h"
-#include <optional>
 
 class Intake : public subsystem {
 public:

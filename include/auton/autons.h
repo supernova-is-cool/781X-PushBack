@@ -1,9 +1,5 @@
 #pragma once
 
-#include "color.h"
-#include <functional>
-#include <optional>
-
 namespace autons {
   void doNothing();
   void rightRush();

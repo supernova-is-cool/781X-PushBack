@@ -1,5 +1,4 @@
 #include "config.h"
-#include "lemlib/chassis/chassis.hpp"
 
 robotConfig::Tunables robotConfig::Tunables::tunables{
     .lateralController =

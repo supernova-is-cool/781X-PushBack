@@ -1,4 +1,3 @@
-#include "pros/motors.h"
 #include "config.h"
 
 robotConfig::Motors robotConfig::Motors::motors{

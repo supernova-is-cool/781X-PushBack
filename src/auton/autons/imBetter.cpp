@@ -8,10 +8,6 @@
 #include "color.h"
 #include "dimensions.h"
 #include "lemlib/chassis/chassis.hpp"
-#include "lemlib/util.hpp"
-#include "pros/rtos.hpp"
-#include "robot.h"
-#include "subsystems/intake.h"
 
 using namespace dimensions::all;
 using namespace DIR;

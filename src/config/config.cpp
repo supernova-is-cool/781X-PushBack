@@ -1,4 +1,5 @@
-#include "robot.h"
+#include "config.h"
+
 const robotConfig robotConfig::config {
     .motors = robotConfig::Motors::motors,
     .pneumatics = robotConfig::Pneumatics::pneumatics,

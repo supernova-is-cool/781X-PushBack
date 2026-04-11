@@ -1,16 +1,9 @@
 #include "autonSelector/selector.hpp"
-#include "dimensions.h"
-#include "lemlib/pose.hpp"
-#include "lemlib/timer.hpp"
-#include "lemlib/util.hpp"
-#include "pros/adi.h"
 #include "pros/misc.h"
 #include "pros/misc.hpp"
 #include "pros/rtos.hpp"
 #include <algorithm>
-#include <optional>
 #include <string>
-// #include "auton/util.h"
 #include "main.h"
 #include "robot.h"
 #include "subsystems/intake.h"
