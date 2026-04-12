@@ -69,17 +69,28 @@ void opcontrol() {
              master.get_analog(map::RIGHT_DRIVE));
 
     // Lever
-    if (master.get_digital(map::LEVER)) {
+    if (master.get_digital_new_press(map::LEVER)) {
       if (!leverPressTimer.has_value()) {
         leverPressTimer = lemlib::Timer(LONG_PRESS_DURATION);
         leverPressTimer->resume();
+        std::println("[{}] Lever button pressed, starting timer\n",
+                     pros::millis());
       }
-      bot.lever.scoreAll();
-    } else {
+    }
+    if (master.get_digital_new_release(map::LEVER)) {
+      std::println(
+          "[{}] Lever button released. Held for {} ms", pros::millis(),
+          leverPressTimer.has_value() ? leverPressTimer->getTimePassed() : -1);
       // If the press was short, score one block.
       if (leverPressTimer.has_value() && !leverPressTimer->isDone()) {
+        std::println("[{}] Short lever press detected, scoring one block",
+                     pros::millis());
         bot.lever.scoreOne();
       }
+    }
+    if (master.get_digital(map::LEVER)) {
+      bot.lever.scoreAll();
+    } else {
       // If we are scoring one block, release control to the lever macro.
       // Otherwise, reset to intake ready position.
       if (bot.lever.getState() != Lever::State::SCORE_ONE)
