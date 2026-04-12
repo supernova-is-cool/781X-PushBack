@@ -3,7 +3,7 @@
 #include <optional>
 
 /** Scoring voltage for the lever motor (in millivolts) */
-constexpr int SCORE_VOLTAGE = 1200;
+constexpr int SCORE_VOLTAGE = 12000;
 /** Max speed to reset the lever motor (in RPM) */
 constexpr int RESET_MAX_SPEED = 100;
 // TODO: Tune exit sensor threshold
