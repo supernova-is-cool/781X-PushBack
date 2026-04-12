@@ -56,19 +56,36 @@ template <class... Ts> overloads(Ts...) -> overloads<Ts...>;
 void opcontrol() {
   pros::Controller master(pros::E_CONTROLLER_MASTER);
   bot.resetControllerSettings();
-  // bot.odomLift.retract();
 
   ts::selector *selector = ts::selector::get();
+
+  /** How long a button must be held to be considered a long press (in ms) */
+  constexpr size_t LONG_PRESS_DURATION = 200;
+  std::optional<lemlib::Timer> leverPressTimer;
+
   while (true) {
     // Drivetrain
     bot.tank(master.get_analog(map::LEFT_DRIVE),
              master.get_analog(map::RIGHT_DRIVE));
 
     // Lever
-    if (master.get_digital(map::LEVER))
+    if (master.get_digital(map::LEVER)) {
+      if (!leverPressTimer.has_value()) {
+        leverPressTimer = lemlib::Timer(LONG_PRESS_DURATION);
+        leverPressTimer->resume();
+      }
       bot.lever.scoreAll();
-    else
-      bot.lever.reset();
+    } else {
+      // If the press was short, score one block.
+      if (leverPressTimer.has_value() && !leverPressTimer->isDone()) {
+        bot.lever.scoreOne();
+      }
+      // If we are scoring one block, release control to the lever macro.
+      // Otherwise, reset to intake ready position.
+      if (bot.lever.getState() != Lever::State::SCORE_ONE)
+        bot.lever.reset();
+      leverPressTimer = std::nullopt;
+    }
 
     // Intake
     if (master.get_digital(map::INTAKE))

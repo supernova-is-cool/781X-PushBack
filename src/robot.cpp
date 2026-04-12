@@ -60,7 +60,7 @@ Robot::Robot(const robotConfig &conf)
       lift(conf.pneumatics.lift),
       m_transform(std::make_shared<auton::AllianceTransform>(COLOR::RED)),
       m_config(conf), intake(conf.motors.intake),
-      lever(conf.motors.lever, conf.pneumatics.gate) {}
+      lever(conf.motors.lever, conf.pneumatics.gate, conf.pneumatics.lift) {}
 
 Robot Robot::instance{robotConfig::config};
 
