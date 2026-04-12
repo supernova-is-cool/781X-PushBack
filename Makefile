@@ -19,6 +19,9 @@ WARNFLAGS+=
 EXTRA_CFLAGS=
 EXTRA_CXXFLAGS=-DSELECTED_AUTO=$(SELECTED_AUTO)
 
+# Pros is a goofy goober
+EXTRA_CXXFLAGS+=-Wno-deprecated-literal-operator
+
 # Set to 1 to enable hot/cold linking
 USE_PACKAGE:=1
 
