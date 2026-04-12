@@ -10,9 +10,12 @@
 class Lever : public subsystem {
 public:
   enum class State { INTAKE_READY, SCORE_ONE, SCORE_ALL, COMPRESS };
+  enum class ScoringSpeed { MAX, SLOW };
 
 private:
   State m_state;
+  /** Should only have a value when in a scoring state. */
+  std::optional<ScoringSpeed> m_scoringSpeed;
   /** First sensed position for scoring one ball. */
   std::optional<float> m_scoreOneSensedPosition;
   /** Start time of the state. Used to implement a timeout. */
@@ -33,12 +36,20 @@ public:
         pros::Optical exitSensor, const PneumaticGroup &lift);
 
   State getState() const;
+  std::optional<ScoringSpeed> getScoringSpeed() const;
   bool isScoring() const;
 
   void reset();
-  /** Scores one or.a few balls. */
+  
+  /** Scores one or a few balls at full speed. */
   void scoreOne();
+  /** Scores all blocks in tube at full speed. */
   void scoreAll();
+  /** Scores one or a few balls at slow speed. Ideal for center goal. */
+  void scoreOneSlow();
+  /** Scores all blocks in tube at slow speed. Ideal for center goal. */
+  void scoreAllSlow();
+
   /** Pushes lever upwards a wee bit to apply more compression to the balls.
    * Useful for scoring on lower goal. */
   void compress();

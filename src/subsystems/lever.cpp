@@ -3,8 +3,10 @@
 #include <optional>
 #include <print>
 
-/** Scoring voltage for the lever motor (in millivolts) */
-constexpr int SCORE_VOLTAGE = 12000;
+/** Max scoring voltage for the lever motor (in millivolts) */
+constexpr int SCORE_MAX_VOLTAGE = 12000;
+/** Slow scoring voltage for the lever motor (in millivolts) */
+constexpr int SCORE_SLOW_VOLTAGE = SCORE_MAX_VOLTAGE * 0.5;
 /** Max speed to reset the lever motor (in RPM) */
 constexpr int RESET_MAX_SPEED = 100;
 // TODO: Tune exit sensor threshold
@@ -12,7 +14,7 @@ constexpr int RESET_MAX_SPEED = 100;
 constexpr int EXIT_SENSOR_THRESHOLD = 50;
 // TODO: Tune angle, and maybe vary it based on starting position and lift state
 /** Degrees to travel for the block to exit the lever once it is sensed. */
-constexpr int SCORE_ONE_ANGLE = 10;
+constexpr int SCORE_ONE_ANGLE = 20;
 /** Max time to wait for score one motion to complete (in milliseconds).
  * Timer begins when state is entered. */
 constexpr int SCORE_ONE_TIMEOUT = 1000;
@@ -35,13 +37,23 @@ void Lever::runTask() {
   case State::INTAKE_READY:
     m_motors.move_absolute(0., 100);
     m_gate.retract();
+
+    // Reset scoring state variables
     m_scoreOneSensedPosition = std::nullopt;
     m_scoreOneStartTime = std::nullopt;
+    m_scoreOneSensedPosition = std::nullopt;
     break;
 
   case State::SCORE_ONE:
   case State::SCORE_ALL:
-    m_motors.move_voltage(SCORE_VOLTAGE);
+    switch (m_scoringSpeed.value_or(ScoringSpeed::MAX)) {
+    case ScoringSpeed::MAX:
+      m_motors.move_voltage(SCORE_MAX_VOLTAGE);
+      break;
+    case ScoringSpeed::SLOW:
+      m_motors.move_voltage(SCORE_SLOW_VOLTAGE);
+      break;
+    }
     m_gate.extend();
 
     // Start timer even if we aren't in the SCORE_ONE state yet
@@ -79,14 +91,34 @@ bool Lever::isBlockExiting() { return m_exitSensor.get_proximity() > 50; }
 
 Lever::State Lever::getState() const { return m_state; }
 
+std::optional<Lever::ScoringSpeed> Lever::getScoringSpeed() const {
+  return m_scoringSpeed;
+}
+
 bool Lever::isScoring() const {
   return m_state == State::SCORE_ONE || m_state == State::SCORE_ALL;
 }
 
 void Lever::reset() { m_state = State::INTAKE_READY; }
 
-void Lever::scoreOne() { m_state = State::SCORE_ONE; }
+void Lever::scoreOne() {
+  m_state = State::SCORE_ONE;
+  m_scoringSpeed = ScoringSpeed::MAX;
+}
 
-void Lever::scoreAll() { m_state = State::SCORE_ALL; }
+void Lever::scoreAll() {
+  m_state = State::SCORE_ALL;
+  m_scoringSpeed = ScoringSpeed::MAX;
+}
+
+void Lever::scoreOneSlow() {
+  m_state = State::SCORE_ONE;
+  m_scoringSpeed = ScoringSpeed::SLOW;
+}
+
+void Lever::scoreAllSlow() {
+  m_state = State::SCORE_ALL;
+  m_scoringSpeed = ScoringSpeed::SLOW;
+}
 
 void Lever::compress() { m_state = State::COMPRESS; }
