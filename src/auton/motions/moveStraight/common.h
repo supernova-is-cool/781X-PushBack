@@ -7,11 +7,11 @@
 
 #pragma once
 
+#include "math/Vector.h"
 #include <cmath>
 #include <format>
 #include <functional>
 #include <string>
-#include "math/Vector.h"
 
 class MoveToLineErrorFactory {
 private:
@@ -52,7 +52,7 @@ public:
           m_point.theta, m_getPose().theta));
       return []() { return 0; };
     }
-    return [=]() -> float {
+    return [=, *this]() -> float {
       const Vector PQ_vec = Vector::between(m_getPose(), m_point);
       return PQ_vec.cross(m_v) / u_cross_v;
     };
