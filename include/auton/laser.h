@@ -1,6 +1,6 @@
 #pragma once
 
-#include "math/nlpose.h"
+#include "math/NlPose.h"
 #include "pros/distance.hpp"
 
 class Laser {
