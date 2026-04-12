@@ -5,14 +5,19 @@
 #include "subsystems/subsystems.h"
 
 class Lever : public subsystem {
+public:
+  enum class State { INTAKE_READY, SCORE_ONE, SCORE_ALL, COMPRESS };
+
 private:
-  enum class State { INTAKE_READY, SCORE_ONE, SCORE_ALL, COMPRESS } m_state;
+  State m_state;
   pros::MotorGroup &m_motors;
   pros::adi::Pneumatics m_gate;
   void runTask() override;
 
 public:
   Lever(pros::MotorGroup &motors, pros::adi::Pneumatics gate);
+
+  State getState() const;
 
   void reset();
   /** Scores one or.a few balls. */

@@ -20,6 +20,8 @@ void Lever::runTask() {
   }
 }
 
+Lever::State Lever::getState() const { return m_state; }
+
 void Lever::reset() { m_state = State::INTAKE_READY; }
 
 void Lever::scoreOne() { m_state = State::SCORE_ONE; }
