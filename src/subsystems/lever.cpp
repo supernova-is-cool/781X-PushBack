@@ -22,6 +22,10 @@ void Lever::runTask() {
 
 Lever::State Lever::getState() const { return m_state; }
 
+bool Lever::isScoring() const {
+  return m_state == State::SCORE_ONE || m_state == State::SCORE_ALL;
+}
+
 void Lever::reset() { m_state = State::INTAKE_READY; }
 
 void Lever::scoreOne() { m_state = State::SCORE_ONE; }

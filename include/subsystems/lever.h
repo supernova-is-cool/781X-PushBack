@@ -18,6 +18,7 @@ public:
   Lever(pros::MotorGroup &motors, pros::adi::Pneumatics gate);
 
   State getState() const;
+  bool isScoring() const;
 
   void reset();
   /** Scores one or.a few balls. */
