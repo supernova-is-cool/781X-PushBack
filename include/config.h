@@ -2,6 +2,7 @@
 
 #include "auton/laser.h"
 #include "lemlib/chassis/chassis.hpp"
+#include "pros/optical.hpp"
 #include "subsystems/pneumatics.h"
 
 struct robotConfig {
@@ -30,7 +31,7 @@ struct robotConfig {
   };
 
   struct Sensors {
-    pros::Distance intakeDistance;
+    pros::Optical tubeExit;
     pros::Rotation vert;
     pros::Rotation hori;
     pros::IMU imu;

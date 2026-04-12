@@ -1,7 +1,7 @@
 #include "config.h"
 
 robotConfig::Sensors robotConfig::Sensors::sensors{
-    .intakeDistance{200},
+    .tubeExit{3},
     .vert{-16},
     .hori{-15},
     .imu{18},
