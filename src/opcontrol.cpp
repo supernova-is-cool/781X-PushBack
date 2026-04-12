@@ -64,6 +64,12 @@ void opcontrol() {
     bot.tank(master.get_analog(map::LEFT_DRIVE),
              master.get_analog(map::RIGHT_DRIVE));
 
+    // Lever
+    if (master.get_digital(map::LEVER))
+      bot.lever.scoreAll();
+    else
+      bot.lever.reset();
+
     // Intake
     if (master.get_digital(map::INTAKE))
       bot.intake.intake();
@@ -71,14 +77,14 @@ void opcontrol() {
       bot.intake.outtake();
     else if (master.get_digital(map::SLOW_OUTTAKE))
       bot.intake.slowOuttake();
-    else
-      bot.intake.stop();
-
-    // Lever
-    if (master.get_digital(map::LEVER))
-      bot.lever.scoreAll();
-    else
-      bot.lever.reset();
+    else {
+      // If the lever is scoring, automatically run the intake to help score the
+      // blocks
+      if (bot.lever.isScoring())
+        bot.intake.intake();
+      else
+        bot.intake.stop();
+    }
 
     // Lift
     if (master.get_digital_new_press(map::LIFT))
@@ -89,8 +95,10 @@ void opcontrol() {
       bot.matchLoader.toggle();
 
     // Descore
-    if (master.get_digital_new_press(map::DESCORE))
-      bot.descore.toggle();
+    if (master.get_digital(map::DESCORE))
+      bot.descore.retract();
+    else
+      bot.descore.extend();
 
     // Park
     if (master.get_digital_new_press(map::PARK))
