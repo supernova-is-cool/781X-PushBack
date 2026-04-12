@@ -24,7 +24,7 @@ constexpr button_t LEVER = pros::E_CONTROLLER_DIGITAL_R1;
 constexpr button_t LIFT = pros::E_CONTROLLER_DIGITAL_UP;
 
 // Other functions
-constexpr button_t MATCH_LOADER = pros::E_CONTROLLER_DIGITAL_UP;
+constexpr button_t MATCH_LOADER = pros::E_CONTROLLER_DIGITAL_X;
 constexpr button_t DESCORE = pros::E_CONTROLLER_DIGITAL_R2;
 constexpr button_t PARK = pros::E_CONTROLLER_DIGITAL_DOWN;
 
@@ -82,7 +82,7 @@ void opcontrol() {
 
     // Lift
     if (master.get_digital_new_press(map::LIFT))
-      bot.lift.extend();
+      bot.lift.toggle();
 
     // Match loader
     if (master.get_digital_new_press(map::MATCH_LOADER))

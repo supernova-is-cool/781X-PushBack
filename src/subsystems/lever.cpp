@@ -9,12 +9,12 @@ void Lever::runTask() {
   switch (m_state) {
   case State::COMPRESS:
   case State::INTAKE_READY:
-    m_motors.move_absolute(0., 20);
+    m_motors.move_absolute(0., 100);
     m_gate.retract();
     break;
   case State::SCORE_ONE:
   case State::SCORE_ALL:
-    m_motors.move(32);
+    m_motors.move_voltage(12000);
     m_gate.extend();
     break;
   }

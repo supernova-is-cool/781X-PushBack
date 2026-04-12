@@ -4,7 +4,7 @@ robotConfig::Sensors robotConfig::Sensors::sensors{
     .intakeDistance{200},
     .vert{-16},
     .hori{-15},
-    .imu{21},
+    .imu{18},
     // TODO: Attach
     .front{3, {0, 0, 0}},
     .back{15, {-4.5, -2.5, M_PI}},
