@@ -45,6 +45,7 @@ void printLoop() {
       LabeledMotor{"Left", bot.m_config.motors.left},
       LabeledMotor{"Right", bot.m_config.motors.right},
       LabeledMotor{"Intake", bot.m_config.motors.intake},
+      LabeledMotor{"Lever", bot.m_config.motors.lever},
   };
   pros::Controller gamepad(pros::E_CONTROLLER_MASTER);
   while (true) {
