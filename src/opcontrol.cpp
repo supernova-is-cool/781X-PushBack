@@ -5,6 +5,7 @@
 #include "pros/rtos.hpp"
 #include "robot.h"
 #include "subsystems/intake.h"
+#include "tuning.h"
 #include <algorithm>
 #include <print>
 #include <string>
@@ -19,17 +20,19 @@ constexpr axis_t RIGHT_DRIVE = pros::E_CONTROLLER_ANALOG_RIGHT_Y;
 // Scoring blocks functions
 constexpr button_t INTAKE = pros::E_CONTROLLER_DIGITAL_L1;
 constexpr button_t OUTTAKE = pros::E_CONTROLLER_DIGITAL_L2;
-constexpr button_t SLOW_OUTTAKE = pros::E_CONTROLLER_DIGITAL_B;
+constexpr button_t SLOW_OUTTAKE = pros::E_CONTROLLER_DIGITAL_Y;
 constexpr button_t LEVER = pros::E_CONTROLLER_DIGITAL_R1;
-constexpr button_t LIFT = pros::E_CONTROLLER_DIGITAL_UP;
+constexpr button_t LIFT = pros::E_CONTROLLER_DIGITAL_DOWN;
 
 // Other functions
-constexpr button_t MATCH_LOADER = pros::E_CONTROLLER_DIGITAL_X;
+constexpr button_t MATCH_LOADER = pros::E_CONTROLLER_DIGITAL_B;
 constexpr button_t DESCORE = pros::E_CONTROLLER_DIGITAL_R2;
-constexpr button_t PARK = pros::E_CONTROLLER_DIGITAL_DOWN;
+constexpr button_t PARK = pros::E_CONTROLLER_DIGITAL_RIGHT;
 
 constexpr button_t PREV_AUTON = pros::E_CONTROLLER_DIGITAL_LEFT;
-constexpr button_t NEXT_AUTON = pros::E_CONTROLLER_DIGITAL_RIGHT;
+constexpr button_t NEXT_AUTON = pros::E_CONTROLLER_DIGITAL_UP;
+constexpr button_t INIT_TUNING[2] = {pros::E_CONTROLLER_DIGITAL_A,
+                                     pros::E_CONTROLLER_DIGITAL_X};
 }; // namespace controller_mapping
 namespace map = controller_mapping;
 
@@ -64,9 +67,13 @@ void opcontrol() {
   std::optional<lemlib::Timer> leverPressTimer;
 
   while (true) {
-    // Drivetrain
-    bot.tank(master.get_analog(map::LEFT_DRIVE),
-             master.get_analog(map::RIGHT_DRIVE));
+    pros::delay(5); // Run every 20ms (refresh rate of the controller)
+
+    // If tuning, relinquish control of the drive to the tuning CLI
+    if (!isTuning())
+      // Drivetrain
+      bot.tank(master.get_analog(map::LEFT_DRIVE),
+               master.get_analog(map::RIGHT_DRIVE));
 
     // Lever
     if (master.get_digital_new_press(map::LEVER)) {
@@ -155,7 +162,5 @@ void opcontrol() {
                 selector->get_selected_auton_name());
       }
     }
-
-    pros::delay(5); // Run every 20ms (refresh rate of the controller)
   }
 }
