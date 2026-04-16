@@ -43,6 +43,11 @@ private:
   /** @brief Should ever be one instance of Robot, and that's this one. */
   static Robot instance;
 
+  Laser m_leftLaser;
+  Laser m_rightLaser;
+  Laser m_frontLaser;
+  Laser m_backLaser;
+
 public:
   const robotConfig &m_config;
 
@@ -70,10 +75,10 @@ public:
   pros::adi::Pneumatics park;
   PneumaticGroup &lift;
 
-  Laser &front;
-  Laser &back;
-  Laser &left;
-  Laser &right;
+  Laser &frontLaser();
+  Laser &backLaser();
+  Laser &leftLaser();
+  Laser &rightLaser();
 
   /**
    * Resets all PID controller settings and horizontal drift to config values.

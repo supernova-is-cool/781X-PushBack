@@ -1,6 +1,8 @@
 #include "robot.h"
+#include "laser.h"
 #include "lemlib/chassis/chassis.hpp"
 #include "lemlib/pose.hpp"
+#include "log.h"
 
 // Handles transformations for auton to work for both red and blue alliance
 
@@ -120,3 +122,35 @@ void Robot::moveToPoint(lemlib::Pose target, int timeout,
                                },
                                async);
 }
+
+Laser &Robot::leftLaser() {
+  switch (m_transform->transformDriveSide(lemlib::DriveSide::LEFT)) {
+  case lemlib::DriveSide::LEFT:
+    log("Returning left laser");
+    return m_leftLaser;
+  case lemlib::DriveSide::RIGHT:
+    log("Returning right laser");
+    return m_rightLaser;
+  default:
+    log("Invalid drive side!");
+    return m_leftLaser; // Default case, should not happen
+  }
+}
+
+Laser &Robot::rightLaser() {
+  switch (m_transform->transformDriveSide(lemlib::DriveSide::RIGHT)) {
+  case lemlib::DriveSide::LEFT:
+    log("Returning left laser");
+    return m_leftLaser;
+  case lemlib::DriveSide::RIGHT:
+    log("Returning right laser");
+    return m_rightLaser;
+  default:
+    log("Invalid drive side!");
+    return m_leftLaser; // Default case, should not happen
+  }
+}
+
+Laser &Robot::frontLaser() { return m_frontLaser; }
+
+Laser &Robot::backLaser() { return m_backLaser; }

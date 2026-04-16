@@ -89,20 +89,14 @@ static void rush(auton::SignTransform::SIGN sign) {
   bot.tank(0, 0);
 
   // Reset y position using distance sensor that is hitting the closest wall
-  bot.setTransform(std::make_shared<auton::SignTransform>(
-      auton::SignTransform::AUDIENCE, auton::SignTransform::AUDIENCE));
-  bot.setPose(bot.getPose().withY(
-      (sign == auton::SignTransform::REFEREE ? bot.right : bot.left)
-          .getBotY(bot.getPose(true, true).theta)
-          .value_or(bot.getPose().y)));
-  bot.setTransform(transform);
+  bot.leftLaser().resetY();
 
   const Pose longGoal = {-TILE - DRIVE_LENGTH / 2 + 4, -2 * TILE, RED_STATION};
   bot.moveToPoint(longGoal, 1500,
                   {.forwards = false, .maxSpeed = 70, .minSpeed = 30});
   // Score on long goal once near
   waitUntilDistToPose(longGoal, 15, 0, true);
-//   bot.intake.goToTOP();
+  //   bot.intake.goToTOP();
   bot.waitUntilDone();
   // Smooth outtaking sequence
   bot.tank(-10, -10);

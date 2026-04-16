@@ -1,6 +1,8 @@
 #include "auton/laser.h"
 #include "dimensions.h"
+#include "log.h"
 #include "pros/error.h"
+#include "robot.h"
 #include <cstddef>
 
 Laser::Laser(size_t port, NlPose offset) : m_sensor(port), m_offset(offset) {}
@@ -45,4 +47,30 @@ std::optional<float> Laser::getBotY(float botTheta) {
       return dimensions::field::MIN_Y + distToWall;
     }
   });
+}
+
+bool Laser::resetX() {
+  float botTheta = bot.getPose(true, true).theta;
+
+  if (auto maybeX = getBotX(botTheta)) {
+    log("Reset X to {} using laser", *maybeX);
+    bot.setPose(bot.getPose().withX(*maybeX));
+    return true;
+  } else {
+    log("Laser measurement failed. Cannot reset X.");
+    return false;
+  }
+}
+
+bool Laser::resetY() {
+  float botTheta = bot.getPose(true, true).theta;
+
+  if (auto maybeY = getBotY(botTheta)) {
+    bot.setPose(bot.getPose().withY(*maybeY));
+    log("Reset Y to {} using laser", *maybeY);
+    return true;
+  } else {
+    log("Laser measurement failed. Cannot reset Y.");
+    return false;
+  }
 }

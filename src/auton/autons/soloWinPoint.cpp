@@ -81,9 +81,7 @@ void autons::soloWinPoint() {
   bot.matchLoader.retract();
 
   // Reset y position
-  bot.setPose(
-      bot.getPose().withY(bot.left.getBotY(bot.getPose(true, true).theta)
-                              .value_or(bot.getPose().y)));
+  bot.leftLaser().resetY();
 
   pros::delay(100);
   bot.tank(0, 0);
@@ -176,9 +174,7 @@ void autons::soloWinPoint() {
   bot.waitUntilDone();
 
   // Reset y position
-  bot.setPose(
-      bot.getPose().withY(bot.right.getBotY(bot.getPose(true, true).theta)
-                              .value_or(bot.getPose().y)));
+  bot.rightLaser().resetY();
 
   // Give time to yoink the blocks
   tank(10, 10, matchloaderTimeToStore, 0);

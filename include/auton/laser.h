@@ -21,6 +21,19 @@ public:
    */
   std::optional<float> getBotY(float botTheta);
 
+  /**
+   * @brief Attempts to reset the x-coordinate of the bot, using this laser.
+   * Assumes the laser hits a vertical wall.
+   * @return True if the reset was successful, false otherwise.
+   */
+  bool resetX();
+  /**
+   * @brief Attempts to reset the y-coordinate of the bot, using this laser.
+   * Assumes the laser hits a horizontal wall.
+   * @return True if the reset was successful, false otherwise.
+   */
+  bool resetY();
+
   Laser(size_t port, NlPose offset);
 
 private:
