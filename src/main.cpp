@@ -19,6 +19,7 @@ ts::auton soloWinPoint("SAWP", autons::soloWinPoint);
 // ts::auton center("Center????", autons::center);
 ts::auton doNothing("Do Nothing", autons::doNothing);
 ts::auton skills("Skills", autons::skills);
+ts::auton rightMiddle("Right Middle", autons::rightMiddle);
 
 /** Prints odometery, temps, and selected auto */
 void printLoop() {

@@ -51,6 +51,7 @@ constexpr float MIN_Y = -MAX_Y;
 
 /** Diameter of the rings */
 constexpr float BALL_INNER_DIAM = 3.25;
+constexpr float CENTER_GOAL_RADIUS = 22.5 / 2.;
 } // namespace field
 
 namespace robot {
@@ -59,7 +60,7 @@ constexpr float DRIVE_WIDTH = 27.0 / 2;
 /** Includes funnels */
 constexpr float DRIVE_LENGTH = 31.0 / 2;
 /** Distance from center of robot to axle of match loader */
-constexpr float MATCHLOADER_DIST_TO_CENTER = 10. + 5./8;
+constexpr float MATCHLOADER_DIST_TO_CENTER = 11.;
 
 } // namespace robot
 
