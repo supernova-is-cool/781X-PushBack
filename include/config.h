@@ -2,6 +2,7 @@
 
 #include "auton/laser.h"
 #include "lemlib/chassis/chassis.hpp"
+#include "pros/distance.hpp"
 #include "pros/optical.hpp"
 #include "subsystems/pneumatics.h"
 
@@ -39,6 +40,7 @@ struct robotConfig {
     Laser back;
     Laser left;
     Laser right;
+    pros::Distance ballCounter;
 
   private:
     friend struct robotConfig;

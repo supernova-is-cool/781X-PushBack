@@ -6,8 +6,9 @@ robotConfig::Sensors robotConfig::Sensors::sensors{
     .hori{-15},
     .imu{18},
     // TODO: Attach
-    .front{3, {0, 0, 0}},
-    .back{15, {-4.5, -2.5, M_PI}},
-    .left{17, {-3, 5.5, M_PI_2}},
-    .right{4, {-3, -5.5, -M_PI_2}},
+    .front{8, {0, 0, 0}},
+    .back{7, {-4.5, -2.5, M_PI}},
+    .left{6, {-3, 5.5, M_PI_2}},
+    .right{5, {-3, -5.5, -M_PI_2}},
+    .ballCounter{4}
 };

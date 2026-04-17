@@ -80,6 +80,8 @@ public:
   Laser &leftLaser();
   Laser &rightLaser();
 
+  pros::Distance ballCounter;
+
   /**
    * Resets all PID controller settings and horizontal drift to config values.
    * Also resets the brake mode to coasting.
