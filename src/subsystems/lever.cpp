@@ -19,6 +19,8 @@ constexpr int SCORE_ONE_ANGLE = 20;
 /** Max time to wait for score one motion to complete (in milliseconds).
  * Timer begins when state is entered. */
 constexpr int SCORE_ONE_TIMEOUT = 1000;
+/** Threshold for determining if the lever is fully scored (in degrees). */
+constexpr float FULLY_SCORED_THRESHOLD = 130;
 
 Lever::Lever(pros::MotorGroup &motors, pros::adi::Pneumatics gate,
              pros::Optical exitSensor, const PneumaticGroup &lift)
@@ -67,7 +69,10 @@ void Lever::runTask() {
       // If jammed, reset to intake ready position.
       this->reset();
     }
-
+    if (isFullyScored() && m_state == State::SCORE_ONE) {
+      log("[{}] Fully scored, resetting lever", pros::millis());
+      this->reset();
+    }
     if (isBlockExiting()) {
       // Start distance thing even if we aren't in the SCORE_ONE state yet
       if (!m_scoreOneSensedPosition.has_value()) {
@@ -96,6 +101,10 @@ std::optional<Lever::ScoringSpeed> Lever::getScoringSpeed() const {
 
 bool Lever::isScoring() const {
   return m_state == State::SCORE_ONE || m_state == State::SCORE_ALL;
+}
+
+bool Lever::isFullyScored() const {
+  return m_motors.get_position() >= FULLY_SCORED_THRESHOLD;
 }
 
 void Lever::reset() { m_state = State::INTAKE_READY; }

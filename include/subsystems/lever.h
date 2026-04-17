@@ -38,9 +38,11 @@ public:
   State getState() const;
   std::optional<ScoringSpeed> getScoringSpeed() const;
   bool isScoring() const;
+  /** Checks if the lever arm is in the fully scored position. */
+  bool isFullyScored() const;
 
   void reset();
-  
+
   /** Scores one or a few balls at full speed. */
   void scoreOne();
   /** Scores all blocks in tube at full speed. */
