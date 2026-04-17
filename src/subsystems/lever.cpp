@@ -1,5 +1,6 @@
 #include "subsystems/lever.h"
 
+#include "log.h"
 #include <optional>
 #include <print>
 
@@ -62,8 +63,7 @@ void Lever::runTask() {
     }
     if (pros::millis() - m_scoreOneStartTime.value() > SCORE_ONE_TIMEOUT &&
         m_state == State::SCORE_ONE) {
-      std::println("[{}] Score one timeout reached, resetting lever",
-                   pros::millis());
+      log("[{}] Score one timeout reached, resetting lever", pros::millis());
       // If jammed, reset to intake ready position.
       this->reset();
     }
@@ -72,14 +72,13 @@ void Lever::runTask() {
       // Start distance thing even if we aren't in the SCORE_ONE state yet
       if (!m_scoreOneSensedPosition.has_value()) {
         m_scoreOneSensedPosition = m_motors.get_position();
-        std::println("[{}] Block sensed, recording position {:.2f} deg",
-                     pros::millis(), m_scoreOneSensedPosition.value());
+        log("[{}] Block sensed, recording position {:.2f} deg", pros::millis(),
+            m_scoreOneSensedPosition.value());
       }
       if (m_motors.get_position() - m_scoreOneSensedPosition.value() >
               SCORE_ONE_ANGLE &&
           m_state == State::SCORE_ONE) {
-        std::println("[{}] Score distance reached, resetting lever",
-                     pros::millis());
+        log("[{}] Score distance reached, resetting lever", pros::millis());
         this->reset();
       }
     }
