@@ -61,6 +61,7 @@ Robot::Robot(const robotConfig &conf)
       m_transform(std::make_shared<auton::AllianceTransform>(COLOR::RED)),
       m_config(conf), intake(conf.motors.intake),
       ballCounter(conf.sensors.ballCounter),
+      intakeLift(conf.pneumatics.intakeLift),
       lever(conf.motors.lever, conf.pneumatics.gate, conf.sensors.tubeExit,
             conf.pneumatics.lift) {}
 

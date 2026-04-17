@@ -73,6 +73,8 @@ public:
   /** Extended is up/inactive. */
   pros::adi::Pneumatics descore;
   pros::adi::Pneumatics park;
+  /** Extended is up/active. */
+  pros::adi::Pneumatics intakeLift;
   PneumaticGroup &lift;
 
   Laser &frontLaser();

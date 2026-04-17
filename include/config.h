@@ -13,6 +13,7 @@ struct robotConfig {
     pros::adi::Pneumatics descore;
     pros::adi::Pneumatics gate;
     pros::adi::Pneumatics park;
+    pros::adi::Pneumatics intakeLift;
     PneumaticGroup lift;
 
   private:
