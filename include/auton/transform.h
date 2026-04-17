@@ -1,5 +1,6 @@
 #pragma once
 
+#include "auton/quadrant.h"
 #include "color.h"
 #include "lemlib/chassis/chassis.hpp"
 #include <memory>
@@ -11,52 +12,53 @@ namespace auton {
  * Used to enable mirroring of autonomous routines.
  */
 class Transformation {
-  public:
-    /** @note Assumes theta is in compass degrees. */
-    virtual lemlib::Pose transformPose(lemlib::Pose oldPose) = 0;
+public:
+  /** @note Assumes theta is in compass degrees. */
+  virtual lemlib::Pose transformPose(lemlib::Pose oldPose) = 0;
 
-    virtual lemlib::DriveSide
-    transformDriveSide(lemlib::DriveSide oldDriveSide) = 0;
+  virtual lemlib::DriveSide
+  transformDriveSide(lemlib::DriveSide oldDriveSide) = 0;
 
-    virtual lemlib::AngularDirection
-    transformAngDir(lemlib::AngularDirection oldAngDir) = 0;
+  virtual lemlib::AngularDirection
+  transformAngDir(lemlib::AngularDirection oldAngDir) = 0;
 
-    /** @note Assumes theta is in compass degrees. */
-    virtual float transformHeading(float oldHeading) = 0;
+  /** @note Assumes theta is in compass degrees. */
+  virtual float transformHeading(float oldHeading) = 0;
 };
 
 class ChainedTransform : public Transformation {
-  private:
-    /** @brief First transform */
-    std::shared_ptr<Transformation> m_t1;
-    /** @brief Second transform */
-    std::shared_ptr<Transformation> m_t2;
-  public:
-    /** @note Assumes theta is in compass degrees. */
-    virtual lemlib::Pose transformPose(lemlib::Pose oldPose) override;
+private:
+  /** @brief First transform */
+  std::shared_ptr<Transformation> m_t1;
+  /** @brief Second transform */
+  std::shared_ptr<Transformation> m_t2;
 
-    virtual lemlib::DriveSide
-    transformDriveSide(lemlib::DriveSide oldDriveSide) override;
+public:
+  /** @note Assumes theta is in compass degrees. */
+  virtual lemlib::Pose transformPose(lemlib::Pose oldPose) override;
 
-    virtual lemlib::AngularDirection
-    transformAngDir(lemlib::AngularDirection oldAngDir) override;
+  virtual lemlib::DriveSide
+  transformDriveSide(lemlib::DriveSide oldDriveSide) override;
 
-    /** @note Assumes theta is in compass degrees. */
-    virtual float transformHeading(float oldHeading) override;
+  virtual lemlib::AngularDirection
+  transformAngDir(lemlib::AngularDirection oldAngDir) override;
 
-    ChainedTransform(std::shared_ptr<Transformation> transformA,
-                     std::shared_ptr<Transformation> transformB);
+  /** @note Assumes theta is in compass degrees. */
+  virtual float transformHeading(float oldHeading) override;
 
-    /**
-     * @brief Creates a chained transform by transforming the output from
-     * transformA with transformB.
-     *
-     * input ============> ============> output
-     *        transformA    transformB
-     */
-    static std::shared_ptr<ChainedTransform>
-    make(std::shared_ptr<Transformation> transformA,
-         std::shared_ptr<Transformation> transformB);
+  ChainedTransform(std::shared_ptr<Transformation> transformA,
+                   std::shared_ptr<Transformation> transformB);
+
+  /**
+   * @brief Creates a chained transform by transforming the output from
+   * transformA with transformB.
+   *
+   * input ============> ============> output
+   *        transformA    transformB
+   */
+  static std::shared_ptr<ChainedTransform>
+  make(std::shared_ptr<Transformation> transformA,
+       std::shared_ptr<Transformation> transformB);
 };
 
 /**
@@ -64,35 +66,34 @@ class ChainedTransform : public Transformation {
  * ( Mirrors over the y-axis ).
  */
 class AllianceTransform : public Transformation {
-  public:
-    /** @brief The alliance the auto was programmed for. */
-    const ALLIANCE normalAlliance;
+public:
+  /** @brief The alliance the auto was programmed for. */
+  const ALLIANCE normalAlliance;
 
-    /** @brief The alliance currently running. */
-    ALLIANCE alliance;
+  /** @brief The alliance currently running. */
+  ALLIANCE alliance;
 
-    bool needsTransform() const;
+  bool needsTransform() const;
 
-    /** @note Assumes theta is in compass degrees. */
-    virtual lemlib::Pose transformPose(lemlib::Pose oldPose) override;
+  /** @note Assumes theta is in compass degrees. */
+  virtual lemlib::Pose transformPose(lemlib::Pose oldPose) override;
 
-    virtual lemlib::DriveSide
-    transformDriveSide(lemlib::DriveSide oldDriveSide) override;
+  virtual lemlib::DriveSide
+  transformDriveSide(lemlib::DriveSide oldDriveSide) override;
 
-    virtual lemlib::AngularDirection
-    transformAngDir(lemlib::AngularDirection oldAngDir) override;
+  virtual lemlib::AngularDirection
+  transformAngDir(lemlib::AngularDirection oldAngDir) override;
 
-    /** @note Assumes theta is in compass degrees. */
-    virtual float transformHeading(float oldHeading) override;
+  /** @note Assumes theta is in compass degrees. */
+  virtual float transformHeading(float oldHeading) override;
 
-    /**
-     * @brief Construct a new AllianceTransform object
-     *
-     * @param alliance The alliance currently running.
-     * @param normalAlliance The alliance the auto was programmed for.
-     */
-    AllianceTransform(ALLIANCE alliance,
-                      ALLIANCE normalAlliance = ALLIANCE::RED);
+  /**
+   * @brief Construct a new AllianceTransform object
+   *
+   * @param alliance The alliance currently running.
+   * @param normalAlliance The alliance the auto was programmed for.
+   */
+  AllianceTransform(ALLIANCE alliance, ALLIANCE normalAlliance = ALLIANCE::RED);
 };
 
 /**
@@ -100,44 +101,64 @@ class AllianceTransform : public Transformation {
  * sides. ( Mirrors over the x-axis ).
  */
 class SignTransform : public Transformation {
-  public:
-    /** @brief Refers to the sign of the corners on that side of the field. */
-    enum SIGN {
-      POSITIVE,
-      NEGATIVE,
-      REFEREE = POSITIVE,
-      AUDIENCE = NEGATIVE,
-    };
-    static constexpr SIGN flipSign(const SIGN sign) {
-      return (sign == SIGN::POSITIVE) ? SIGN::NEGATIVE : SIGN::POSITIVE;
-    };
+public:
+  using SIGN = Quadrant::SIGN;
+  static constexpr SIGN AUDIENCE = SIGN::AUDIENCE;
+  static constexpr SIGN REFEREE = SIGN::REFEREE;
+  static constexpr SIGN POSITIVE = SIGN::POSITIVE;
+  static constexpr SIGN NEGATIVE = SIGN::NEGATIVE;
 
-    /** @brief The sign that the auto was programmed for. */
-    const SIGN normalSign;
+  static constexpr SIGN flipSign(const SIGN sign) {
+    return (sign == SIGN::POSITIVE) ? SIGN::NEGATIVE : SIGN::POSITIVE;
+  };
 
-    /** @brief The sign thats being currently run. */
-    SIGN sign;
+  /** @brief The sign that the auto was programmed for. */
+  const SIGN normalSign;
 
-    bool needsTransform() const;
+  /** @brief The sign thats being currently run. */
+  SIGN sign;
 
-    /** @note Assumes theta is in compass degrees. */
-    virtual lemlib::Pose transformPose(lemlib::Pose oldPose) override;
+  bool needsTransform() const;
 
-    virtual lemlib::DriveSide
-    transformDriveSide(lemlib::DriveSide oldDriveSide) override;
+  /** @note Assumes theta is in compass degrees. */
+  virtual lemlib::Pose transformPose(lemlib::Pose oldPose) override;
 
-    virtual lemlib::AngularDirection
-    transformAngDir(lemlib::AngularDirection oldAngDir) override;
+  virtual lemlib::DriveSide
+  transformDriveSide(lemlib::DriveSide oldDriveSide) override;
 
-    /** @note Assumes theta is in compass degrees. */
-    virtual float transformHeading(float oldHeading) override;
+  virtual lemlib::AngularDirection
+  transformAngDir(lemlib::AngularDirection oldAngDir) override;
 
-    /**
-     * @brief Construct a new SignTransform object
-     *
-     * @param sign The sign thats being currently run.
-     * @param normalSign The sign that the auto was programmed for.
-     */
-    SignTransform(SIGN sign, SIGN normalSign);
+  /** @note Assumes theta is in compass degrees. */
+  virtual float transformHeading(float oldHeading) override;
+
+  /**
+   * @brief Construct a new SignTransform object
+   *
+   * @param sign The sign thats being currently run.
+   * @param normalSign The sign that the auto was programmed for.
+   */
+  SignTransform(SIGN sign, SIGN normalSign);
 };
+
+class QuadrantTransform : public ChainedTransform {
+public:
+  QuadrantTransform(Quadrant quadrant, Quadrant normalQuadrant);
+};
+
+/**
+ * @brief Uses a RAII like std::lock_guard to apply a transform and
+ * automatically reset it once it goes out of scope. Not thread safe. Probably
+ * some edge cases that break this.
+ */
+class TransformLockGuard {
+private:
+  std::shared_ptr<Transformation> m_oldTransform;
+
+public:
+  TransformLockGuard(std::shared_ptr<Transformation> newTransform);
+
+  ~TransformLockGuard();
+};
+
 } // namespace auton

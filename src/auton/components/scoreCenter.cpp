@@ -1,0 +1,67 @@
+#include "auton/components.h"
+#include "auton/transform.h"
+#include "auton/util.h"
+#include "dimensions.h"
+#include "robot.h"
+#include <memory>
+
+using namespace dimensions::all;
+using namespace DIR;
+using namespace auton::util;
+
+using lemlib::Pose;
+using AngDir = lemlib::AngularDirection;
+using auton::Quadrant;
+
+void auton::components::scoreCenter(Quadrant quadrant,
+                                    std::size_t score_duration) {
+  // Programmed from right red perspective
+  auton::TransformLockGuard _transform{
+      std::make_shared<auton::QuadrantTransform>(quadrant,
+                                                 Quadrant::RED_RIGHT)};
+  // TODO: Support upper middle goal
+  const bool isMiddle = quadrant.isLeft();
+  const Pose center{0, 0};
+  // Face the center goal
+  bot.turnToPoint(center, 500, {.forwards = !isMiddle});
+  bot.waitUntilDone();
+
+  const float upperScoringDist = 8;
+  const float lowerScoringDist = 5;
+  /** Distance from center of bot to the lip of the goal. */
+  const float scoringDist = (isMiddle) ? upperScoringDist : lowerScoringDist;
+
+  const Pose scoreTargetLine =
+      (center +
+       Pose::fromPolar(-scoringDist - CENTER_GOAL_RADIUS, REFEREE + 45))
+          .withTheta(REFEREE - 45);
+  const float targetHeading =
+      trigAngleToHeading(bot.getPose().angle(center)) + (isMiddle ? 180 : 0);
+
+  // Move towards the center goal to score
+  bot.moveToLine(scoreTargetLine, 1500, {.targetHeading = targetHeading});
+  // Retract matchloader to prevent blocking the center goal
+  bot.matchLoader.retract();
+  if (isMiddle) {
+    // Do not raise lift for middle goal
+    bot.lift.retract();
+  } else {
+    // Raise intake and lift to enhance scoring
+    bot.intakeLift.extend();
+    bot.lift.extend();
+  }
+  bot.waitUntilDone();
+
+  if (isMiddle) {
+    // Just score a few, but slowly to prevent them from being launched out the
+    // other side of the goal
+    bot.lever.scoreOneSlow();
+  } else {
+    // Slow outtake to score blocks without sending them out the other end
+    bot.intake.slowOuttake();
+  }
+  pros::delay(score_duration);
+
+  // Exit goal
+  tank(-32, -32, 150, 0);
+}
