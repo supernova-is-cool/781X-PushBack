@@ -29,4 +29,5 @@ public:
   void retract();
   void toggle();
   void set(bool is_extended);
+  bool isExtended() const;
 };
