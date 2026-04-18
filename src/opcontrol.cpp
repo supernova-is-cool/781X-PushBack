@@ -20,7 +20,7 @@ constexpr axis_t RIGHT_DRIVE = pros::E_CONTROLLER_ANALOG_RIGHT_Y;
 // Scoring blocks functions
 constexpr button_t INTAKE = pros::E_CONTROLLER_DIGITAL_L1;
 constexpr button_t OUTTAKE = pros::E_CONTROLLER_DIGITAL_L2;
-constexpr button_t SLOW_OUTTAKE = pros::E_CONTROLLER_DIGITAL_Y;
+constexpr button_t OUTTAKE_LOW = pros::E_CONTROLLER_DIGITAL_Y;
 constexpr button_t LEVER = pros::E_CONTROLLER_DIGITAL_R1;
 constexpr button_t LIFT = pros::E_CONTROLLER_DIGITAL_DOWN;
 
@@ -105,12 +105,18 @@ void opcontrol() {
       leverPressTimer = std::nullopt;
     }
 
+    // Intake Lift
+    if (master.get_digital(map::OUTTAKE_LOW))
+      bot.intakeLift.extend();
+    else
+      bot.intakeLift.retract();
+
     // Intake
     if (master.get_digital(map::INTAKE))
       bot.intake.intake();
     else if (master.get_digital(map::OUTTAKE))
       bot.intake.outtake();
-    else if (master.get_digital(map::SLOW_OUTTAKE))
+    else if (master.get_digital(map::OUTTAKE_LOW))
       bot.intake.slowOuttake();
     else {
       // If the lever is scoring, automatically run the intake to help score the
