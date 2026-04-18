@@ -57,7 +57,11 @@ void Lever::runTask() {
       m_motors.move_voltage(SCORE_SLOW_VOLTAGE);
       break;
     }
-    m_gate.extend();
+    // Only extend gate if scoring on middle goal.
+    if (m_lift.isExtended())
+      m_gate.retract();
+    else
+      m_gate.extend();
 
     // Start timer even if we aren't in the SCORE_ONE state yet
     if (!m_scoreOneStartTime.has_value()) {
