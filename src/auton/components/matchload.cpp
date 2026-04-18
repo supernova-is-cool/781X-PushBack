@@ -51,4 +51,5 @@ void auton::components::matchload(Quadrant quadrant, bool onlyMyColor) {
     pros::delay(1000);
   }
   bot.cancelMotion();
+  bot.leftLaser().resetY();
 }
