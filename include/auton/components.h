@@ -8,12 +8,18 @@ namespace auton::components {
  * @brief Intakes blocks from the matchloader.
  *
  * @param quadrant Specifies the matchloader to intake from.
- * @param onlyMyColor If set to true, intakes only 3 blocks, otherwise
- * intakes 6 blocks.
+ * @param onlyMyColor If set to true, intakes only 3 blocks from matchloader,
+ * otherwise intakes all 6 blocks.
  */
 void matchload(Quadrant quadrant, bool onlyMyColor);
-/** Intakes blocks from the center */
-void grabCenterBlocks(Quadrant quadrant);
+/**
+ * @brief Intakes the blocks from the center.
+ *
+ * @param quadrant
+ * @param alignWithGoal Whether to align the bot with the center goal. Helps
+ * when scoring on the center goal afterwards.
+ */
+void grabCenterBlocks(Quadrant quadrant, bool alignWithGoal = true);
 /**
  * @brief Scores blocks into the long goal.
  * @pre Starts in a position where the bot can back into the long goal easily

@@ -13,7 +13,8 @@ using lemlib::Pose;
 using AngDir = lemlib::AngularDirection;
 using auton::Quadrant;
 
-void auton::components::grabCenterBlocks(Quadrant quadrant) {
+void auton::components::grabCenterBlocks(Quadrant quadrant,
+                                         bool alignWithGoal) {
   // Programmed from right red perspective
   auton::TransformLockGuard _transform{
       std::make_shared<auton::QuadrantTransform>(quadrant,
@@ -25,10 +26,17 @@ void auton::components::grabCenterBlocks(Quadrant quadrant) {
   bot.swingToPoint(centerBalls, lemlib::DriveSide::RIGHT, 500,
                    {.minSpeed = 32, .earlyExitRange = 20});
   bot.waitUntilDone();
+
   // Move towards the center balls and intake them
-  bot.moveToLine(
-      centerGoalLine, 2000,
-      {.targetHeading = trigAngleToHeading(bot.getPose().angle(centerBalls))});
+  if (alignWithGoal) {
+    // Align the imaginary line emanating from the center goal
+    bot.moveToLine(centerGoalLine, 2000,
+                   {.targetHeading =
+                        trigAngleToHeading(bot.getPose().angle(centerBalls))});
+  } else {
+    // Just go to the center balls
+    bot.moveToPoint(centerBalls, 2000, {.minSpeed = 32, .earlyExitRange = 5});
+  }
   bot.intake.intake();
   // Wait until the perfect moment to use ML to capture the blocks
   waitUntil(
@@ -39,7 +47,11 @@ void auton::components::grabCenterBlocks(Quadrant quadrant) {
       },
       0, 2000);
   bot.matchLoader.extend();
-  bot.waitUntilDone();
 
-  // Next step
+  if (alignWithGoal)
+    // Take the time to fully align with the center goal
+    bot.waitUntilDone();
+  else
+    // Rush onto the next step
+    bot.cancelMotion();
 }

@@ -26,23 +26,30 @@ struct StandardMatchAutonConfig {
 
 // Programmed from right red perspective
 static void standardMatchAuto(StandardMatchAutonConfig config) {
+  const auto transform = std::make_shared<auton::QuadrantTransform>(
+      Quadrant::fromSide(COLOR::RED, config.side),
+      Quadrant::fromSide(COLOR::RED, Quadrant::SIDE::RIGHT));
   // Set starting pose
   {
-    auton::TransformLockGuard _lockGuard{
-        std::make_shared<auton::QuadrantTransform>(
-            Quadrant::fromSide(COLOR::RED, config.side),
-            Quadrant::fromSide(COLOR::RED, Quadrant::SIDE::RIGHT))};
-    const Pose startPose = {-TILE * 2, -TILE + DRIVE_WIDTH / 2 + .5,
-                            BLUE_STATION};
+    auton::TransformLockGuard _lockGuard{transform};
+
+    const Pose startPose{-TILE * 2, -TILE + DRIVE_WIDTH / 2 + .5, BLUE_STATION};
     bot.setPose(startPose);
   }
+
   bot.descore.extend();
 
   auto qd = Quadrant::fromSide(COLOR::RED, config.side);
 
-  grabCenterBlocks(qd);
-  if (config.scoreCenter)
+  grabCenterBlocks(qd, config.scoreCenter);
+  if (config.scoreCenter) {
     scoreCenter(qd, 1000);
+  } else {
+    auton::TransformLockGuard _lockGuard{transform};
+
+    const Pose matchloaderAlignTarget{-2 * TILE, -2 * TILE};
+    bot.turnToPoint(matchloaderAlignTarget, 1000);
+  }
   matchload(qd, true);
   scoreLong(qd);
   descoreLong(qd, LongDescoreSide::INNER);
