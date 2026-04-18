@@ -66,7 +66,7 @@ void autons::soloWinPoint() {
   // Score 4 blocks on long goal
   bot.moveToPoint(
       rightLongGoal, 2000,
-      {.forwards = false, .maxSpeed = 96, .minSpeed = 16, .earlyExitRange = 3});
+      {.forwards = false, .maxSpeed = 96, .minSpeed = 45, .earlyExitRange = 3});
   waitUntilDistToPose(rightLongGoal, 9, 0, true);
   //   bot.intake.goToTOP();
   waitUntilDistToPose(rightLongGoal, 3, 0, true);
@@ -130,9 +130,9 @@ void autons::soloWinPoint() {
   bot.lateralPID.kD /= 1.25;
 
   // Go into middle goal
-  bot.turnToHeading(middleGoalTargetTheta, 1000);
+  bot.turnToHeading(middleGoalTargetTheta, 1000, {.minSpeed = 40, .earlyExitRange = 8});
   const Pose middleGoalTarget = Pose::fromPolar(13, middleGoalTargetTheta);
-  bot.moveToPoint(middleGoalTarget, 1000, {.forwards = false, .maxSpeed = 80});
+  bot.moveToPoint(middleGoalTarget, 1000, {.forwards = false, .maxSpeed = 80, .minSpeed = 30});
   bot.waitUntilDone();
 
   // Score on middle goal
@@ -140,7 +140,7 @@ void autons::soloWinPoint() {
   bot.intake.intake();
   bot.lateralPID.kP *= .5;
   bot.moveToLine(
-      {0, 0, middleGoalTargetTheta + 90}, 1250,
+      {4, 0, middleGoalTargetTheta + 90}, 1250,
       {.maxSpeed = 40, .minSpeed = 12, .targetHeading = middleGoalTargetTheta});
   bot.waitUntilDone();
   bot.lateralPID.kP /= .5;
@@ -152,7 +152,7 @@ void autons::soloWinPoint() {
   bot.intake.outtake();
   // Align with left matchloader
   bot.moveToY(leftMatchloader.y, 2000,
-              {.targetHeading = middleGoalTargetTheta + 10});
+              {.targetHeading = middleGoalTargetTheta + 5});
   // Let outtake spin to hold onto blocjks
   pros::delay(300);
   bot.intake.intake();
@@ -165,11 +165,11 @@ void autons::soloWinPoint() {
   bot.angularPID.kP *= 1.25;
   // Face matchloader to prepare for scoring
   bot.turnToHeading(RED_STATION, 1000, {.earlyExitRange = 10});
-  bot.waitUntilDone();
+  //bot.waitUntilDone();
   bot.angularPID.kP /= 1.25;
 
   // Move into matchloader to pick up blocks
-  bot.moveToX(leftMatchloader.x, 1000,
+  bot.moveToX(leftMatchloader.x, 1300,
               {.maxSpeed = 64, .targetHeading = RED_STATION});
   bot.waitUntilDone();
 

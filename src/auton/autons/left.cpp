@@ -41,8 +41,8 @@
 //   bot.matchLoader.extend();
 //   bot.waitUntilDone();
 
-//   // --- Middle Goal Setup ---
-//   const Pose middleGoal = Pose::fromPolar(14, 135) + Pose{0, 0, 0};
+  // --- Middle Goal Setup ---
+  const Pose middleGoal = Pose::fromPolar(11, 135) + Pose{0, 0, 0};
 
 //   // Turn first for cleaner pathing
 //   bot.turnToPoint(middleGoal, 1200, {.forwards = false, .earlyExitRange = 15});
@@ -61,37 +61,36 @@
 //   bot.intake.intake();
 //   pros::delay(500);
 
-//   // Hold onto any remaining balls
-//   bot.intake.outtake();
-//   pros::delay(200);
-//   bot.intake.intake();
-//   // bot.tank(0, 0);
+  // Hold onto any remaining balls
+  bot.intake.outtake();
+  pros::delay(200);
+  bot.intake.intake();
+  // bot.tank(0, 0);
 
-//   const Pose matchLoader = {MAX_X - DRIVE_LENGTH / 2 - 2, -2 * TILE + 1,
-//                             BLUE_STATION};
-//   // Align with left matchloader
-//   bot.moveToY(matchLoader.y, 2000);
+  const Pose matchLoader = {MAX_X - DRIVE_LENGTH / 2 + 7, -2 * TILE + 1,
+                            BLUE_STATION};
+  // Align with left matchloader
+  bot.moveToY(matchLoader.y, 2000);
 
 //   bot.turnToHeading(BLUE_STATION, 1000);
 //   bot.waitUntilDone();
 //   bot.intake.intake();
 
-//   // Go into match loader to pick up balls
-//   bot.moveToPoint(matchLoader, 2000, {.maxSpeed = 60});
-//   // Wait until bot accelerates
-//   pros::delay(200);
-//   // Wait until stopped because we hit match loader
-//   waitUntil(
-//       [] {
-//         const auto speed = lemlib::getSpeed(false);
-//         return !bot.isInMotion() || (speed.distance({0, 0}) < .015);
-//       },
-//       50, INT_MAX, true);
-//   bot.cancelMotion();
-//   // Give a little time to fully grab the balls before exiting
-//   bot.tank(15, 15);
-//   pros::delay(000);
-//   bot.tank(0, 0);
+  // Go into match loader to pick up balls
+  bot.moveToPoint(matchLoader, 2000, {.maxSpeed = 60});
+  // Wait until bot accelerates
+  // Wait until stopped because we hit match loader
+  waitUntil(
+      [] {
+        const auto speed = lemlib::getSpeed(false);
+        return !bot.isInMotion() || (speed.distance({0, 0}) < .02);
+      },
+      50, INT_MAX, true);
+  bot.cancelMotion();
+  // Give a little time to fully grab the balls before exiting
+  bot.tank(15, 15);
+  pros::delay(00);
+  bot.tank(0, 0);
 
 //   const Pose longGoal = {TILE + DRIVE_LENGTH / 2, matchLoader.y, RED_STATION};
 

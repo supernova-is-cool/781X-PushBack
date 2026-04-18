@@ -35,7 +35,7 @@ void wiggle() {
 void autons::skills() {
 
   const Pose blueBall = {-18, 18};
-  const Pose farLeftMatchLoader = {MIN_X, 2 * TILE - 1, RED_STATION};
+  const Pose farLeftMatchLoader = {MIN_X, 2 * TILE - 2, RED_STATION};
   const Pose farRightMatchLoader = {MAX_X, 2 * TILE - 1, BLUE_STATION};
   const Pose closeLeftMatchLoader = {MIN_X, -2 * TILE + 1, RED_STATION};
   const Pose closeRightMatchLoader = {MAX_X, -2 * TILE + 1, BLUE_STATION};
@@ -62,9 +62,9 @@ void autons::skills() {
   bot.tank(30, 30);
   pros::delay(225);
   bot.tank(0, 0);
-  pros::delay(650);
+  pros::delay(850);
   bot.tank(30, 30);
-  pros::delay(750);
+  pros::delay(800);
   // bot.tank(20, 20); pros::delay(400);
   wiggle();
   bot.tank(0, 0);
@@ -146,12 +146,12 @@ void autons::skills() {
   // Slowly push into middle goal
   tank(-20, -20, 0, 0);
 
-//   bot.intake.goToMIDDLE();
-  bot.intake.intake();
-  pros::delay(200);
-//   bot.intake.goToSlow();
-  pros::delay(3000);
-  bot.intake.stop();
+  bot.intake.goToMIDDLE();
+  bot.intake.setSpinState(Intake::SpinState::INTAKING);
+  pros::delay(400);
+  bot.intake.goToSlow();
+  pros::delay(2800);
+  bot.intake.goToIdle();
 
   bot.setPose({middleGoal.x, middleGoal.y, bot.getPose().theta});
   pros::delay(100);
@@ -197,15 +197,15 @@ void autons::skills() {
   pros::delay(1100);
   bot.tank(0, 0);
 
-  // BACK OUT + TRANSITION
+  // BACK OUT + TRANSITIONx
   bot.moveToPose(
-      {-1.25 * TILE, 2.5 * TILE + 1, RED_STATION}, 1500,
+      {-1.25 * TILE, 2.5 * TILE - 3.5, RED_STATION}, 1500,
       {.forwards = false, .maxSpeed = 70, .minSpeed = 35, .earlyExitRange = 3});
   bot.waitUntilDone();
 
   bot.matchLoader.retract();
 
-  bot.moveToPoint({TILE + 12, bot.getPose().y}, 5000,
+  bot.moveToPoint({TILE + 20, bot.getPose().y}, 5000,
                   {.forwards = false,
                    .maxSpeed = 90,
                    .minSpeed = 70,
@@ -271,7 +271,7 @@ void autons::skills() {
   bot.waitUntilDone();
 
   bot.moveToPoint({bot.getPose().x, -2 * TILE + 1}, 5500,
-                  {.maxSpeed = 80, .minSpeed = 30, .earlyExitRange = 16});
+                  {.maxSpeed = 80, .minSpeed = 30, .earlyExitRange = 14});
   bot.waitUntilDone();
 
   // 3RD MATCHLOAD (RIGHT CLOSE)
@@ -288,13 +288,13 @@ void autons::skills() {
   bot.tank(0, 0);
 
   // OUT → CLOSE LONG GOAL
-  bot.moveToPose({1.25 * TILE, -2.5 * TILE, BLUE_STATION}, 1500,
+  bot.moveToPose({1.25 * TILE, -2.5 * TILE + 2.67, BLUE_STATION}, 1500,
                  {.forwards = false, .minSpeed = 35, .earlyExitRange = 3});
   bot.waitUntilDone();
 
   bot.matchLoader.retract();
 
-  bot.moveToPoint({-TILE - 12, bot.getPose().y}, 5000,
+  bot.moveToPoint({-TILE - 20, bot.getPose().y}, 5000,
                   {.forwards = false,
                    .maxSpeed = 90,
                    .minSpeed = 70,

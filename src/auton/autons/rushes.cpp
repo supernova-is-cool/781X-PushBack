@@ -1,10 +1,11 @@
-// #include "auton/autons.h"
-// #include "auton/transform.h"
-// #include "lemlib/chassis/odom.hpp"
-// #include "lemlib/pose.hpp"
-// #include "robot.h"
-// #include <cstdio>
-// #include <memory>
+#include "auton/autons.h"
+#include "auton/transform.h"
+#include "lemlib/chassis/odom.hpp"
+#include "lemlib/pose.hpp"
+#include "pros/motors.h"
+#include "robot.h"
+#include <cstdio>
+#include <memory>
 
 // #include "auton/autons.h"
 // #include "auton/util.h"
@@ -54,39 +55,39 @@
 //   waitUntilDistToPose(centerBallsTarget, 9);
 //   bot.matchLoader.extend();
 
-//   const Pose matchLoader = {MIN_X + DRIVE_LENGTH / 2, -2 * TILE, RED_STATION};
-//   const Pose alignmentPoint = matchLoader.withX(-2 * TILE + 1);
-//   bot.turnToHeading(RED_STATION - 45, 500,
-//                     {.maxSpeed = 95, .minSpeed = 80, .earlyExitRange = 30});
-//   bot.waitUntilDone();
+  const Pose matchLoader = {MIN_X + DRIVE_LENGTH / 2 + 5, -2 * TILE, RED_STATION};
+  const Pose alignmentPoint = matchLoader.withX(-2 * TILE + 1);
+  bot.turnToHeading(RED_STATION - 45, 500,
+                    {.maxSpeed = 95, .minSpeed = 80, .earlyExitRange = 30});
+  bot.waitUntilDone();
 
-//   // Align in front of matchloader to hit ML perfectly
-//   bot.lateralPID.kP *= .8;
-//   bot.lateralPID.kD *= 1.2;
-//   bot.moveToY(matchLoader.y + TRACK_WIDTH / 2, 1000,
-//               {.earlyExitRange = 3, .targetHeading = RED_STATION - 45});
-//   bot.waitUntilDone();
-//   bot.lateralPID.kP /= .8;
-//   bot.lateralPID.kD /= 1.2;
+  // Align in front of matchloader to hit ML perfectly
+  bot.lateralPID.kP *= .8;
+  bot.lateralPID.kD *= 1.2;
+  bot.moveToY(matchLoader.y + TRACK_WIDTH / 2 - 3, 1500,
+              {.earlyExitRange = 1, .targetHeading = RED_STATION - 45});
+  bot.waitUntilDone();
+  bot.lateralPID.kP /= .8;
+  bot.lateralPID.kD /= 1.2;
 
 //   bot.swingToHeading(RED_STATION, lemlib::DriveSide::RIGHT, 1000,
 //                      {.minSpeed = 20, .earlyExitRange = 10});
 //   bot.waitUntilDone();
 
-//   // Go into match loader to pick up balls
-//   bot.moveToPoint(matchLoader, 2000, {.maxSpeed = 60});
-//   // Wait until stopped because we hit match loader
-//   waitUntil(
-//       [] {
-//         const auto speed = lemlib::getSpeed(false);
-//         return !bot.isInMotion() || (speed.distance({0, 0}) < .02);
-//       },
-//       50, INT_MAX, true);
-//   bot.cancelMotion();
-//   // Give a little time to fully grab the balls before exiting
-//   bot.tank(15, 15);
-//   pros::delay(000);
-//   bot.tank(0, 0);
+  // Go into match loader to pick up balls
+  bot.moveToX(matchLoader.x, 2000, {.maxSpeed = 60});
+  // Wait until stopped because we hit match loader
+  waitUntil(
+      [] {
+        const auto speed = lemlib::getSpeed(false);
+        return !bot.isInMotion() || (speed.distance({0, 0}) < .02);
+      },
+      50, INT_MAX, true);
+  bot.cancelMotion();
+  // Give a little time to fully grab the balls before exiting
+  bot.tank(15, 15);
+  pros::delay(500);
+  bot.tank(0, 0);
 
 //   // Reset y position using distance sensor that is hitting the closest wall
 //   bot.leftLaser().resetY();
@@ -153,30 +154,31 @@
 //   // while descoring, as we are at risk of crossing.
 //   bot.setBrakeMode(pros::E_MOTOR_BRAKE_BRAKE);
 
-//   const Pose pushBlocksTarget{-DRIVE_LENGTH / 2 -
-//                                   (sign == SIGN::AUDIENCE ? 10 : 6),
-//                               bot.getPose().y, descoreHeading};
-//   bot.moveToX(
-//       pushBlocksTarget.x, 3000,
-//       {.maxSpeed = 48,
-//        .targetHeading = descoreHeading + (sign == SIGN::AUDIENCE ? 0 : -30)});
-//   bot.waitUntilDone();
+  const Pose pushBlocksTarget{-DRIVE_LENGTH / 2  -
+                                  (sign == SIGN::AUDIENCE ? 10 : 6),
+                              bot.getPose().y, descoreHeading};
+  bot.moveToX(
+      pushBlocksTarget.x, 3000,
+      {.maxSpeed = 48,
+       .targetHeading = descoreHeading + (sign == SIGN::AUDIENCE ? 0 : -30)});
+  bot.waitUntilDone();
 
-//   // Repeatedly run moveToPose to hold position against pushes
-//   // (When auton stage ends, this will also end)
-//   const Pose holdPose = [&] {
-//     const Pose currentPose = bot.getPose();
-//     return currentPose
-//         .withTheta(descoreHeading)
-//         // Do not go further than target and risk crossing auton line
-//         .withX(std::max(currentPose.x, pushBlocksTarget.x));
-//   }();
-//   bot.lateralLargeExit.range = 0;
-//   bot.lateralSmallExit.range = 0;
-//   while (true) {
-//     bot.moveToX(holdPose.x, 1000, {.targetHeading = descoreHeading}, false);
-//   }
-// }
+  // Repeatedly run moveToPose to hold position against pushes
+  // (When auton stage ends, this will also end)
+  const Pose holdPose = [&] {
+    const Pose currentPose = bot.getPose();
+    return currentPose
+        .withTheta(descoreHeading)
+        // Do not go further than target and risk crossing auton line
+        .withX(std::max(currentPose.x, pushBlocksTarget.x));
+  }();
+  bot.lateralLargeExit.range = 0;
+  bot.lateralSmallExit.range = 0;
+  bot.setBrakeMode(pros::E_MOTOR_BRAKE_BRAKE);
+  while (true) {
+    bot.moveToX(holdPose.x, 1000, {.targetHeading = descoreHeading}, false);
+  }
+}
 
 // void autons::rightRush() { rush(SIGN::AUDIENCE); }
 

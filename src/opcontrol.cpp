@@ -2,6 +2,7 @@
 #include "main.h"
 #include "pros/misc.h"
 #include "pros/misc.hpp"
+#include "pros/motors.h"
 #include "pros/rtos.hpp"
 #include "robot.h"
 #include "subsystems/intake.h"
@@ -59,6 +60,8 @@ template <class... Ts> overloads(Ts...) -> overloads<Ts...>;
 void opcontrol() {
   pros::Controller master(pros::E_CONTROLLER_MASTER);
   bot.resetControllerSettings();
+  bot.setBrakeMode(pros::E_MOTOR_BRAKE_COAST);
+  bot.park.extend();
 
   ts::selector *selector = ts::selector::get();
 
