@@ -21,7 +21,8 @@ constexpr int SCORE_ONE_ANGLE = 20;
 constexpr int SCORE_ONE_TIMEOUT = 1000;
 /** Threshold for determining if the lever is fully scored (in degrees). */
 constexpr float FULLY_SCORED_THRESHOLD = 130;
-
+/** Acceptable error for the lever position when in the intake ready state. */
+constexpr float ACCEPTABLE_POSITION_ERROR = 5;
 Lever::Lever(pros::MotorGroup &motors, pros::adi::Pneumatics gate,
              pros::Optical exitSensor, const PneumaticGroup &lift)
     : m_state(State::INTAKE_READY), m_scoreOneSensedPosition(std::nullopt),
@@ -38,7 +39,10 @@ void Lever::runTask() {
   case State::COMPRESS:
     // TODO: Implement Compress state. For now, just hold ready position.
   case State::INTAKE_READY:
-    m_motors.move_absolute(0., 100);
+    if (std::abs(m_motors.get_position() - 0) >= ACCEPTABLE_POSITION_ERROR)
+      m_motors.move_absolute(0., 100);
+    else
+      m_motors.move_voltage(0);
     m_gate.retract();
 
     // Reset scoring state variables
