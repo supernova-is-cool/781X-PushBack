@@ -19,7 +19,6 @@ void auton::components::scoreLong(Quadrant quadrant) {
       std::make_shared<auton::QuadrantTransform>(quadrant,
                                                  Quadrant::RED_RIGHT)};
   const Pose longGoalOpening{-TILE, -TILE * 2};
-  // const Pose longGoalTarget = longGoalOpening + Pose{-5, 0 + (quadrant.isRight() ? 5.f : 0.f)};
   const Pose longGoalTarget = longGoalOpening + Pose{-5, 0};
 
   // Move into long goal
