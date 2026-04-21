@@ -1,8 +1,10 @@
 #include "auton/laser.h"
 #include "dimensions.h"
+#include "lemlib/chassis/chassis.hpp"
 #include "log.h"
 #include "pros/error.h"
 #include "robot.h"
+#include "util.h"
 #include <cstddef>
 
 Laser::Laser(size_t port, NlPose offset) : m_sensor(port), m_offset(offset) {}
@@ -50,11 +52,13 @@ std::optional<float> Laser::getBotY(float botTheta) {
 }
 
 bool Laser::resetX() {
-  float botTheta = bot.getPose(true, true).theta;
+  auto botAsChassis = (lemlib::Chassis *)&bot;
+  float botTheta = botAsChassis->getPose(true, true).theta;
 
   if (auto maybeX = getBotX(botTheta)) {
-    log("Reset X to {} using laser", *maybeX);
-    bot.setPose(bot.getPose().withX(*maybeX));
+    log("Reset X to {} using laser. theta is {}deg", *maybeX,
+        auton::util::trigAngleToHeading(botTheta));
+    botAsChassis->setPose(botAsChassis->getPose().withX(*maybeX));
     return true;
   } else {
     log("Laser measurement failed. Cannot reset X.");
@@ -63,11 +67,13 @@ bool Laser::resetX() {
 }
 
 bool Laser::resetY() {
-  float botTheta = bot.getPose(true, true).theta;
+  auto botAsChassis = (lemlib::Chassis *)&bot;
+  float botTheta = botAsChassis->getPose(true, true).theta;
 
   if (auto maybeY = getBotY(botTheta)) {
-    bot.setPose(bot.getPose().withY(*maybeY));
-    log("Reset Y to {} using laser", *maybeY);
+    botAsChassis->setPose(botAsChassis->getPose().withY(*maybeY));
+    log("Reset Y to {} using laser. theta is {}deg", *maybeY,
+        auton::util::trigAngleToHeading(botTheta));
     return true;
   } else {
     log("Laser measurement failed. Cannot reset Y.");
