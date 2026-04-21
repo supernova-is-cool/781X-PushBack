@@ -36,9 +36,15 @@ void auton::components::scoreLong(Quadrant quadrant, AUTON auton) {
   // Score the balls
   bot.lever.scoreAll();
   /** Push the bot into the long goal while scoring */
-  tank(-36, -36, 0, 0);
+  const auto defaultLatPID = bot.lateralPID;
+  bot.lateralPID.kP *= .5;
+  bot.lateralPID.kD = 0;
+  bot.moveToX(0, 2000, {.targetHeading = RED_STATION});
   // Wait until scoring is done or until timeout is reached
   waitUntil([] { return bot.lever.isFullyScored(); }, 20, 2000);
+  bot.cancelMotion();
+
+  bot.lateralPID = defaultLatPID;
   bot.lever.reset();
   bot.intake.stop();
 }

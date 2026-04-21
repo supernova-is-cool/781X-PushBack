@@ -27,7 +27,7 @@ void auton::components::scoreCenter(Quadrant quadrant,
   bot.turnToPoint(center, 500, {.forwards = !isMiddle});
   bot.waitUntilDone();
 
-  const float middleScoringDist = 4;
+  const float middleScoringDist = 3;
   const float lowerScoringDist = 5;
   /** Distance from center of bot to the lip of the goal. */
   const float scoringDist = (isMiddle) ? middleScoringDist : lowerScoringDist;
