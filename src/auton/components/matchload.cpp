@@ -13,7 +13,7 @@ using lemlib::Pose;
 using AngDir = lemlib::AngularDirection;
 using auton::Quadrant;
 
-void auton::components::matchload(Quadrant quadrant, bool onlyMyColor) {
+void auton::components::matchload(Quadrant quadrant, bool onlyMyColor, AUTON auton) {
   // Programmed from right red perspective
   auton::TransformLockGuard _transform{
       std::make_shared<auton::QuadrantTransform>(quadrant,

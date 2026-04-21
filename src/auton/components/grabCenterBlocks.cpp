@@ -14,8 +14,8 @@ using lemlib::Pose;
 using AngDir = lemlib::AngularDirection;
 using auton::Quadrant;
 
-void auton::components::grabCenterBlocks(Quadrant quadrant,
-                                         bool alignWithGoal) {
+void auton::components::grabCenterBlocks(Quadrant quadrant, bool alignWithGoal,
+                                         AUTON auton) {
   // Programmed from right red perspective
   auton::TransformLockGuard _transform{
       std::make_shared<auton::QuadrantTransform>(quadrant,
@@ -40,6 +40,16 @@ void auton::components::grabCenterBlocks(Quadrant quadrant,
     bot.moveToPoint(centerBalls, 2000, {.minSpeed = 32, .earlyExitRange = 3});
   }
   bot.intake.intake();
+  // Make sure matchloader is retracted before we push them accidentally with
+  // the matchloader mech
+  waitUntil(
+      [&] {
+        return bot.getPose().distance(centerBalls) <
+                   MATCHLOADER_DIST_TO_CENTER * 2 ||
+               !bot.isInMotion();
+      },
+      0, 1000);
+  bot.matchLoader.retract();
   // Wait until the perfect moment to use ML to capture the blocks
   waitUntil(
       [&] {

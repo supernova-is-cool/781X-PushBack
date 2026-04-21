@@ -14,7 +14,7 @@ using AngDir = lemlib::AngularDirection;
 using auton::Quadrant;
 
 void auton::components::scoreCenter(Quadrant quadrant,
-                                    std::size_t score_duration) {
+                                    std::size_t score_duration, AUTON auton) {
   // Programmed from right red perspective
   auton::TransformLockGuard _transform{
       std::make_shared<auton::QuadrantTransform>(quadrant,
