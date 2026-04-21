@@ -159,12 +159,12 @@ void initialize() {
   bot.setAlliance(ALLIANCE::RED);
   bot.setPose({0, 0, 0});
   new pros::Task{printLoop};
-  new pros::Task{[] {
-    std::string _input;
-    getline(std::cin, _input);
-    // If the bot receives any input on the terminal, start the tuning CLI
-    tuningCLI();
-  }};
+  // new pros::Task{[] {
+  //   std::string _input;
+  //   getline(std::cin, _input);
+  //   // If the bot receives any input on the terminal, start the tuning CLI
+  //   tuningCLI();
+  // }};
 }
 
 /**
