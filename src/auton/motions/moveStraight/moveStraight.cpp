@@ -77,7 +77,11 @@ void Robot::moveStraight(MoveStraightErrorFuncFactory errorFuncFactory,
 
   // We will try to maintain this theta throughout the motion
   const float targetTheta = degToRad(
-      90 - params.targetHeading.value_or(Chassis::getPose(false, false).theta));
+      90 - params.targetHeading
+               .transform([this](float targetHeading) {
+                 return this->m_transform->transformHeading(targetHeading);
+               })
+               .value_or(Chassis::getPose(false, false).theta));
   const auto errorFunc = errorFuncFactory(targetTheta);
 
   // main loop
