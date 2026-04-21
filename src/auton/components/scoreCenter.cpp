@@ -19,7 +19,7 @@ void auton::components::scoreCenter(Quadrant quadrant,
   auton::TransformLockGuard _transform{
       std::make_shared<auton::QuadrantTransform>(quadrant,
                                                  Quadrant::RED_RIGHT)};
-  // TODO: Support upper middle goal
+  /** Whether the bot should score on the middle goal (middle as in height) */
   const bool isMiddle = quadrant.isLeft();
   const Pose offset = {isMiddle ? -4.f : 0.f, 0};
   const Pose center = Pose{0, 0} + offset;
@@ -48,8 +48,7 @@ void auton::components::scoreCenter(Quadrant quadrant,
     // Do not raise lift for middle goal
     bot.lift.retract();
   } else {
-    // Raise intake and lift to enhance scoring
-    bot.intakeLift.extend();
+    // Raise lift to help with outtaking
     bot.lift.extend();
   }
   bot.waitUntilDone();
@@ -69,6 +68,8 @@ void auton::components::scoreCenter(Quadrant quadrant,
   } else {
     // Slow outtake to score blocks without sending them out the other end
     bot.intake.slowOuttake();
+    // Pull intake up to score on low goal
+    bot.intakeLift.extend();
     pros::delay(score_duration);
     // Hold onto remaining blocks
     bot.intake.intake();
