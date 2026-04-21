@@ -5,6 +5,7 @@
 #include "auton/util.h"
 #include "color.h"
 #include "dimensions.h"
+#include "log.h"
 #include "robot.h"
 #include <memory>
 
@@ -35,17 +36,26 @@ static void standardMatchAuto(StandardMatchAutonConfig config) {
 
     const Pose startPose{-TILE * 2, -TILE + DRIVE_WIDTH / 2 + .5, BLUE_STATION};
     bot.setPose(startPose);
+    log("Inside lockGuard block: bot.getPose() = {}", bot.getPose());
   }
 
   bot.descore.extend();
 
   auto qd = Quadrant::fromSide(COLOR::RED, config.side);
+  log("Outside lockGuard block: bot.getPose() = {}", bot.getPose());
 
   grabCenterBlocks(qd, config.scoreCenter);
+  log("After grabCenterBlocks: bot.getPose() = {}", bot.getPose());
   if (config.scoreCenter) {
     scoreCenter(qd, 1000);
   } else {
     auton::TransformLockGuard _lockGuard{transform};
+
+    if (qd.isLeft()) {
+      // Adjust odom pose
+      bot.setPose(
+          (bot.getPose() + Pose{0, -21, 0}).withTheta(bot.getPose().theta));
+    }
 
     const Pose matchloaderAlignTarget{-2 * TILE, -2 * TILE};
     bot.turnToPoint(matchloaderAlignTarget, 1000);

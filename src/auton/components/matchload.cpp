@@ -18,13 +18,27 @@ void auton::components::matchload(Quadrant quadrant, bool onlyMyColor) {
   auton::TransformLockGuard _transform{
       std::make_shared<auton::QuadrantTransform>(quadrant,
                                                  Quadrant::RED_RIGHT)};
+  const lemlib::PID defaultLateralPID = bot.lateralPID;
+
   const Pose matchloader{MIN_X, -TILE * 2};
   const Pose matchloaderTarget =
-      matchloader + Pose{MATCHLOADER_DIST_TO_CENTER + 1, 0};
+      matchloader +
+      Pose{MATCHLOADER_DIST_TO_CENTER + 1, quadrant.isRight() ? 0.f : 1.5f};
 
-  // TODO: Investigate using a swing turn for speed
+  // If facing towards the matchloader, reduce kp and increase kd to prevent
+  // back of the bot from lifting up
+  if (trigAngleToHeading(bot.getPose().angle(matchloaderTarget)) -
+          bot.getPose().theta <
+      90) {
+    bot.lateralPID.kP *= 0.8;
+    bot.lateralPID.kD *= 1.2;
+  }
   // Align in front of the matchloader
   bot.moveToY(matchloader.y, 2000);
+  bot.waitUntilDone();
+  bot.lateralPID = defaultLateralPID;
+
+  // TODO: Investigate using a swing turn for speed
   // Quickly turn to the matchloader
   bot.turnToHeading(RED_STATION,
                     1000 /* , {.minSpeed = 32, .earlyExitRange = 20} */);
@@ -39,8 +53,9 @@ void auton::components::matchload(Quadrant quadrant, bool onlyMyColor) {
   bot.waitUntilDone();
 
   // Push matchloader mech into the matchloader
-  bot.moveToX(matchloaderTarget.x, 2000,
-              {/* .minSpeed = 32, */ .targetHeading = RED_STATION});
+  bot.moveToX(
+      matchloaderTarget.x, 2000,
+      {/* .minSpeed = 32, */ .maxSpeed = 84, .targetHeading = RED_STATION});
 
   /** The maximum distance measurement that indicates there are 4 or more balls
    */

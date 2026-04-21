@@ -46,24 +46,32 @@ void auton::components::descoreLong(Quadrant quadrant,
     break;
   }
   case SIDE::RIGHT: {
+    const Pose longGoalPose = bot.getPose();
+    const float descoreY = longGoalPose.y - DRIVE_WIDTH / 2 - 2;
+    const float alignHeading = descoreHeading + 30;
+    bot.intake.outtake();
     // Align descore with long goal
-    bot.swingToHeading(AUDIENCE, lemlib::DriveSide::LEFT, 500,
+    bot.swingToHeading(AUDIENCE + 45, lemlib::DriveSide::LEFT, 500,
                        {
                            .direction = AngDir::CCW_COUNTERCLOCKWISE,
                            .minSpeed = 32,
-                           .earlyExitRange = 20,
+                           .earlyExitRange = 15,
                        });
-    bot.turnToHeading(descoreHeading, 500,
-                      {
-                          .direction = AngDir::CCW_COUNTERCLOCKWISE,
-                          .minSpeed = 32,
-                          .earlyExitRange = 20,
-                      });
+    bot.swingToHeading(alignHeading, lemlib::DriveSide::RIGHT, 500,
+                       {
+                           .direction = AngDir::CW_CLOCKWISE,
+                           .minSpeed = 32,
+                           .earlyExitRange = 15,
+                       });
+    bot.moveToY(
+        descoreY, 500,
+        {.minSpeed = 32, .earlyExitRange = 1, .targetHeading = alignHeading});
     break;
   }
   }
   // Push blocks by moving in a straight line
-  const float pushBlocksTargetX = 0 - DRIVE_LENGTH / 2 - 2;
+  const float pushBlocksTargetX =
+      0 - DRIVE_LENGTH / 2 + (side == SIDE::LEFT ? -2 : 0);
   bot.moveToX(pushBlocksTargetX, 2000,
               {.maxSpeed = 48, .targetHeading = descoreHeading});
   bot.waitUntilDone();

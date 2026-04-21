@@ -2,6 +2,7 @@
 #include "auton/transform.h"
 #include "auton/util.h"
 #include "dimensions.h"
+#include "log.h"
 #include "robot.h"
 #include <memory>
 
@@ -19,8 +20,10 @@ void auton::components::grabCenterBlocks(Quadrant quadrant,
   auton::TransformLockGuard _transform{
       std::make_shared<auton::QuadrantTransform>(quadrant,
                                                  Quadrant::RED_RIGHT)};
-  const Pose centerBalls{-TILE, -TILE};
-  const Pose centerGoalLine{0, 0, REFEREE + 45};
+  log("in grabCenterBlocks: bot.getPose() = {}", bot.getPose());
+  const Pose offset = {quadrant.isRight() ? 0.f : -4.f, 0};
+  const Pose centerBalls = Pose{-TILE, -TILE} + offset;
+  const Pose centerGoalLine = (Pose{0, 0} + offset).withTheta(REFEREE + 45);
 
   // Turn towards the center balls
   bot.swingToPoint(centerBalls, lemlib::DriveSide::RIGHT, 500,
@@ -29,13 +32,12 @@ void auton::components::grabCenterBlocks(Quadrant quadrant,
 
   // Move towards the center balls and intake them
   if (alignWithGoal) {
-    // Align the imaginary line emanating from the center goal
-    bot.moveToLine(centerGoalLine, 2000,
-                   {.targetHeading =
-                        trigAngleToHeading(bot.getPose().angle(centerBalls))});
+    float targetHeading = trigAngleToHeading(bot.getPose().angle(centerBalls));
+    // Align to the imaginary line emanating from the center goal
+    bot.moveToLine(centerGoalLine, 2000, {.targetHeading = targetHeading});
   } else {
     // Just go to the center balls
-    bot.moveToPoint(centerBalls, 2000, {.minSpeed = 32, .earlyExitRange = 5});
+    bot.moveToPoint(centerBalls, 2000, {.minSpeed = 32, .earlyExitRange = 3});
   }
   bot.intake.intake();
   // Wait until the perfect moment to use ML to capture the blocks
