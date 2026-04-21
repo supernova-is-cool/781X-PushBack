@@ -41,7 +41,7 @@ struct robotConfig {
     Laser back;
     Laser left;
     Laser right;
-    pros::Distance ballCounter;
+    pros::Distance matchloader;
 
   private:
     friend struct robotConfig;

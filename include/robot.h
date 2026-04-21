@@ -82,7 +82,8 @@ public:
   Laser &leftLaser();
   Laser &rightLaser();
 
-  pros::Distance ballCounter;
+  /** Senses whether 3 blocks have been taken from the matchloader  */
+  pros::Distance mlSensor;
 
   /**
    * Resets all PID controller settings and horizontal drift to config values.

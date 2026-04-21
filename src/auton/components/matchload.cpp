@@ -42,14 +42,17 @@ void auton::components::matchload(Quadrant quadrant, bool onlyMyColor) {
   bot.moveToX(matchloaderTarget.x, 2000,
               {/* .minSpeed = 32, */ .targetHeading = RED_STATION});
 
-  constexpr float emptyDistance = 380;
-  /** The minimum distance measurement that indicates 3 balls are present */
-  constexpr float threeBallDistance = 130;
-  constexpr float ballDistance = (threeBallDistance - emptyDistance) / 3;
+  /** The maximum distance measurement that indicates there are 4 or more balls
+   */
+  constexpr float maxBallDistance = 100;
 
-  // Wait until the ball counter measures 3 balls or until 2 seconds have passed
-  waitUntil([&] { return bot.ballCounter.get() < threeBallDistance; }, 20,
-            2000);
+  // Wait until balls in matchloader are detected
+  waitUntil([&] { return bot.mlSensor.get() < maxBallDistance; }, 50, 2000,
+            true);
+  // Wait until 3 balls are taken from the matchloader, such that the sensor
+  // does not see a ball
+  waitUntil([&] { return bot.mlSensor.get() > maxBallDistance; }, 50, 2000,
+            true);
   if (!onlyMyColor) {
     // If loading all 6 blocks, give a little more time to intake them
     pros::delay(1000);
