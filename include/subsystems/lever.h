@@ -40,6 +40,11 @@ public:
   bool isScoring() const;
   /** Checks if the lever arm is in the fully scored position. */
   bool isFullyScored() const;
+  /** 
+   * @returns Approximately how many blocks are remaining in the tube, assuming that the
+   * space in front of the lever is completely full
+   */
+  float blocksRemaining() const;
 
   void reset();
 

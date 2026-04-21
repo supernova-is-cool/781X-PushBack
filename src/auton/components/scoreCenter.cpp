@@ -53,9 +53,17 @@ void auton::components::scoreCenter(Quadrant quadrant,
   bot.waitUntilDone();
 
   if (isMiddle) {
+    bot.intake.intake();
     // Just score a few, but slowly to prevent them from being launched out the
     // other side of the goal
-    bot.lever.scoreOneSlow();
+    bot.lever.scoreAllSlow();
+    lemlib::Timer timeout{score_duration};
+    timeout.resume();
+    waitUntil(
+        [&] { return bot.lever.blocksRemaining() <= 1 || timeout.isDone(); });
+    // Reset lever and outtake to prevent jamming
+    bot.lever.reset();
+    bot.intake.outtake();
   } else {
     // Slow outtake to score blocks without sending them out the other end
     bot.intake.slowOuttake();

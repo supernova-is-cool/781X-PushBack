@@ -115,6 +115,13 @@ bool Lever::isFullyScored() const {
   return m_motors.get_position() >= FULLY_SCORED_THRESHOLD;
 }
 
+float Lever::blocksRemaining() const {
+  const float angle = m_motors.get_position();
+  // TODO: Tune this
+  const float blockSpacing = FULLY_SCORED_THRESHOLD / 6;
+  return std::max(0.f, (FULLY_SCORED_THRESHOLD - angle) / blockSpacing);
+}
+
 void Lever::reset() { m_state = State::INTAKE_READY; }
 
 void Lever::scoreOne() {
