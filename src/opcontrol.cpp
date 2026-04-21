@@ -31,8 +31,6 @@ constexpr button_t PARK = pros::E_CONTROLLER_DIGITAL_RIGHT;
 
 constexpr button_t PREV_AUTON = pros::E_CONTROLLER_DIGITAL_LEFT;
 constexpr button_t NEXT_AUTON = pros::E_CONTROLLER_DIGITAL_UP;
-constexpr button_t INIT_TUNING[2] = {pros::E_CONTROLLER_DIGITAL_A,
-                                     pros::E_CONTROLLER_DIGITAL_X};
 }; // namespace controller_mapping
 namespace map = controller_mapping;
 
