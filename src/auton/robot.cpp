@@ -126,13 +126,13 @@ void Robot::moveToPoint(lemlib::Pose target, int timeout,
 Laser &Robot::leftLaser() {
   switch (m_transform->transformDriveSide(lemlib::DriveSide::LEFT)) {
   case lemlib::DriveSide::LEFT:
-    log("Returning left laser");
+    // log("Returning left laser");
     return m_leftLaser;
   case lemlib::DriveSide::RIGHT:
-    log("Returning right laser");
+    // log("Returning right laser");
     return m_rightLaser;
   default:
-    log("Invalid drive side!");
+    // log("Invalid drive side!");
     return m_leftLaser; // Default case, should not happen
   }
 }
@@ -140,13 +140,13 @@ Laser &Robot::leftLaser() {
 Laser &Robot::rightLaser() {
   switch (m_transform->transformDriveSide(lemlib::DriveSide::RIGHT)) {
   case lemlib::DriveSide::LEFT:
-    log("Returning left laser");
+    // log("Returning left laser");
     return m_leftLaser;
   case lemlib::DriveSide::RIGHT:
-    log("Returning right laser");
+    // log("Returning right laser");
     return m_rightLaser;
   default:
-    log("Invalid drive side!");
+    // log("Invalid drive side!");
     return m_leftLaser; // Default case, should not happen
   }
 }
