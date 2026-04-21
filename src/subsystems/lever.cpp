@@ -14,8 +14,12 @@ constexpr int RESET_MAX_SPEED = 100;
 /** Proximity threshold for the exit sensor to detect a block. */
 constexpr int EXIT_SENSOR_THRESHOLD = 50;
 // TODO: Tune angle, and maybe vary it based on starting position and lift state
-/** Degrees to travel for the block to exit the lever once it is sensed. */
-constexpr int SCORE_ONE_ANGLE = 20;
+/** Degrees to travel for the block to exit the lever once it is sensed, when
+ * going at max speed. */
+constexpr int SCORE_ONE_ANGLE_MAX = 20;
+/** Degrees to travel for the block to exit the lever once it is sensed, when
+ * going at slow speed. */
+constexpr int SCORE_ONE_ANGLE_SLOW = 30;
 /** Max time to wait for score one motion to complete (in milliseconds).
  * Timer begins when state is entered. */
 constexpr int SCORE_ONE_TIMEOUT = 1000;
@@ -61,11 +65,6 @@ void Lever::runTask() {
       m_motors.move_voltage(SCORE_SLOW_VOLTAGE);
       break;
     }
-    // Only extend gate if scoring on middle goal.
-    if (m_lift.isExtended())
-      m_gate.retract();
-    else
-      m_gate.extend();
 
     // Start timer even if we aren't in the SCORE_ONE state yet
     if (!m_scoreOneStartTime.has_value()) {
@@ -76,6 +75,8 @@ void Lever::runTask() {
       log("[{}] Score one timeout reached, resetting lever", pros::millis());
       // If jammed, reset to intake ready position.
       this->reset();
+      runTask();
+      return;
     }
     if (isFullyScored() && m_state == State::SCORE_ONE) {
       log("[{}] Fully scored, resetting lever", pros::millis());
@@ -88,13 +89,30 @@ void Lever::runTask() {
         log("[{}] Block sensed, recording position {:.2f} deg", pros::millis(),
             m_scoreOneSensedPosition.value());
       }
+      const float SCORE_ONE_ANGLE =
+          (m_scoringSpeed.value_or(ScoringSpeed::MAX) == ScoringSpeed::MAX)
+              ? SCORE_ONE_ANGLE_MAX
+              : SCORE_ONE_ANGLE_SLOW;
       if (m_motors.get_position() - m_scoreOneSensedPosition.value() >
               SCORE_ONE_ANGLE &&
           m_state == State::SCORE_ONE) {
         log("[{}] Score distance reached, resetting lever", pros::millis());
         this->reset();
+        runTask();
+        return;
       }
     }
+
+    // Only extend gate if scoring on middle goal.
+    if (m_lift.isExtended()) {
+      // Expand the gate when fully scored to prevent pulling the last block
+      // when exiting
+      if (isFullyScored())
+        m_gate.extend();
+      else
+        m_gate.retract();
+    } else
+      m_gate.extend();
     break;
   }
 }
