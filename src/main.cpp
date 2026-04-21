@@ -102,20 +102,20 @@ void printLoop() {
     // // Print Distance Reset values for debugging
     // {
     //   const float theta = bot.getPose(true, true).theta;
-    //   if (std::abs(sin(theta)) > 1) {
+    //   if (std::abs(tan(theta)) < 1) {
     //     std::println(
     //         "DSR: theta={}\n\tX:back={},\tfront={}\n\tY:left={},\tright={}",
-    //         theta, bot.back.getBotX(theta).value_or(NAN),
-    //         bot.front.getBotX(theta).value_or(NAN),
-    //         bot.left.getBotY(theta).value_or(NAN),
-    //         bot.right.getBotY(theta).value_or(NAN));
+    //         theta, bot.backLaser().getBotX(theta).value_or(NAN),
+    //         bot.frontLaser().getBotX(theta).value_or(NAN),
+    //         bot.leftLaser().getBotY(theta).value_or(NAN),
+    //         bot.rightLaser().getBotY(theta).value_or(NAN));
     //   } else {
     //     std::println(
     //         "DSR: theta={}\n\tY:back={},\tfront={}\n\tX:left={},\tright={}",
-    //         theta, bot.back.getBotY(theta).value_or(NAN),
-    //         bot.front.getBotY(theta).value_or(NAN),
-    //         bot.left.getBotX(theta).value_or(NAN),
-    //         bot.right.getBotX(theta).value_or(NAN));
+    //         theta, bot.backLaser().getBotY(theta).value_or(NAN),
+    //         bot.frontLaser().getBotY(theta).value_or(NAN),
+    //         bot.leftLaser().getBotX(theta).value_or(NAN),
+    //         bot.rightLaser().getBotX(theta).value_or(NAN));
     //   }
     // }
     pros::delay(50);
