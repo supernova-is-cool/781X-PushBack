@@ -98,7 +98,9 @@ void Robot::moveStraight(MoveStraightErrorFuncFactory errorFuncFactory,
 
     // calculate distance to the target point
     const float linearError = errorFunc();
-
+    // If within the early exit range, exit
+    if (std::abs(linearError) < params.earlyExitRange)
+      break;
     // check if the robot is close enough to the target to start settling
     if (std::abs(linearError) < 7.5 && close == false) {
       infoSink()->debug("Setting to close. Lin Err={}", linearError);
