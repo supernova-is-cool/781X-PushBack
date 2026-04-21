@@ -14,7 +14,7 @@ ts::auton rightMiddle("Right Middle", autons::rightMiddle);
 ts::auton leftRush("Left Rush", autons::leftRush);
 ts::auton leftMiddle("Left Middle", autons::leftMiddle);
 ts::auton soloWinPoint("SAWP", autons::soloWinPoint);
-ts::auton doNothing("Do Nothing", autons::doNothing);
+ts::auton doNothing("Go Forward", autons::doNothing);
 
 lemlib::Timer autonTimer{15 * 1000};
 

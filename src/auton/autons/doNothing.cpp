@@ -1,3 +1,3 @@
 #include "auton/autons.h"
-
-void autons::doNothing() {}
+#include "robot.h"
+void autons::doNothing() { bot.moveDistance(4, 1000); }
