@@ -30,7 +30,9 @@ constexpr button_t DESCORE = pros::E_CONTROLLER_DIGITAL_R2;
 constexpr button_t PARK = pros::E_CONTROLLER_DIGITAL_RIGHT;
 
 constexpr button_t PREV_AUTON = pros::E_CONTROLLER_DIGITAL_LEFT;
-constexpr button_t NEXT_AUTON = pros::E_CONTROLLER_DIGITAL_UP;
+constexpr button_t NEXT_AUTON = pros::E_CONTROLLER_DIGITAL_A;
+constexpr button_t RUN_AUTON[2] = {pros::E_CONTROLLER_DIGITAL_UP,
+                                   pros::E_CONTROLLER_DIGITAL_X};
 }; // namespace controller_mapping
 namespace map = controller_mapping;
 
@@ -40,6 +42,50 @@ template <class... Ts> struct overloads : Ts... {
 };
 template <class... Ts> overloads(Ts...) -> overloads<Ts...>;
 
+namespace {
+
+/* Task states returned by task_get_state. (yoinked from the FreeRTOS source
+ * code) */
+typedef enum {
+  E_TASK_STATE_RUNNING =
+      0, /* A task is querying the state of itself, so must be running. */
+  E_TASK_STATE_READY,   /* The task being queried is in a read or pending ready
+  list. */
+  E_TASK_STATE_BLOCKED, /* The task being queried is in the Blocked state. */
+  E_TASK_STATE_SUSPENDED, /* The task being queried is in the Suspended state,
+  or is in the Blocked state with an infinite time
+  out. */
+  E_TASK_STATE_DELETED, /* The task being queried has been deleted, but its TCB
+  has not yet been freed. */
+  E_TASK_STATE_INVALID  /* Used as an 'invalid state' value. */
+} task_state_e_t;
+
+pros::Task *autonTask = nullptr;
+/** Only works for auton that was dispatched by controller */
+void stopAuton() {
+  if (autonTask != nullptr) {
+    // autonTask->suspend();
+    switch (task_state_e_t(autonTask->get_state())) {
+    case E_TASK_STATE_RUNNING:
+    case E_TASK_STATE_READY:
+    case E_TASK_STATE_BLOCKED:
+    case E_TASK_STATE_SUSPENDED:
+      autonTask->remove();
+      delete autonTask;
+      break;
+    case E_TASK_STATE_DELETED:
+      std::println("Auton task was deleted");
+      break;
+    case E_TASK_STATE_INVALID:
+      std::println("Auton task was invalid");
+      break;
+    }
+    // delete autonTask;
+    autonTask = nullptr;
+    autonTimer.pause();
+  }
+}
+} // namespace
 /**
  * Runs the operator control code. This function will be started in its own task
  * with the default priority and stack size whenever the robot is enabled via
@@ -53,7 +99,6 @@ template <class... Ts> overloads(Ts...) -> overloads<Ts...>;
  * operator control task will be stopped. Re-enabling the robot will restart the
  * task, not resume it from where it left off.
  */
-
 void opcontrol() {
   pros::Controller master(pros::E_CONTROLLER_MASTER);
   bot.resetControllerSettings();
@@ -64,8 +109,60 @@ void opcontrol() {
   constexpr size_t LONG_PRESS_DURATION = 200;
   std::optional<lemlib::Timer> leverPressTimer;
 
+  autonTimer.pause();
+
   while (true) {
     pros::delay(5); // Run every 20ms (refresh rate of the controller)
+
+    // Use controller to select and run auton if we are not playing a match
+    if (!pros::competition::is_connected()) {
+      static bool prevRunAutonButtonState = false;
+      bool runAutonButtonState = master.get_digital(map::RUN_AUTON[0]) &&
+                                 master.get_digital(map::RUN_AUTON[1]);
+      // Start/Stop auto on the rising edge of both buttons
+      if (runAutonButtonState && !prevRunAutonButtonState) {
+        if (autonTask == nullptr) {
+          // Start the selected auton
+          autonTask = new pros::Task(autonomous, "Auton Task");
+        } else {
+          // Stop the auton if it's already running
+          stopAuton();
+        }
+      }
+      prevRunAutonButtonState = runAutonButtonState;
+
+      if (autonTask != nullptr) {
+        if (autonTimer.isDone()) {
+          // Time's up, stop the auton
+          stopAuton();
+        } else {
+          // Don't run opcontrol code if auton is running
+          continue;
+        }
+      }
+
+      // Select auto
+      /** Desired change in index */
+      int change = 0;
+      // Left and right on the dpad cycle through autons
+      if (master.get_digital_new_press(map::PREV_AUTON)) {
+        change += -1;
+      }
+      if (master.get_digital_new_press(map::NEXT_AUTON)) {
+        change += 1;
+      }
+      if (change != 0) {
+        auto names = selector->get_auton_names();
+        size_t len = names.size();
+        auto it = std::find(names.begin(), names.end(),
+                            selector->get_selected_auton_name());
+        size_t old_i = it - names.begin();
+        size_t new_i = ((old_i + change) % len + len) % len;
+        selector->select_auton(names.at(new_i));
+        println("old_i={},new_i={},selected={}", old_i, new_i,
+                selector->get_selected_auton_name());
+      }
+    }
 
     // If tuning, relinquish control of the drive to the tuning CLI
     if (!isTuning())
@@ -142,29 +239,5 @@ void opcontrol() {
     // Park
     if (master.get_digital_new_press(map::PARK))
       bot.park.toggle();
-
-    // Use controller to select auton if we are not playing a match
-    if (!pros::competition::is_connected()) {
-      /** Desired change in index */
-      int change = 0;
-      // Left and right on the dpad cycle through autons
-      if (master.get_digital_new_press(map::PREV_AUTON)) {
-        change += -1;
-      }
-      if (master.get_digital_new_press(map::NEXT_AUTON)) {
-        change += 1;
-      }
-      if (change != 0) {
-        auto names = selector->get_auton_names();
-        size_t len = names.size();
-        auto it = std::find(names.begin(), names.end(),
-                            selector->get_selected_auton_name());
-        size_t old_i = it - names.begin();
-        size_t new_i = ((old_i + change) % len + len) % len;
-        selector->select_auton(names.at(new_i));
-        println("old_i={},new_i={},selected={}", old_i, new_i,
-                selector->get_selected_auton_name());
-      }
-    }
   }
 }

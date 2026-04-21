@@ -1,6 +1,7 @@
 #include "main.h"
 #include "auton/autons.h"
 #include "autonSelector/selector.hpp"
+#include "lemlib/timer.hpp"
 #include "liblvgl/llemu.hpp"
 #include "pros/misc.hpp"
 #include "pros/motor_group.hpp"
@@ -20,6 +21,8 @@ ts::auton soloWinPoint("SAWP", autons::soloWinPoint);
 ts::auton doNothing("Do Nothing", autons::doNothing);
 ts::auton skills("Skills", autons::skills);
 ts::auton rightMiddle("Right Middle", autons::rightMiddle);
+
+lemlib::Timer autonTimer{15 * 1000};
 
 /** Prints odometery, temps, and selected auto */
 void printLoop() {
@@ -89,16 +92,22 @@ void printLoop() {
         !pros::c::competition_is_connected()) {
       // Print every 200ms
       if (pros::millis() % 200 < 50) {
-        std::string name = selector->get_selected_auton_name();
-        static std::string prev_name = name;
-        if (name != prev_name) {
+        std::string print_str =
+            std::format("{}", selector->get_selected_auton_name()) +
+            (!autonTimer.isPaused()
+                 ? std::format(" ({}s)",
+                               (autonTimer.getTimeLeft() + 999) / 1000)
+                 : " (Paused)");
+        static std::string prev_print_str = print_str;
+        if (print_str != prev_print_str) {
           gamepad.clear_line(0);
         } else {
-          gamepad.print(0, 0, "%s", name.c_str());
+          gamepad.print(0, 0, "%s", print_str.c_str());
         }
-        prev_name = name;
+        prev_print_str = print_str;
       }
     }
+
     // // Print Distance Reset values for debugging
     // {
     //   const float theta = bot.getPose(true, true).theta;
@@ -198,6 +207,13 @@ void competition_initialize() {}
  */
 void autonomous() {
   init_odom_printing();
+  // Setup timer
+  if (selector->get_selected_auton_name().starts_with("Skills"))
+    autonTimer.set(60 * 1000); // 1 minute for skills
+  else
+    autonTimer.set(15 * 1000); // 15 seconds for regular autons
+  autonTimer.resume();
+
   bot.resetControllerSettings();
   selector->run_selected_auton();
 }
