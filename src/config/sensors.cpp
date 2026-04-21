@@ -9,6 +9,6 @@ robotConfig::Sensors robotConfig::Sensors::sensors{
     // TODO: Attach
     .front{8, {0, 0, 0}},
     .back{7, {-4.5, -2.5, M_PI}},
-    .left{5, {-4.25, dimensions::robot::DRIVE_WIDTH / 2, M_PI_2}},
-    .right{9, {-4.25, -dimensions::robot::DRIVE_WIDTH / 2, -M_PI_2}},
+    .left{5, {-3.75, dimensions::robot::DRIVE_WIDTH / 2, M_PI_2}},
+    .right{9, {-3.75, -dimensions::robot::DRIVE_WIDTH / 2, -M_PI_2}},
     .matchloader{4}};
