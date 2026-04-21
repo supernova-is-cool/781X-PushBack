@@ -1,8 +1,8 @@
 #include "subsystems/lever.h"
+#include "robot.h"
+#include <optional>
 
 #include "log.h"
-#include <optional>
-#include <print>
 
 /** Max scoring voltage for the lever motor (in millivolts) */
 constexpr int SCORE_MAX_VOLTAGE = 12000;
@@ -39,6 +39,10 @@ Lever::Lever(pros::MotorGroup &motors, pros::adi::Pneumatics gate,
 }
 
 void Lever::runTask() {
+  // Wait until imu is done calibrating before moving lever as moving the lever
+  // or the gate might mess up the imu calibration
+  if (bot.m_config.sensors.imu.is_calibrating())
+    return;
   switch (m_state) {
   case State::COMPRESS:
     // TODO: Implement Compress state. For now, just hold ready position.

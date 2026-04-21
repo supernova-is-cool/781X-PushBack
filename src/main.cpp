@@ -154,10 +154,12 @@ void initialize() {
     // SELECTED_AUTO is a macro specified in selectedAuto.txt file
     selector->select_auton(SELECTED_AUTO.name);
   }
-
+  
   pros::delay(250);
   bot.calibrate();
   pros::delay(250);
+  // Put robot in ideal starting state, after imu has calibrated
+  bot.intakeLift.retract();
 
   bot.setAlliance(ALLIANCE::RED);
   bot.setPose({0, 0, 0});

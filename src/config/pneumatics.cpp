@@ -5,9 +5,9 @@
 robotConfig::Pneumatics robotConfig::Pneumatics::pneumatics{
     .matchLoader = pros::adi::Pneumatics({10, 'C'}, false),
     .descore = pros::adi::Pneumatics{{10, 'D'}, false},
-    .gate = pros::adi::Pneumatics{{10, 'A'}, false, true},
+    .gate = pros::adi::Pneumatics{{10, 'A'}, true, true},
     .park = pros::adi::Pneumatics{'D', false},
-    .intakeLift = pros::adi::Pneumatics{'A', false, true},
+    .intakeLift = pros::adi::Pneumatics{'A', true, true},
     .lift = PneumaticGroup{
         {pros::adi::Port{'C'},
          pros::adi::Port{pros::adi::ext_adi_port_pair_t(10, 'B')}},
