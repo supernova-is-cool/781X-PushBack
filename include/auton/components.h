@@ -41,12 +41,12 @@ void scoreCenter(Quadrant quadrant, std::size_t score_duration);
 enum class LongDescoreSide { OUTER, INNER };
 
 /**
- * @brief Uses descore to push blocks into the long goal.
+ * @brief Uses descore to push blocks in the long goal into the control zone.
  * @pre Starts from long goal scoring position.
  *
  * @param quadrant
  * @param side
  */
-void descoreLong(Quadrant quadrant, LongDescoreSide side);
+void pushLong(Quadrant quadrant, LongDescoreSide side);
 
 } // namespace auton::components

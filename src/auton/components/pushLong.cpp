@@ -15,8 +15,7 @@ using lemlib::Pose;
 using AngDir = lemlib::AngularDirection;
 using auton::Quadrant;
 using SIDE = Quadrant::SIDE;
-void auton::components::descoreLong(Quadrant quadrant,
-                                    LongDescoreSide oi_side) {
+void auton::components::pushLong(Quadrant quadrant, LongDescoreSide oi_side) {
   // Programmed from right red perspective
   auton::TransformLockGuard _transform{
       std::make_shared<auton::AllianceTransform>(quadrant.color, COLOR::RED)};

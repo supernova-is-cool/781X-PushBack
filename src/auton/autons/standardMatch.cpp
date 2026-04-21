@@ -62,7 +62,7 @@ static void standardMatchAuto(StandardMatchAutonConfig config) {
   }
   matchload(qd, true);
   scoreLong(qd);
-  descoreLong(qd, LongDescoreSide::INNER);
+  pushLong(qd, LongDescoreSide::INNER);
 }
 
 void autons::rightMiddle() {
