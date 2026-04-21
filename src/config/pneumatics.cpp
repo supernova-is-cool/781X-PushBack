@@ -11,4 +11,5 @@ robotConfig::Pneumatics robotConfig::Pneumatics::pneumatics{
     .lift = PneumaticGroup{
         {pros::adi::Port{'C'},
          pros::adi::Port{pros::adi::ext_adi_port_pair_t(10, 'B')}},
-        false}};
+        true,
+        true}};
