@@ -1,7 +1,7 @@
 #pragma once
 
 namespace autons {
-void doNothing();
+void goForward4();
 void rightRush();
 void rightMiddle();
 void leftRush();

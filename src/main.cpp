@@ -1,6 +1,7 @@
 #include "main.h"
 #include "auton/autons.h"
 #include "autonSelector/selector.hpp"
+#include "dimensions.h"
 #include "lemlib/timer.hpp"
 #include "liblvgl/llemu.hpp"
 #include "pros/misc.hpp"
@@ -14,7 +15,12 @@ ts::auton rightMiddle("Right Middle", autons::rightMiddle);
 ts::auton leftRush("Left Rush", autons::leftRush);
 ts::auton leftMiddle("Left Middle", autons::leftMiddle);
 ts::auton soloWinPoint("SAWP", autons::soloWinPoint);
-ts::auton doNothing("Go Forward", autons::doNothing);
+ts::auton goForward4("Go Forward 4", autons::goForward4);
+ts::auton goForward6_5("Go Forward 6.5", [] {
+  bot.setPose({0, 0, dimensions::all::RED_STATION});
+  bot.moveToX(-6.5, 1000);
+});
+ts::auton doNothing("Do nothing", [] {});
 
 lemlib::Timer autonTimer{15 * 1000};
 
