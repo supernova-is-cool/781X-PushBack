@@ -86,18 +86,29 @@ void stopAuton() {
   }
 }
 } // namespace
+
+/** Maps [-1,1] -> [-1,1] */
+static float cubicDriveCurve(float input, float m_0) {
+  return (1 - m_0) * std::pow(input, 3) + m_0 * input;
+}
+
+/** Maps [-1,1] -> [-1,1] */
+static float expoDriveCurve(float input, float m_0) {
+  return input * std::pow(m_0, 1 - std::abs(input));
+}
+
 /**
- * Runs the operator control code. This function will be started in its own task
- * with the default priority and stack size whenever the robot is enabled via
- * the Field Management System or the VEX Competition Switch in the operator
- * control mode.
+ * Runs the operator control code. This function will be started in its own
+ * task with the default priority and stack size whenever the robot is
+ * enabled via the Field Management System or the VEX Competition Switch in
+ * the operator control mode.
  *
- * If no competition control is connected, this function will run immediately
- * following initialize().
+ * If no competition control is connected, this function will run
+ * immediately following initialize().
  *
  * If the robot is disabled or communications is lost, the
- * operator control task will be stopped. Re-enabling the robot will restart the
- * task, not resume it from where it left off.
+ * operator control task will be stopped. Re-enabling the robot will restart
+ * the task, not resume it from where it left off.
  */
 void opcontrol() {
   pros::Controller master(pros::E_CONTROLLER_MASTER);
@@ -163,12 +174,59 @@ void opcontrol() {
                 selector->get_selected_auton_name());
       }
     }
+    // // If tuning, relinquish control of the drive to the tuning CLI
+    // if (!isTuning()) {
+    //   float leftPower = master.get_analog(map::LEFT_DRIVE);
+    //   float rightPower = master.get_analog(map::RIGHT_DRIVE);
+    //   if (std::abs(leftPower - rightPower) < 8) {
+    //     float average = (leftPower + rightPower) / 2;
+    //     leftPower = average;
+    //     rightPower = average;
+    //   }
+    //   constexpr float blah = 16.f/127.f;
+
+    //   // Drivetrain
+    //   bot.tank(leftPower, rightPower);
+    // }
+
+    // // If tuning, relinquish control of the drive to the tuning CLI
+    // if (!isTuning()) {
+    //   // Drivetrain
+    //   bot.arcade(master.get_analog(pros::E_CONTROLLER_ANALOG_LEFT_Y),
+    //              master.get_analog(pros::E_CONTROLLER_ANALOG_RIGHT_X));
+    // }
+
+    // // If tuning, relinquish control of the drive to the tuning CLI
+    // if (!isTuning())
+    //   // Drivetrain
+    //   bot.tank(master.get_analog(map::LEFT_DRIVE),
+    //            master.get_analog(map::RIGHT_DRIVE));
 
     // If tuning, relinquish control of the drive to the tuning CLI
-    if (!isTuning())
-      // Drivetrain
-      bot.tank(master.get_analog(map::LEFT_DRIVE),
-               master.get_analog(map::RIGHT_DRIVE));
+    if (!isTuning()) {
+      constexpr float THROTTLE_CURVE_SLOPE = .5;
+      constexpr float STEER_CURVE_SLOPE = .5;
+
+      const float leftInput = master.get_analog(map::LEFT_DRIVE) / 127.f;
+      const float rightInput = master.get_analog(map::RIGHT_DRIVE) / 127.f;
+      const float throttleInput = (leftInput + rightInput) / 2;
+      const float steerInput = (leftInput - rightInput) / 2;
+      const float steerOutput = cubicDriveCurve(steerInput, STEER_CURVE_SLOPE);
+      const float maxThrottle = 1 - std::abs(steerOutput);
+      // Maintains same slope at the center, but scales the arms so that at the
+      // ends, throttleOutput==maxThrottle
+      const float throttleOutput =
+          maxThrottle == 0
+              ? 0
+              : maxThrottle *
+                    cubicDriveCurve(throttleInput,
+                                    THROTTLE_CURVE_SLOPE / maxThrottle);
+
+      const float leftOutput = throttleOutput + steerOutput;
+      const float rightOutput = throttleOutput - steerOutput;
+
+      bot.tank(127 * leftOutput, 127 * rightOutput);
+    }
 
     // Lever
     if (master.get_digital_new_press(map::LEVER)) {
