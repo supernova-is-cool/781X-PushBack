@@ -70,9 +70,12 @@ void auton::components::scoreCenter(Quadrant quadrant,
     bot.intake.slowOuttake();
     // Pull intake up to score on low goal
     bot.intakeLift.extend();
+    // Push constantly into low goal while scoring
+    tank(32, 32, 0, 0);
     pros::delay(score_duration);
     // Hold onto remaining blocks
     bot.intake.intake();
+    bot.intakeLift.retract();
   }
 
   // Exit goal

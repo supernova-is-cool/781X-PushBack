@@ -23,7 +23,7 @@ void auton::components::matchload(Quadrant quadrant, bool onlyMyColor, AUTON aut
   const Pose matchloader{MIN_X, -TILE * 2};
   const Pose matchloaderTarget =
       matchloader +
-      Pose{MATCHLOADER_DIST_TO_CENTER + 1, quadrant.isRight() ? 0.f : 1.5f};
+      Pose{MATCHLOADER_DIST_TO_CENTER + (quadrant.isRight() ? 0.f : 1.f), quadrant.isRight() ? -2.f : 1.5f};
 
   // If facing towards the matchloader, reduce kp and increase kd to prevent
   // back of the bot from lifting up
@@ -34,7 +34,7 @@ void auton::components::matchload(Quadrant quadrant, bool onlyMyColor, AUTON aut
     bot.lateralPID.kD *= 1.2;
   }
   // Align in front of the matchloader
-  bot.moveToY(matchloader.y, 2000);
+  bot.moveToY(matchloaderTarget.y, 2500);
   bot.waitUntilDone();
   bot.lateralPID = defaultLateralPID;
 
